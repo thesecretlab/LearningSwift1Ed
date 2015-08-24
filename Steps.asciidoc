@@ -1,0 +1,45 @@
+== Mac App
+
+. Create a new Workspace in Xcode (File -> New -> Workspace)
+
+. Save as Notes.xcworkspace
+
+. File -> New  -> Project, OS X -> Application, Cocoa Application
++
+Product name: Notes, Language: Swift, Org. name and identifier: whatever you like, Create Document-Based Application = on, Use Core Data = off, include unit and UI tests = both on
++
+When saving it, change 'Add to' to the 'Notes' workspace that you just created
+
+[NOTE]
+====
+UI tests will only work on OS X 10.11 'El Capitan'.
+====
+
+. Run the app and you can already create new 'documents' by pressing Cmd-N.
+
+=== The document model
+
+. Open Document.swift
+. Add an NSAttributedString property called +text+ - set its default value to the empty attributed string
+
+. Implement +dataOfType+ to convert the string to an NSData containing RTFD and return it (or throw an error)
+. Implement +readFromData+ to convert the NSData into an NSAttributedString or throw an error
+
+. Run the app, you can now save and open files - the UI doesn't change yet, we'll do that next
+
+==== A basic UI
+
+. Open Document.xib
+
+. Delete the label
+
+. Add a text view, resize it to fill the window (leaving some margins)
+. Select it
+. Editor->Resolve Auto Layout Issues->Reset to Suggested Constraints
+	. Text view will now resize to fit the window
+. Select the Text View (it's a child of the Bordered Scroll View's Clip View)
+. Open Bindings inspector
+	. Bind Attributed String to File's Owner; model key path = self.text
+	
+. Run the app; you can now enter and save text, close the document, re-open it; you get free undo and revision control; LOTS of stuff is taken care of for you!
+
