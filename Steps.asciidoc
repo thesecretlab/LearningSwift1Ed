@@ -43,3 +43,32 @@ UI tests will only work on OS X 10.11 'El Capitan'.
 	
 . Run the app; you can now enter and save text, close the document, re-open it; you get free undo and revision control; LOTS of stuff is taken care of for you!
 
+==== Architecting for attachments
+
+. Right now the document class has a single property: 'text'
+. It's also stored as a single file
+. We want to include attachments, and the easiest way to do that is to create a 'file package' - this means we won't have to read the entire thing into memory, which might be a problem if those attachments are large
+. This means we need to use NSFileWrapper
+
+	. An NSFileWrapper is an object that represents either a single file, or a directory of multiple files (each of which can itself be a file wrapper representing a directory)
+	. In this app we'll use directory file wrappers; they'll contain at least two files:
+		 . A file that contains general info about the document, named "Document.plist"
+		 . The .rtfd file containing the text, called "Text.rtfd"
+		 . Plus any attached files, which will be kept in a directory called Attachments (so that you can drop files with any name in, including ones named "Document.plist" and "Text.rtf")
+
+. This means we need to implement methods that load from and save to a file wrapper
+
+. Go to project -> Info, scroll down to Document Types, turn on Document is distributed as a bundle
+
+. Implement +readFromFileWrapper+ and +fileWrapperOfType+ (plus related funcs and enums)
+
+. Re-run the app, make a document, save it
+. Locate that document in the Finder and right click, choose Show Package Contents - behold, Text.rtf!
+
+==== Adding attachments
+
+. Now we'll add support for actually storing attachments
+
+
+
+==== Adding support for QuickLook
