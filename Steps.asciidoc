@@ -129,6 +129,8 @@ Run +brctl log --wait --shorten+ in the terminal to get a log of everything iClo
 
 == iOS App
 
+=== Starting up and adding iCloud
+
 . File -> New -> Project, name it Notes-iOS
 . Add it to the workspace
 . Project settings -> Capabilities
@@ -139,3 +141,14 @@ Run +brctl log --wait --shorten+ in the terminal to get a log of everything iClo
 
 . Open AppDelegate.swift
 . Add code that queries +URLForUbiquityContainerIdentifier+
+
+. Open iOS simulator
+. Go to Settings->iCloud
+. Create a new Apple ID (do NOT use your current one) and sign into it
+
+. Go back to Xcode and run the app; after a few seconds, it will log the location of the container!
+
+=== Listing documents
+
+
+

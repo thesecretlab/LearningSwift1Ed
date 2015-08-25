@@ -36,7 +36,18 @@ class MasterViewController: UITableViewController {
             self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
         }
             
-            
+		self.queryDidUpdateObserver = NSNotificationCenter.defaultCenter()
+		        .addObserverForName(NSMetadataQueryDidUpdateNotification,
+		        object: metadataQuery,
+		        queue: NSOperationQueue.mainQueue()) { (notification) in
+		        self.queryUpdated()
+		        }
+		        self.queryDidFinishGatheringObserver = NSNotificationCenter.defaultCenter()
+		        .addObserverForName(NSMetadataQueryDidFinishGatheringNotification,
+		        object: metadataQuery,
+		        queue: NSOperationQueue.mainQueue()) { (notification) in
+		        self.queryUpdated()
+		        }
     
         metadataQuery.startQuery()
     }
