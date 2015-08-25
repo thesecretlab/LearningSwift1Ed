@@ -14,6 +14,8 @@
 		685C4A071B8AC9C000D34F19 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 685C4A051B8AC9C000D34F19 /* MainMenu.xib */; };
 		685C4A121B8AC9C000D34F19 /* NotesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685C4A111B8AC9C000D34F19 /* NotesTests.swift */; };
 		685C4A1D1B8AC9C000D34F19 /* NotesUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685C4A1C1B8AC9C000D34F19 /* NotesUITests.swift */; };
+		685C4A2C1B8C15EB00D34F19 /* AddAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685C4A2A1B8C15EB00D34F19 /* AddAttachmentViewController.swift */; };
+		685C4A2D1B8C15EB00D34F19 /* AddAttachmentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 685C4A2B1B8C15EB00D34F19 /* AddAttachmentViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,9 @@
 		685C4A181B8AC9C000D34F19 /* NotesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		685C4A1C1B8AC9C000D34F19 /* NotesUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesUITests.swift; sourceTree = "<group>"; };
 		685C4A1E1B8AC9C000D34F19 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		685C4A2A1B8C15EB00D34F19 /* AddAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddAttachmentViewController.swift; sourceTree = "<group>"; };
+		685C4A2B1B8C15EB00D34F19 /* AddAttachmentViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddAttachmentViewController.xib; sourceTree = "<group>"; };
+		685C4A2E1B8C306300D34F19 /* Notes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Notes.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,9 +102,12 @@
 		685C49FB1B8AC9C000D34F19 /* Notes */ = {
 			isa = PBXGroup;
 			children = (
+				685C4A2E1B8C306300D34F19 /* Notes.entitlements */,
 				685C49FC1B8AC9C000D34F19 /* AppDelegate.swift */,
 				685C49FE1B8AC9C000D34F19 /* Document.swift */,
 				685C4A001B8AC9C000D34F19 /* Document.xib */,
+				685C4A2A1B8C15EB00D34F19 /* AddAttachmentViewController.swift */,
+				685C4A2B1B8C15EB00D34F19 /* AddAttachmentViewController.xib */,
 				685C4A031B8AC9C000D34F19 /* Assets.xcassets */,
 				685C4A051B8AC9C000D34F19 /* MainMenu.xib */,
 				685C4A081B8AC9C000D34F19 /* Info.plist */,
@@ -192,6 +200,12 @@
 				TargetAttributes = {
 					685C49F81B8AC9C000D34F19 = {
 						CreatedOnToolsVersion = 7.0;
+						DevelopmentTeam = 5V2A4389PA;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 					685C4A0C1B8AC9C000D34F19 = {
 						CreatedOnToolsVersion = 7.0;
@@ -229,6 +243,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				685C4A041B8AC9C000D34F19 /* Assets.xcassets in Resources */,
+				685C4A2D1B8C15EB00D34F19 /* AddAttachmentViewController.xib in Resources */,
 				685C4A021B8AC9C000D34F19 /* Document.xib in Resources */,
 				685C4A071B8AC9C000D34F19 /* MainMenu.xib in Resources */,
 			);
@@ -255,6 +270,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				685C4A2C1B8C15EB00D34F19 /* AddAttachmentViewController.swift in Sources */,
 				685C49FF1B8AC9C000D34F19 /* Document.swift in Sources */,
 				685C49FD1B8AC9C000D34F19 /* AppDelegate.swift in Sources */,
 			);
@@ -395,11 +411,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Notes/Notes.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Notes/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = au.com.secretlab.Notes;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -407,11 +427,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Notes/Notes.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Notes/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = au.com.secretlab.Notes;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -486,6 +510,7 @@
 				685C4A231B8AC9C000D34F19 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		685C4A241B8AC9C000D34F19 /* Build configuration list for PBXNativeTarget "NotesTests" */ = {
 			isa = XCConfigurationList;
@@ -494,6 +519,7 @@
 				685C4A261B8AC9C000D34F19 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		685C4A271B8AC9C000D34F19 /* Build configuration list for PBXNativeTarget "NotesUITests" */ = {
 			isa = XCConfigurationList;
@@ -502,6 +528,7 @@
 				685C4A291B8AC9C000D34F19 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

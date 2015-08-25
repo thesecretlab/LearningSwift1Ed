@@ -35,18 +35,46 @@ private enum ErrorCode : Int {
     case CannotSaveText
 }
 
-class Document: NSDocument {
+class Document: NSDocument, AddAttachmentDelegate {
     
     // Main text content
     var text : NSAttributedString = NSAttributedString()
     
     // Attachments
-    var attachedFiles : [String:NSFileWrapper]? {
+    dynamic  var attachedFiles : [NSFileWrapper]? {
         if let attachmentsDirectory = self.documentFileWrapper.fileWrappers?[FileNames.AttachmentsDirectory.rawValue], let attachmentsFileWrappers = attachmentsDirectory.fileWrappers {
-            return attachmentsFileWrappers
+            return attachmentsFileWrappers.values.array
         } else {
             return nil
         }
+    }
+    
+    func addAttachmentAtURL(url:NSURL) throws {
+        // Ensure that we have an Attachments folder to store stuff in
+        
+        guard let fileWrappers = self.documentFileWrapper.fileWrappers else {
+            throw err(.CannotAccessAttachments)
+        }
+        
+        self.willChangeValueForKey("attachedFiles")
+        
+        var attachmentsDirectoryWrapper = fileWrappers[FileNames.AttachmentsDirectory.rawValue]
+        
+        if attachmentsDirectoryWrapper == nil {
+            
+            attachmentsDirectoryWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
+            
+            attachmentsDirectoryWrapper?.preferredFilename = FileNames.AttachmentsDirectory.rawValue
+            
+            self.documentFileWrapper.addFileWrapper(attachmentsDirectoryWrapper!)
+        }
+        
+        let newAttachment = try NSFileWrapper(URL: url, options: NSFileWrapperReadingOptions.Immediate)
+        
+        attachmentsDirectoryWrapper?.addFileWrapper(newAttachment)
+        
+        self.updateChangeCount(NSDocumentChangeType.ChangeDone)
+        self.didChangeValueForKey("attachedFiles")
     }
     
     // Directory file wrapper
@@ -113,7 +141,70 @@ class Document: NSDocument {
         
     }
 
+    var popover : NSPopover?
 
+    @IBAction func addAttachment(sender: NSButton) {
+        
+        
+        
+        
+        if let viewController = AddAttachmentViewController(nibName:"AddAttachmentViewController", bundle:NSBundle.mainBundle()) {
+            
+            viewController.delegate = self
+            
+            self.popover = NSPopover()
+            
+            self.popover?.behavior = .Transient
+            
+            self.popover?.contentViewController = viewController
+            
+            self.popover?.showRelativeToRect(sender.bounds, ofView: sender, preferredEdge: NSRectEdge.MaxY)
+        }
+        
+    }
+    
+    
+    
+    func addFile() {
+        
+        let panel = NSOpenPanel()
+        
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        
+        
+        panel.beginWithCompletionHandler { (result) -> Void in
+            if result == NSModalResponseOK {
+                
+                if let resultURL = panel.URLs.first {
+                    do {
+                        try self.addAttachmentAtURL(resultURL)
+                    } catch let error as NSError {
+                        NSApp.presentError(error, modalForWindow: self.windowForSheet!, delegate: nil, didPresentSelector: nil, contextInfo: nil)
+                    } catch {
+                        
+                    }
+                }
+                
+            }
+        }
+        
+        
+    }
+    
+//    func collectionView(collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
+//        return self.attachedFiles?.count ?? 0
+//    }
+//    
+//    func collectionView(collectionView: NSCollectionView, itemForRepresentedObjectAtIndexPath indexPath: NSIndexPath) -> NSCollectionViewItem {
+//        
+//        let collectionItem = NSCollectionViewItem()
+//        collectionItem.textField?.stringValue = "Hi"
+//        
+//        return collectionItem
+//        
+//    }
 
 }
 

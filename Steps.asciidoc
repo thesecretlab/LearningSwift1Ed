@@ -69,6 +69,73 @@ UI tests will only work on OS X 10.11 'El Capitan'.
 
 . Now we'll add support for actually storing attachments
 
+. First we'll add the collection view
+. Resize the text view to make room for the collection view at the bottom
+. Add a collection view
+
+
+. Add a new cocoa class - subclass of NSViewController, turn on create XIB file, name it AddAttachmentViewController
+
+. Open the xib, add a button for File attachments and the label 'Add a new...' above it
+
+. Open the Document xib, add a + button (use a gradient button), attach it to a new method called +addAttachment+; make sure the parameter is of type NSButton and not AnyObject!
+. Add a new property: +popover+, optional NSPopover
+. Implement addAttachment
+
+. Open AddAttachmentViewController.swift 
+. Add the +AddAttachmentDelegate+ protocol
+. Add a new property, +delegate+, type: optional +AddAttachmentDelegate+
+. Attach the File button to a new method that calls the delegate's +addFile+ method
+
+. Implement +addFile+
+. Implement +addAttachmentAtURL+
+
+. Run the app, add an attachment, save the document, view package contents - it's there!
 
 
 ==== Adding support for QuickLook
+
+==== iCloud
+
+. Go to Project Settings, General tab
+. Ensure that you've set your Team correctly
+. Go to Capabilities tab
+. Turn on iCloud, wait for it to load
+. Turn on iCloud documents, set Container to "Specify custom containers", add a new container called iCloud.<your bundle ID> - this is to allow your iOS app to access the same container
+
+. Open Info.plist
+
+. Add the following stuff:
+
+----
+<key>NSUbiquitousContainers</key>
+    <dict>
+        <key>iCloud.YOUR.BUNDLE.IDENTIFIER</key>
+        <dict>
+            <key>NSUbiquitousContainerIsDocumentScopePublic</key>
+            <true/>
+            <key>NSUbiquitousContainerSupportedFolderLevels</key>
+            <string>Any</string>
+            <key>NSUbiquitousContainerName</key>
+            <string>Notes</string>
+        </dict>
+    </dict>
+----
+
+[NOTE]
+====
+Run +brctl log --wait --shorten+ in the terminal to get a log of everything iCloud is doing
+====
+
+== iOS App
+
+. File -> New -> Project, name it Notes-iOS
+. Add it to the workspace
+. Project settings -> Capabilities
+	. Enable iCloud 
+	. iCloud documents = on
+	. Specify custom containers
+	. Use the same container as the one you created for the OS X app
+
+. Open AppDelegate.swift
+. Add code that queries +URLForUbiquityContainerIdentifier+
