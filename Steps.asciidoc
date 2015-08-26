@@ -131,14 +131,18 @@ Run +brctl log --wait --shorten+ in the terminal to get a log of everything iClo
 
 === Starting up and adding iCloud
 
-. File -> New -> Project, name it Notes-iOS
+. File -> New -> Target, iOS single-view application, name it Notes-iOS, set it up as a universal app, ensure core data= OFF
 . Add it to the workspace
-. Project settings -> Capabilities
+
+. Project settings -> Notes-iOS target -> Capabilities
 	. Enable iCloud 
 	. iCloud documents = on
 	. Specify custom containers
 	. Use the same container as the one you created for the OS X app
+	
+	
 
+	
 . Open AppDelegate.swift
 . Add code that queries +URLForUbiquityContainerIdentifier+
 
@@ -146,9 +150,102 @@ Run +brctl log --wait --shorten+ in the terminal to get a log of everything iClo
 . Go to Settings->iCloud
 . Create a new Apple ID (do NOT use your current one) and sign into it
 
+ALTERNATIVELY
+
+. Install it on your phone, as long as your phone is signed into iCloud
+
 . Go back to Xcode and run the app; after a few seconds, it will log the location of the container!
+
+=== Creating the list view controller
+
+. Open the storyboard and delete everything
+. Add a new navigation controller; delete the table view that it comes with
+. Make the navigation controller the initial view controller
+. Drag out a Collection View Controller
+. Make the collection view controller be the root view controller of the navigation controller
+. Set its class to +ViewController+
+. Open ViewController.swift
+. Change +ViewController+ to subclass +UICollectionViewController+
+. Add the +FileCollectionViewCell+ class to ViewController.swift
+
+. Select the cell, change its class to +FileCollectionViewCell+, set its reuse identifier to +FileCell+
+. Add a label to the cell, constrain it to the center-bottom of the cell
+. Add a view above the label that takes up the rest of the space
+. Connect the label to the +fileNameLabel+ property of +FileCollectionViewCell+
+
 
 === Listing documents
 
+. We need to subclass UIDocument and create the equivalent of the Document class from the Mac app for the iOS app
+. Several important things need to be the same across the two different classes - the names of files for example
+. We'll move them into a separate swift file that's part of both targets
+. Right click the project, add a new group, name it Common
+	. Select this new group and go to the file inspector, click on the little folder icon to set its location, an open dialog box will appear; in it, make a new folder called Common, and then click Choose
+	. You've just made a new folder to put files that are common to both projects!
+. Right click the Common group and add a new Swift file
+	. Name it DocumentCommon, and add it to both the Notes and Notes-iOS targets by checking the boxes
+	. Open the Document.swift file and move the +err+ func, and all three enums into DocumentCommons.swift
+	. Check that the Mac app still builds!
+	
+. Create a new Cocoa Touch class in Notes-iOS, subclass of UIDocument
 
+. Add +NSAttributedString+ property +text+, defaults to the empty attributed string
+. Add +NSFileWrapper+ property +documentFileWrapper+, defaults to an empty directory file wrapper
+. Implement +loadFromContents+ to load the text (ignoring anything to do with attachments for now)
+. Implement +contentsForType+ to store the text
 
+. Time to start LISTING documents:
+	. Add +metadataQuery+, +queryDidFinishGatheringObserver+ and +queryDidUpdateObserver+ properties
+	. Make +viewDidLoad+ set up the observers and kick off the query
+	. Implement +queryUpdated+, to make it refresh the table view
+	. Implement +numberOfSectionsInCollectionView+, +numberOfItemsInSection+, and +cellForItemAtIndexPath+
+	. Run the app! If there are documents in the container
+
+. Now we can start CREATING documents
+
+. Implement the +localDocumentsDirectoryURL+ lazy property - this gives us the folder to store our local documents in
+. Implement the +ubiquitousDocumentsDirectoryURL+ lazy property - this gives us the location of where to put documents in order for them to be in iCloud
+. Implement the +createDocument+ function
+
+. Run the app, click the + button, and you'll be adding new files! You're a winner!
+
+==== Downloading from iCloud
+
+. First we need to show files that aren't yet downloaded
+. Implement +itemIsOpenable+
+. Add checks in +cellForItemAtIndexPath+ to make unavailable documents transparent
+
+. Update +queryUpdated+ to begin downloading any files that aren't already down
+
+=== Opening documents
+
+. New UIViewController subclass called +DocumentViewController+
+. Add a new view controller to the storyboard, set its class to +DocumentViewController+
+. Connect it to the document list view controller via a segue called ShowDocument
+. Add a +UITextView+ to it, make it fill the screen and set it to Attributed (instead of Plain) 
+
+. Open +DocumentViewController+
+	. Implement +textView+, +document+, +documentURL+ properties
+	. Implement +viewWillAppear+ to open the document
+	
+. Connect the text view to the +textView+ outlet
+
+. In ViewController.swift:
+	. Implement +didSelectItemAtIndexPath+
+	. Implement +prepareForSegue+
+	
+. Run the app, make a document, it works!
+
+=== Editing and saving documents
+
+. Make DocumentViewController conform to UITextViewDelegate
+. Implement +textViewDidChange+ to store text in the document and update change count
+. In the storyboard, make the Document View Controller the text view's delegate
+. Implement +viewWillDisappear+ to close the document
+. Launch the app, open a document, make changes, close it, re-open it, the changes are still there!
+
+=== Handling conflicts
+
+=== UI for attachments
+
+=== 

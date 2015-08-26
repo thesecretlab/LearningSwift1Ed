@@ -4,7 +4,4 @@
    <FileRef
       location = "group:Notes/Notes.xcodeproj">
    </FileRef>
-   <FileRef
-      location = "group:Notes/Notes-iOS/Notes-iOS.xcodeproj">
-   </FileRef>
 </Workspace>

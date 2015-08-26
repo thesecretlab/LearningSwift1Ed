@@ -8,33 +8,6 @@
 
 import Cocoa
 
-// We can be throwing a lot of errors in this class, and they'll all be in the same error domain and using error codes from the same enum, so here's a little convenience func to save typing and space
-private func err(code: ErrorCode, _ userInfo:[NSObject:AnyObject]?=nil)  -> NSError {
-    return NSError(domain: ErrorDomain, code: code.rawValue, userInfo: userInfo)
-}
-
-private let ErrorDomain = "NotesErrorDomain"
-
-// Used for looking up data in Document.plist
-private enum DocumentSummaryKeys : String {
-    case Attachments = "attachments" // -> [String]
-}
-
-// Names of files/directories in the package
-private enum FileNames : String {
-    case DocumentFile = "Document.plist"
-    case TextFile = "Text.rtf"
-    case AttachmentsDirectory = "Attachments"
-}
-
-// Things that can go wrong.
-private enum ErrorCode : Int {
-    case CannotLoadFileWrappers
-    case CannotLoadText
-    case CannotAccessAttachments
-    case CannotSaveText
-}
-
 class Document: NSDocument, AddAttachmentDelegate {
     
     // Main text content
@@ -42,8 +15,8 @@ class Document: NSDocument, AddAttachmentDelegate {
     
     // Attachments
     dynamic  var attachedFiles : [NSFileWrapper]? {
-        if let attachmentsDirectory = self.documentFileWrapper.fileWrappers?[FileNames.AttachmentsDirectory.rawValue], let attachmentsFileWrappers = attachmentsDirectory.fileWrappers {
-            return attachmentsFileWrappers.values.array
+        if let attachmentsDirectory = self.documentFileWrapper.fileWrappers?[NoteDocumentFileNames.AttachmentsDirectory.rawValue], let attachmentsFileWrappers = attachmentsDirectory.fileWrappers {
+            return Array(attachmentsFileWrappers.values)
         } else {
             return nil
         }
@@ -58,13 +31,13 @@ class Document: NSDocument, AddAttachmentDelegate {
         
         self.willChangeValueForKey("attachedFiles")
         
-        var attachmentsDirectoryWrapper = fileWrappers[FileNames.AttachmentsDirectory.rawValue]
+        var attachmentsDirectoryWrapper = fileWrappers[NoteDocumentFileNames.AttachmentsDirectory.rawValue]
         
         if attachmentsDirectoryWrapper == nil {
             
             attachmentsDirectoryWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
             
-            attachmentsDirectoryWrapper?.preferredFilename = FileNames.AttachmentsDirectory.rawValue
+            attachmentsDirectoryWrapper?.preferredFilename = NoteDocumentFileNames.AttachmentsDirectory.rawValue
             
             self.documentFileWrapper.addFileWrapper(attachmentsDirectoryWrapper!)
         }
@@ -110,7 +83,7 @@ class Document: NSDocument, AddAttachmentDelegate {
         }
         
         // Ensure that we can access the document text
-        guard let documentTextData = fileWrappers[FileNames.TextFile.rawValue]?.regularFileContents else {
+        guard let documentTextData = fileWrappers[NoteDocumentFileNames.TextFile.rawValue]?.regularFileContents else {
             throw err(.CannotLoadText)
         }
         
@@ -129,12 +102,12 @@ class Document: NSDocument, AddAttachmentDelegate {
         
         let textRTFData = try self.text.dataFromRange(NSRange(0..<self.text.length), documentAttributes: [NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType])
         
-        if let oldTextFileWrapper = self.documentFileWrapper.fileWrappers?[FileNames.TextFile.rawValue] {
+        if let oldTextFileWrapper = self.documentFileWrapper.fileWrappers?[NoteDocumentFileNames.TextFile.rawValue] {
             self.documentFileWrapper.removeFileWrapper(oldTextFileWrapper)
             
         }
         
-        self.documentFileWrapper.addRegularFileWithContents(textRTFData, preferredFilename: FileNames.TextFile.rawValue)
+        self.documentFileWrapper.addRegularFileWithContents(textRTFData, preferredFilename: NoteDocumentFileNames.TextFile.rawValue)
         
         return self.documentFileWrapper
         
