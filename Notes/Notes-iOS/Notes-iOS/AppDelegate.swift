@@ -50,6 +50,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
+    func application(application: UIApplication, continueUserActivity userActivity: NSUserActivity, restorationHandler: ([AnyObject]?) -> Void) -> Bool {
+        
+        // Return to the list of documents
+        if let navigationController = self.window?.rootViewController as? UINavigationController, let topViewController = navigationController.topViewController {
+            navigationController.popToRootViewControllerAnimated(false)
+            
+            // We're now at the list of documents; tell the restoration 
+            // system that this view controller needs to be informed
+            // that we're continuing the activity
+            restorationHandler([topViewController])
+            
+            
+            return true
+        }
+        return false
+    }
+    
+    
+    
     
 }
 

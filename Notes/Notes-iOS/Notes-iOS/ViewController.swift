@@ -21,12 +21,22 @@ class ViewController: UICollectionViewController {
         let metadataQuery = NSMetadataQuery()
         metadataQuery.searchScopes =
             [NSMetadataQueryUbiquitousDocumentsScope]
-        metadataQuery.predicate = NSPredicate(format: "%K LIKE '*'",
+        metadataQuery.predicate = NSPredicate(format: "%K LIKE '*.note'",
             NSMetadataItemFSNameKey)
         
         return metadataQuery
     }()
     
+    override func restoreUserActivityState(activity: NSUserActivity) {
+        // We're being told to open a document
+        
+        if let url = activity.userInfo?[NSUserActivityDocumentURLKey] as? NSURL {
+            
+            // Open the document
+            self.performSegueWithIdentifier("ShowDocument", sender: url)
+        }
+        
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,36 +65,42 @@ class ViewController: UICollectionViewController {
     func queryUpdated() {
         self.collectionView?.reloadData()
         
-        if let items = self.metadataQuery.results as? [NSMetadataItem] {
-            for item in items {
-                
-                if itemIsOpenable(item) == true {
-                    // We only need to download if it isn't already openable
-                    continue
-                }
-                
-                guard let url = item.valueForAttribute(NSMetadataItemURLKey) as? NSURL else {
-                    // We need to URL to download it, so bail out
-                    continue
-                }
-                
-                do {
-                    // Ask the system to try to download it
-                    try NSFileManager.defaultManager().startDownloadingUbiquitousItemAtURL(url)
-                } catch let error as NSError {
-                    
-                    // Log it if there was a problem
-                    NSLog("Failed to start downloading item \(url): \(error)")
-                }
-            }
-
+        // Bail out if, for some reason, the metadata query's results
+        // 
+        guard let items = self.metadataQuery.results as? [NSMetadataItem]  else {
+            return
         }
+
+        for item in items {
+            
+            // Check to see if we already have the latest version downloaded
+            if itemIsOpenable(item) == true {
+                // We only need to download if it isn't already openable
+                continue
+            }
+            
+            // Ensure that we can get the file URL for this item
+            guard let url = item.valueForAttribute(NSMetadataItemURLKey) as? NSURL else {
+                // We need to have the URL to download it, so bail out
+                continue
+            }
+            
+            // Ask the system to try to download it
+            do {
+                try NSFileManager.defaultManager().startDownloadingUbiquitousItemAtURL(url)
+            } catch let error as NSError {                
+                // Log it if there was a problem
+                NSLog("Failed to start downloading item \(url): \(error)")
+            }
+        }
+
+    
     }
     
     // MARK: - Collection View
     
     override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        // We only have one section
+        // We only ever have one section
         return 1
     }
     
@@ -104,16 +120,17 @@ class ViewController: UICollectionViewController {
         
         // Attempt to get this object from the metadata query
         if let object = self.metadataQuery.resultAtIndex(indexPath.row) as? NSMetadataItem {
-            // The display name is the visible name
+            // The display name is the visible name for the file
             cell.fileNameLabel!.text = object.valueForAttribute(NSMetadataItemDisplayNameKey) as? String
             
             openable = itemIsOpenable(object)
             
         } else {
+            // No object for this index - this is unlikely, but
+            // it's important to do _something_
             cell.fileNameLabel!.text = "<error>"
             
             openable = false
-            
         }
         
         // If this cell is openable, make it fully visible, and
@@ -132,30 +149,36 @@ class ViewController: UICollectionViewController {
         
     }
     
+    // Returns true if the document can be opened right now
     func itemIsOpenable(item:NSMetadataItem?) -> Bool {
         
+        // Return false if item is nil
         guard let item = item else {
             return false
         }
-    
-        if let url = item.valueForAttribute(NSMetadataItemURLKey) as? NSURL {
-            
-            var downloadStatus : AnyObject?
-            do {
-                try url.getResourceValue(&downloadStatus, forKey: NSURLUbiquitousItemDownloadingStatusKey)
-            } catch {
-                return false
-            }
-            
-            if downloadStatus as? String == NSURLUbiquitousItemDownloadingStatusCurrent {
-                return true
-            } else {
-                return false
-            }
-            
+        
+        // Get the URL from the item or bail out
+        guard let url = item.valueForAttribute(NSMetadataItemURLKey) as? NSURL else {
+            return false
         }
-    
-        return false
+        
+        // Ask the system for the download status
+        var downloadStatus : AnyObject?
+        do {
+            try url.getResourceValue(&downloadStatus, forKey: NSURLUbiquitousItemDownloadingStatusKey)
+        } catch let error as NSError {
+            NSLog("Failed to get downloading status for \(url): \(error)")
+            // If we can't get that, we can't open it
+            return false
+        }
+        
+        // Return true if this file is the most current version
+        if downloadStatus as? String == NSURLUbiquitousItemDownloadingStatusCurrent {
+            return true
+        } else {
+            return false
+        }
+        
         
     }
     
@@ -168,9 +191,7 @@ class ViewController: UICollectionViewController {
     }
     
     func createDocument() {
-        
-        
-        // Create a name for this
+        // Create a name for this new document
         let documentName = "Document \(rand()).note"
         
         // Work out where we're going to store it, temporarily
@@ -208,15 +229,26 @@ class ViewController: UICollectionViewController {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
-        // If segue is a NSMetadataItem, the segue is "ShowDocument" and the destination view controller is a DocumentViewController...
-        if segue.identifier == "ShowDocument", let item = sender as? NSMetadataItem, let documentVC = segue.destinationViewController as? DocumentViewController
+        // If the segue is "ShowDocument" and the destination view controller is a DocumentViewController...
+        if segue.identifier == "ShowDocument", let documentVC = segue.destinationViewController as? DocumentViewController
         {
-            
-            // .. get the URL and open it!
-            if let url = item.valueForAttribute(NSMetadataItemURLKey) as? NSURL {
-                documentVC.documentURL = url
+         
+            let documentURL : NSURL
+            // If it's a metadata item and we can get the URL from it..
+            if let item = sender as? NSMetadataItem, let url = item.valueForAttribute(NSMetadataItemURLKey) as? NSURL {
+                
+                documentURL = url
+                
+            } else if let url = sender as? NSURL {
+                // We've received the URL directly
+                documentURL = url
+            } else {
+                // it's something else, oh no!
+                fatalError("ShowDocument segue was called with an invalid sender of type \(sender.dynamicType)")
             }
             
+            // Provide the url to the view controller
+            documentVC.documentURL = documentURL
         }
     }
     

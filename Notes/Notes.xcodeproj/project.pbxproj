@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6848C6331B8FD9D3000B3B00 /* AudioAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6848C6321B8FD9D2000B3B00 /* AudioAttachmentViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		685195E41B8D60A200548D79 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685195E31B8D60A200548D79 /* AppDelegate.swift */; };
 		685195E61B8D60A200548D79 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685195E51B8D60A200548D79 /* ViewController.swift */; };
 		685195EB1B8D60A200548D79 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 685195E91B8D60A200548D79 /* Main.storyboard */; };
@@ -27,6 +28,9 @@
 		685C4A1D1B8AC9C000D34F19 /* NotesUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685C4A1C1B8AC9C000D34F19 /* NotesUITests.swift */; };
 		685C4A2C1B8C15EB00D34F19 /* AddAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685C4A2A1B8C15EB00D34F19 /* AddAttachmentViewController.swift */; };
 		685C4A2D1B8C15EB00D34F19 /* AddAttachmentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 685C4A2B1B8C15EB00D34F19 /* AddAttachmentViewController.xib */; };
+		68D6178C1B8EA1AF0049C16A /* AddAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D6178B1B8EA1AF0049C16A /* AddAttachmentViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		68D6178E1B8ED82A0049C16A /* ImageAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D6178D1B8ED82A0049C16A /* ImageAttachmentViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		68D617901B8F263B0049C16A /* LocationAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D6178F1B8F263B0049C16A /* LocationAttachmentViewController.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,7 +64,21 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		68B619AA1B90205700CD5356 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		6848C6321B8FD9D2000B3B00 /* AudioAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AudioAttachmentViewController.swift; path = "Notes-iOS/AudioAttachmentViewController.swift"; sourceTree = "<group>"; };
 		685195E11B8D60A200548D79 /* Notes-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Notes-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		685195E31B8D60A200548D79 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = "Notes-iOS/AppDelegate.swift"; sourceTree = "<group>"; };
 		685195E51B8D60A200548D79 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = "Notes-iOS/ViewController.swift"; sourceTree = "<group>"; };
@@ -94,6 +112,9 @@
 		685C4A2A1B8C15EB00D34F19 /* AddAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddAttachmentViewController.swift; sourceTree = "<group>"; };
 		685C4A2B1B8C15EB00D34F19 /* AddAttachmentViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddAttachmentViewController.xib; sourceTree = "<group>"; };
 		685C4A2E1B8C306300D34F19 /* Notes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Notes.entitlements; sourceTree = "<group>"; };
+		68D6178B1B8EA1AF0049C16A /* AddAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddAttachmentViewController.swift; path = "Notes-iOS/AddAttachmentViewController.swift"; sourceTree = "<group>"; };
+		68D6178D1B8ED82A0049C16A /* ImageAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageAttachmentViewController.swift; path = "Notes-iOS/ImageAttachmentViewController.swift"; sourceTree = "<group>"; };
+		68D6178F1B8F263B0049C16A /* LocationAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocationAttachmentViewController.swift; path = "Notes-iOS/LocationAttachmentViewController.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,6 +171,10 @@
 				685195E51B8D60A200548D79 /* ViewController.swift */,
 				685196181B8D7F5B00548D79 /* DocumentViewController.swift */,
 				685196161B8D653600548D79 /* Document.swift */,
+				68D6178B1B8EA1AF0049C16A /* AddAttachmentViewController.swift */,
+				68D6178D1B8ED82A0049C16A /* ImageAttachmentViewController.swift */,
+				6848C6321B8FD9D2000B3B00 /* AudioAttachmentViewController.swift */,
+				68D6178F1B8F263B0049C16A /* LocationAttachmentViewController.swift */,
 				685195E91B8D60A200548D79 /* Main.storyboard */,
 				685195EC1B8D60A200548D79 /* Assets.xcassets */,
 				685195EE1B8D60A200548D79 /* LaunchScreen.storyboard */,
@@ -255,6 +280,7 @@
 				685195DD1B8D60A200548D79 /* Sources */,
 				685195DE1B8D60A200548D79 /* Frameworks */,
 				685195DF1B8D60A200548D79 /* Resources */,
+				68B619AA1B90205700CD5356 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
@@ -481,9 +507,13 @@
 			files = (
 				685196191B8D7F5B00548D79 /* DocumentViewController.swift in Sources */,
 				685195E61B8D60A200548D79 /* ViewController.swift in Sources */,
+				6848C6331B8FD9D3000B3B00 /* AudioAttachmentViewController.swift in Sources */,
+				68D617901B8F263B0049C16A /* LocationAttachmentViewController.swift in Sources */,
 				685195E41B8D60A200548D79 /* AppDelegate.swift in Sources */,
+				68D6178C1B8EA1AF0049C16A /* AddAttachmentViewController.swift in Sources */,
 				685196151B8D622A00548D79 /* DocumentCommon.swift in Sources */,
 				685196171B8D653600548D79 /* Document.swift in Sources */,
+				68D6178E1B8ED82A0049C16A /* ImageAttachmentViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -605,6 +635,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
+				STRIP_BITCODE_FROM_COPIED_FILES = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -623,6 +654,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
+				STRIP_BITCODE_FROM_COPIED_FILES = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -860,6 +892,7 @@
 				685196091B8D60A200548D79 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		6851960F1B8D60A200548D79 /* Build configuration list for PBXNativeTarget "Notes-iOSTests" */ = {
 			isa = XCConfigurationList;
@@ -868,6 +901,7 @@
 				6851960B1B8D60A200548D79 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		685196101B8D60A200548D79 /* Build configuration list for PBXNativeTarget "Notes-iOSUITests" */ = {
 			isa = XCConfigurationList;
@@ -876,6 +910,7 @@
 				6851960D1B8D60A200548D79 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		685C49F41B8AC9C000D34F19 /* Build configuration list for PBXProject "Notes" */ = {
 			isa = XCConfigurationList;

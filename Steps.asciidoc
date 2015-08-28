@@ -15,6 +15,21 @@ When saving it, change 'Add to' to the 'Notes' workspace that you just created
 UI tests will only work on OS X 10.11 'El Capitan'.
 ====
 
+. We need to define what the document is, so that the system can work with it
+	. Go to the Notes target properties and open the Info tab
+	. Open the Document Types section
+	. There's already a document type, we need to add a little more description to it for the system
+	. Set +name+ to "Note"
+	. Set +identifier+ to "au.com.secretlab.Note"
+	. This defines this document as conforming to this Uniform Type Identifier, which is the method by which the system works out the types of files
+. We've defined our own custom type (since we're inventing a new document format here) - this means we need to export it to the system so that it knows about it
+	. Open the Exported UTIs section
+	. Add a new entry
+		. Description= "Note"
+		. Extensions = "note"
+		. Identifier = "au.com.secretlab.Note"
+		. Conforms to = "com.apple.package" (this means "this type is a package")
+
 . Run the app and you can already create new 'documents' by pressing Cmd-N.
 
 === The document model
@@ -156,6 +171,25 @@ ALTERNATIVELY
 
 . Go back to Xcode and run the app; after a few seconds, it will log the location of the container!
 
+. Now we need to register the document type - it's not strictly necessary yet but it's good practice and will be important when we implement handoff later
+
+. Go to Notes-iOS target, scroll down to Document Types and add one
+. Name = "Note"
+. Types = "au.com.secretlab.Note"
+. Additional document type properties:
+	
+	. +CFBundleTypeExtensions+ (array) = 1 element, "note"
+
+. Add an exported UTI:
+	. Description: Note
+	. Identifier: au.com.secretlab.Note
+	. Conforms to: com.apple.package
+	. Additional exported UTI properties:
+		. UTTypeTagSpecification (dict):
+			. public.filename-extension (array), 1 element: "note"
+
+The app is now associated with this type
+
 === Creating the list view controller
 
 . Open the storyboard and delete everything
@@ -239,13 +273,290 @@ ALTERNATIVELY
 === Editing and saving documents
 
 . Make DocumentViewController conform to UITextViewDelegate
+. Add the +shouldCloseOnDisappear+ property
 . Implement +textViewDidChange+ to store text in the document and update change count
 . In the storyboard, make the Document View Controller the text view's delegate
 . Implement +viewWillDisappear+ to close the document
 . Launch the app, open a document, make changes, close it, re-open it, the changes are still there!
 
-=== Handling conflicts
+==== Handling conflicts
+
+*TODO*
 
 === UI for attachments
 
-=== 
+. This involves some reasonably complex constraints, so it's easier to start from scratch
+
+. Delete all views from the Document View Controller's interface
+
+. It'll be easier to do this without the top bar in the way, so select the Document View Controller, and in the Simulated Metrics section of the inspector, change Top Bar from Inferred to None
+
+. Add a scroll view, and constrain it thusly:
+	. Trailing space to container = 0 (not to margin!)
+	. Leading space to container = 0 (likewise)
+	. Top space to container = 0 - to get this, hold Option and "Vertical Spacing to Top Layout Guide" will change to "Top Space to Container Margin"
+	. Bottom space to container = 0
+
+The scroll view will now completely fill the screen; we'll now add stuff inside it
+
+In particular, we'll be adding a stack view, which will contain the text editor and the collection view that will show the list of attachments
+
+. Add a stack view as a child of the scroll view
+	 . Constrain it to the scroll view in the same way as the scroll view is constrained to ITS parent view - top, left, right and bottom all zero
+	 . Also constrain its width to be the same as the scroll view
+	
+. Add a collection view to the stack view
+	. Add two constraints: constrain top space to the stack view, and constrain height to 88
+	. Set the cell size to 88x88
+	. Set its background color to 90% white (very slightly grey)
+
+. Add a Text View to the stack view; it needs no constraints, since the stack view will size and position it
+
+	. Connect the Document View Controller's +textView+ outlet to this text view
+	. Turn Scrolling Enabled off for the text view
+
+. Run the app; the text now appears underneath the collection view
+
+==== Listing attachments
+
+First we add support for storing attachments in the iOS document class
+
+. Implement +attachedFiles+ and +addAttachmentAtURL+ to the iOS +Document+ class 
+
+Now we implement a way for the document to determine the type of the attachment, and a method to generate a thumbnail for the attachment
+
+. Add File image to the assets catalog
+
+. +import MobileCoreServices+
+. Implement the extension to +NSFileWrapper+ that allows you to get type information of attachments as well as thumbnails
+ 
+. Now we'll make the collection view show cells: one for each attachment, plus a cell that will add a new attachment
+
+. Make +DocumentViewController+ conform to +UICollectionViewDataSource+ and +UICollectionViewDelegate+
+. Add an outlet for a +UICollectionView+ called +attachmentsCollectionView+
+
+. Implement +numberOfItemsInSection+ and +cellForItemAtIndexPath+ in DocumentViewController
+
+. In DocumentViewController.swift, add +AttachmentCell+ - a subclass that has an outlet for an image view
+
+. Open the storyboard and select the collection view
+. Change Items from 1 to 2
+. Set scroll direction to horizontal
+. Set the identifiers of each to +AttachmentCell+ and +AddAttachmentCell+
+. Set the class of +AttachmentCell+ to "AttachmentCell"
+. Connect the empty image view in AttachmentCell to the +imageView+ outlet of +AttachmentCell+
+
+. Add an image view to both, make them fill their cells (distance from all edges should be zero)
+	. For the AttachmentCell, make the Content Mode be Aspect Fill
+	. For the AddAttachmentCell, make the Content Mode be Center
+
+. Add the AddAttachmentIcon image to the asset catalog
+. Set image for the AddAttachmentCell to AddAttachmentIcon
+
+. Connect the +attachmentsCollectionView+ outlet to the collection view
+. Set the data source and delegate of the collection view to the view controller
+
+. In the open completion handler of the document, make the +attachmentsCollectionView+ reload its data (it starts empty because when the view appears, the document hasn't opened yet)
+
+. Run the app, you'll see an Add cell!
+
+==== Adding attachments
+
+We need to create an interface for attachments. This will be a popover on iPad, and a modal display on iPhone
+
+. Add a new Cocoa Touch class, name = +AddAttachmentViewController+, subclass = +UIViewController+
+. Open the storyboard and drag out a new view controller, set its class to +AddAttachmentViewController+
+. Add a vertical stack view, constrain it to fill the whole thing
+. Set its Alignment to Center
+. Add a label to it
+. Connect the Document View Controller to this new view controller with a popover segue, set its name to ShowAddAttachment, set its anchor to the View
+. Implement +didSelectItemAtIndexPath+ and +prepareForSegue+ in +DocumentViewController+
+. Run the app, open a doc, tap Add, you'll get a modal screen on iPhone and a popover on iPad
+. We need a way to close the popover on iPhone
+	. Add the extension to +DocumentViewController+ that makes it conform to +UIPopoverPresentationControllerDelegate+
+		. This adds a navigation controller that has a "Done" button in it to the view controller, but only when the popover is being presented as a full-screen modal
+	. When presenting the popover, make the popover presenter controller's delegate be +self+
+
+. Now we start adding the buttons that actually add new attachments
+	. Open AddAttachmentViewController.swift (the iOS version)
+	. Implement +AddAttachmentDelegate+ protocol
+	. Add +delegate+ property
+	. Add a Button to the Add Attachment view controller, name = "Add Photo"
+	. Connect it to a new action called +addPhoto+
+	. Implement +addPhoto+ to call the delegate's +addPhoto+ method and dismiss itself
+	
+	. Open DocumentViewController.swift
+	. Add the extension that makes +DocumentViewController+ conform to +AddAttachmentDelegate+, and the extension that makes it conform to +UIImagePickerControllerDelegate+
+	. Add code in +prepareForSegue+ to make the +DocumentViewController+ the delegate of the +AddAttachmentDelegate+
+. Run the app; you can now select images, and they appear in the list
+
+==== Viewing attachments
+
+Because there are multiple different types of attachment, it doesn't make much sense to duplicate the "show a view controller" code for each one - we're going to create a new view controller for each type of attachment, but we want to not have to write the same code over and over again for SHOWING those view controllers - things like "if it's an Image segue then get the Image view controller and give it the Image", repeated ad infinitum
+
+So instead we'll create a protocol that these view controllers will conform to, which means we can treat them all the same way - we'll just give them the NSFileWrapper that represents the attachment, and they can do whatever they need to it
+
+This way we only need to write the code for "show an attachment"
+
+. Implement the +AttachmentViewer+ protocol in DocumentViewController.swift
+
+. Add a new Cocoa class: +ImageAttachmentViewController+, subclass of +UIViewController+, conforms to +AttachmentViewer+
+. Add +imageView+ outlet
+. Add +attachmentFile+ property
+. Implement +viewDidLoad+ to load the image from the data
+
+. Open the storyboard
+. Add a new view controller, set its class to +ImageAttachmentViewController+
+. Add an image view to it, make it fill the screen
+. Set its Mode to Aspect Fit
+. Link it to the +imageView+ outlet
+. Set the background color of the view controller's view to black
+. Add a popover segue from the document view controller, name = ShowImageAttachment, anchor = +DocumentViewController+'s view
+
+. Now we add support for displaying thumbnails of attachments, and show them
+. Add code in +didSelectItemAtIndexPath+ to detect the type of the attachment and triggers a segue
+
+. Add code in +prepareForSegue+ that gives the image data to the image view
+
+. Run the app, you can now tap image attachments and get a screen
+
+==== Deleting attachments
+
+. We'll use the standard deleting gesture - tap and hold to display a Delete button
+
+. Go to the +AttachmentCell+ class
+	. Add +deleteButton+ outlet
+	. Add +editMode+ property
+. Add +isEditingAttachments+ property to DocumentViewController
+. In +cellForItemAtIndexPath+, set +editMode+ property of +AttachmentCell+
+. Add +beginEditMode+ action method - this makes all visible AttachmentCells enter edit mode, and adds a Done button
+. Add +endEditMode+ method - this makes all visible AttachmentCells leave edit mode
+. Add code in +didSelectItemAtIndexPath+ to bail out of selecting if we are editing
+
+. Add the Delete image to the assets catalog
+. Open the storyboard
+. Add a new button to the AttachmentCell - set it to Custom, remove the label, set the image to Delete, constrain it to the top right of the cell
+. Connect the +deleteButton+ outlet to this button
+. Add code in +cellForItemAtIndexPath+ to add a long-press gesture recognizer
+
+Now we make the buttons actually delete stuff - we'll add a delegate protocol that lets cells notify their delegate that they've been deleted
+
+. Add +AttachmentCellDelegate+ protocol
+. Add +delegate+ property on +AttachmentCell+
+. Add +delete+ action method
+. Open storyboard, connect the button to the cell's +delete+ action
+. Add +deleteAttachment+ method to +Document+ to remove the attachment
+. Add extension to +DocumentViewController+ that conforms to +AttachmentCellDelegate+
+. Add code in +cellForItemAtIndexPath+ that sets the cell's +delegate+ to +self+
+
+. Run the app - you can now delete attachments!
+
+=== Location attachments
+
+Location attachments will be JSON files that contain lat/long pairs, and they'll be used on a map
+
+. Open Info.plist
+. Add a new string key: NSLocationWhenInUseUsageDescription, value= "We'll use your position to show where you are on the map."
+
+. Add the Location image to the asset catalog
+. Add the Current Location image to the asset catalog
+
+. Open Document.swift
+. Add code to +thumbnailImage+ to return the Location image if it's a JSON attachment
+
+. Add a new view controller subclass called +LocationAttachmentViewController+, implement it
+. Go to the storyboard
+. Add a new view controller, make it use the LocationAttachmentViewController class
+	. Add a Map View to it, make it fill the constraints
+	. Turn on Shows User Location
+	. Connect it to the mapView outlet
+	. Make its delegate the view controller
+	. Add a toolbar, constrain it to the bottom of the window and make it fill the width
+	. Set the button item to show the Current Location image
+	. Connect this item to a new item called showCurrentLocationItem
+	. Connect it to a new action method called showCurrentLocation
+
+. Connect it from the document view controller with a popover presentation called +ShowLocationAttachment+, set anchor to the document view controller's view
+
+. Open AddAttachmentViewController.swift
+. Add +addLocation+ to +AddAttachmentDelegate+
+. Add a new action method called +addLocation+, make it call delegate's +addLocation+ method
+
+. Open DocumentViewController.swift
+. Add the implementation of +addLocation+ to the extension that conforms to +AddAttachmentDelegate+ - it just triggers the +ShowLocationAttachment+ segue
+. Add code to +didSelectItemAtIndexPath+ to trigger the +ShowLocationAttachment+ segue if we selected a JSON item
+
+. Open the storyboard, find the add attachment view controller
+. Add a new Button to the stack view, set label to "Add Location"
+. Connect it to the +addLocation+ action
+
+=== Sharing with UIActivityController
+
+We'll add sharing support to the image attachment view controller
+
+. Open the storyboard
+. Go to the image view controller
+. Add a toolbar, constrain it to fill the bottom of the view controller
+. Add a new button item, set System Item to "Action"
+. Connect it to a new action method called +shareImage+
+. Implement shareImage
+
+Note that this opens modally in compact-width size classes, and in a popover on regular-width size classes
+
+=== Audio attachments
+
+. New +UIViewController+ subclass named AudioAttachmentViewController
+. Implement +AudioAttachmentViewController+
+
+*TODO*
+
+=== Splitscreen
+
+. Only available on iPad Air 2
+. Swipe in from the right hand side of the screen and pick an app
+. This view can be resized, so your constraints will handle it (and also change size classes when needed)
+. You don't actually need to do anything to support it
+
+=== Handoffs
+
+We need to describe to the system the type of activity is associated with editing this document, so that all other devices will receive notificaions that 
+
+. Go to the Notes target settings, open the Document Types
+. Add a new entry in Additional document type properties:
+	. +NSUbiquitousDocumentUserActivityType+ (string) = +au.com.secretlab.Notes.editing+
+
+. Now go to the same place in Notes-iOS, add the same entry
+
+. Open Notes-iOS's AppDelegate
+. Implement +continueUserActivity+ to pop to the list of documents and signal that the list of documents should resume an activity
+. Open +ViewController+
+. Implement +restoreUserActivityState+ to load
+
+=== Universal links
+
+. Universal links let you claim a domain for the use of your app
+. Say you claim example.com, and have an app "Example" - whenever the user taps on a link to example.com and they have the Example app installed, the app will launch instead
+. This works no matter how the link is accessed -  for example if an app programmatically opens http://example.com, it will be intercepted and the app will launch instead
+
+How to do it:
+
+. Add a +apple-app-site-association+ file to your website
+. Add an Associated Domains entitlement to your app that links the app to your website's domain
+
+. Implement +continueUserActivity+ in the App Delegate; when the user taps on a link that is on your domain and matches the patterns, you'll receive an +NSUserActivity+, which contains an +NSURL+
+
+=== Searchability
+
+. There are three different searching technologies: NSUserActivity, CoreSpotlight and web indexing
+
+	. NSUserActivity allows you to index parts of your app - for example if you have an app that downloads and shows recipes, every time the user views a recipe, you record that as an activity and describe how to get back to this screen; spotlight indexes this activity and displays it if the user searches for things that match the activity's description
+	
+	. CoreSpotlight gives you control over the search index - you manually submit metadata items into the index
+	
+	. Web archiving allows you to mark up websites for Apple's search crawler to view
+
+. Import CoreSpotlight in DocumentViewController
+. Add searchable metadata to the document's user activity when the document is opened
+. Mark the activity as searchable
+
+

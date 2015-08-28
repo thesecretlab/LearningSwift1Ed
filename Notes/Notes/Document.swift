@@ -14,7 +14,7 @@ class Document: NSDocument, AddAttachmentDelegate {
     var text : NSAttributedString = NSAttributedString()
     
     // Attachments
-    dynamic  var attachedFiles : [NSFileWrapper]? {
+    dynamic var attachedFiles : [NSFileWrapper]? {
         if let attachmentsDirectory = self.documentFileWrapper.fileWrappers?[NoteDocumentFileNames.AttachmentsDirectory.rawValue], let attachmentsFileWrappers = attachmentsDirectory.fileWrappers {
             return Array(attachmentsFileWrappers.values)
         } else {
