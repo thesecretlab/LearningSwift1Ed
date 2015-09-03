@@ -19,7 +19,11 @@ class AudioAttachmentViewController: UIViewController, AttachmentViewer {
     var audioRecorder : AVAudioRecorder?
     
     func beginRecording () {
-        let fileName = "Recording \(Int(arc4random())).wav"
+        // Try to use the same filename as before, if possible
+        
+        let fileName = self.attachmentFile?.preferredFilename ??
+            "Recording \(Int(arc4random())).wav"
+        
         let temporaryURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).URLByAppendingPathComponent(fileName)
         
         do {
@@ -41,7 +45,12 @@ class AudioAttachmentViewController: UIViewController, AttachmentViewer {
     override func viewWillDisappear(animated: Bool) {
         if let recorder = self.audioRecorder {
             
-            // We have a recorder, which means
+            // We have a recorder, which means we have a recording to attach
+            do {
+                try self.document?.addAttachmentAtURL(recorder.url)
+            } catch let error as NSError {
+                NSLog("Failed to attach recording: \(error)")
+            }
         }
     }
 

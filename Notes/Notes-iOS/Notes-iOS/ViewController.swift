@@ -182,6 +182,16 @@ class ViewController: UICollectionViewController {
         
     }
     
+    func openDocumentWithPath(path : String)  {
+        
+        // Build a file URL from this path
+        let url = NSURL(fileURLWithPath: path)
+        
+        // Open this document
+        self.performSegueWithIdentifier("ShowDocument", sender: url)
+        
+    }
+    
     var localDocumentsDirectoryURL : NSURL = {
         return NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
     }()

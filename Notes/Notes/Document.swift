@@ -94,6 +94,8 @@ class Document: NSDocument, AddAttachmentDelegate {
         }
         
         // Keep the text in memory
+        self.documentFileWrapper = fileWrapper
+        
         self.text = documentText
         
     }
@@ -117,9 +119,6 @@ class Document: NSDocument, AddAttachmentDelegate {
     var popover : NSPopover?
 
     @IBAction func addAttachment(sender: NSButton) {
-        
-        
-        
         
         if let viewController = AddAttachmentViewController(nibName:"AddAttachmentViewController", bundle:NSBundle.mainBundle()) {
             

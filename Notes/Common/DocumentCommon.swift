@@ -24,8 +24,13 @@ enum NoteDocumentFileNames : String {
 
 // Things that can go wrong.
 enum ErrorCode : Int {
+    case CannotAccessDocument
     case CannotLoadFileWrappers
     case CannotLoadText
     case CannotAccessAttachments
     case CannotSaveText
+}
+
+extension Document {
+    
 }

@@ -50,6 +50,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
+    func application(app: UIApplication, openURL url: NSURL, options: [String : AnyObject]) -> Bool {
+        if url.scheme == "notes", let path = url.path {
+            
+            // Return to the list of documents
+            if let navigationController = self.window?.rootViewController as? UINavigationController {
+                
+                navigationController.popToRootViewControllerAnimated(false)
+                
+                 (navigationController.topViewController as? ViewController)?.openDocumentWithPath(path)
+            }
+            
+            return true
+            
+        }
+        
+        return false
+    }
+    
+    
     func application(application: UIApplication, continueUserActivity userActivity: NSUserActivity, restorationHandler: ([AnyObject]?) -> Void) -> Bool {
         
         // Return to the list of documents

@@ -16,19 +16,19 @@ UI tests will only work on OS X 10.11 'El Capitan'.
 ====
 
 . We need to define what the document is, so that the system can work with it
-	. Go to the Notes target properties and open the Info tab
-	. Open the Document Types section
-	. There's already a document type, we need to add a little more description to it for the system
-	. Set +name+ to "Note"
-	. Set +identifier+ to "au.com.secretlab.Note"
-	. This defines this document as conforming to this Uniform Type Identifier, which is the method by which the system works out the types of files
+    . Go to the Notes target properties and open the Info tab
+    . Open the Document Types section
+    . There's already a document type, we need to add a little more description to it for the system
+    . Set +name+ to "Note"
+    . Set +identifier+ to "au.com.secretlab.Note"
+    . This defines this document as conforming to this Uniform Type Identifier, which is the method by which the system works out the types of files
 . We've defined our own custom type (since we're inventing a new document format here) - this means we need to export it to the system so that it knows about it
-	. Open the Exported UTIs section
-	. Add a new entry
-		. Description= "Note"
-		. Extensions = "note"
-		. Identifier = "au.com.secretlab.Note"
-		. Conforms to = "com.apple.package" (this means "this type is a package")
+    . Open the Exported UTIs section
+    . Add a new entry
+        . Description= "Note"
+        . Extensions = "note"
+        . Identifier = "au.com.secretlab.Note"
+        . Conforms to = "com.apple.package" (this means "this type is a package")
 
 . Run the app and you can already create new 'documents' by pressing Cmd-N.
 
@@ -51,11 +51,11 @@ UI tests will only work on OS X 10.11 'El Capitan'.
 . Add a text view, resize it to fill the window (leaving some margins)
 . Select it
 . Editor->Resolve Auto Layout Issues->Reset to Suggested Constraints
-	. Text view will now resize to fit the window
+    . Text view will now resize to fit the window
 . Select the Text View (it's a child of the Bordered Scroll View's Clip View)
 . Open Bindings inspector
-	. Bind Attributed String to File's Owner; model key path = self.text
-	
+    . Bind Attributed String to File's Owner; model key path = self.text
+    
 . Run the app; you can now enter and save text, close the document, re-open it; you get free undo and revision control; LOTS of stuff is taken care of for you!
 
 ==== Architecting for attachments
@@ -65,11 +65,11 @@ UI tests will only work on OS X 10.11 'El Capitan'.
 . We want to include attachments, and the easiest way to do that is to create a 'file package' - this means we won't have to read the entire thing into memory, which might be a problem if those attachments are large
 . This means we need to use NSFileWrapper
 
-	. An NSFileWrapper is an object that represents either a single file, or a directory of multiple files (each of which can itself be a file wrapper representing a directory)
-	. In this app we'll use directory file wrappers; they'll contain at least two files:
-		 . A file that contains general info about the document, named "Document.plist"
-		 . The .rtfd file containing the text, called "Text.rtfd"
-		 . Plus any attached files, which will be kept in a directory called Attachments (so that you can drop files with any name in, including ones named "Document.plist" and "Text.rtf")
+    . An NSFileWrapper is an object that represents either a single file, or a directory of multiple files (each of which can itself be a file wrapper representing a directory)
+    . In this app we'll use directory file wrappers; they'll contain at least two files:
+         . A file that contains general info about the document, named "Document.plist"
+         . The .rtfd file containing the text, called "Text.rtfd"
+         . Plus any attached files, which will be kept in a directory called Attachments (so that you can drop files with any name in, including ones named "Document.plist" and "Text.rtf")
 
 . This means we need to implement methods that load from and save to a file wrapper
 
@@ -150,14 +150,14 @@ Run +brctl log --wait --shorten+ in the terminal to get a log of everything iClo
 . Add it to the workspace
 
 . Project settings -> Notes-iOS target -> Capabilities
-	. Enable iCloud 
-	. iCloud documents = on
-	. Specify custom containers
-	. Use the same container as the one you created for the OS X app
-	
-	
+    . Enable iCloud 
+    . iCloud documents = on
+    . Specify custom containers
+    . Use the same container as the one you created for the OS X app
+    
+    
 
-	
+    
 . Open AppDelegate.swift
 . Add code that queries +URLForUbiquityContainerIdentifier+
 
@@ -177,16 +177,16 @@ ALTERNATIVELY
 . Name = "Note"
 . Types = "au.com.secretlab.Note"
 . Additional document type properties:
-	
-	. +CFBundleTypeExtensions+ (array) = 1 element, "note"
+    
+    . +CFBundleTypeExtensions+ (array) = 1 element, "note"
 
 . Add an exported UTI:
-	. Description: Note
-	. Identifier: au.com.secretlab.Note
-	. Conforms to: com.apple.package
-	. Additional exported UTI properties:
-		. UTTypeTagSpecification (dict):
-			. public.filename-extension (array), 1 element: "note"
+    . Description: Note
+    . Identifier: au.com.secretlab.Note
+    . Conforms to: com.apple.package
+    . Additional exported UTI properties:
+        . UTTypeTagSpecification (dict):
+            . public.filename-extension (array), 1 element: "note"
 
 The app is now associated with this type
 
@@ -214,13 +214,13 @@ The app is now associated with this type
 . Several important things need to be the same across the two different classes - the names of files for example
 . We'll move them into a separate swift file that's part of both targets
 . Right click the project, add a new group, name it Common
-	. Select this new group and go to the file inspector, click on the little folder icon to set its location, an open dialog box will appear; in it, make a new folder called Common, and then click Choose
-	. You've just made a new folder to put files that are common to both projects!
+    . Select this new group and go to the file inspector, click on the little folder icon to set its location, an open dialog box will appear; in it, make a new folder called Common, and then click Choose
+    . You've just made a new folder to put files that are common to both projects!
 . Right click the Common group and add a new Swift file
-	. Name it DocumentCommon, and add it to both the Notes and Notes-iOS targets by checking the boxes
-	. Open the Document.swift file and move the +err+ func, and all three enums into DocumentCommons.swift
-	. Check that the Mac app still builds!
-	
+    . Name it DocumentCommon, and add it to both the Notes and Notes-iOS targets by checking the boxes
+    . Open the Document.swift file and move the +err+ func, and all three enums into DocumentCommons.swift
+    . Check that the Mac app still builds!
+    
 . Create a new Cocoa Touch class in Notes-iOS, subclass of UIDocument
 
 . Add +NSAttributedString+ property +text+, defaults to the empty attributed string
@@ -229,11 +229,11 @@ The app is now associated with this type
 . Implement +contentsForType+ to store the text
 
 . Time to start LISTING documents:
-	. Add +metadataQuery+, +queryDidFinishGatheringObserver+ and +queryDidUpdateObserver+ properties
-	. Make +viewDidLoad+ set up the observers and kick off the query
-	. Implement +queryUpdated+, to make it refresh the table view
-	. Implement +numberOfSectionsInCollectionView+, +numberOfItemsInSection+, and +cellForItemAtIndexPath+
-	. Run the app! If there are documents in the container
+    . Add +metadataQuery+, +queryDidFinishGatheringObserver+ and +queryDidUpdateObserver+ properties
+    . Make +viewDidLoad+ set up the observers and kick off the query
+    . Implement +queryUpdated+, to make it refresh the table view
+    . Implement +numberOfSectionsInCollectionView+, +numberOfItemsInSection+, and +cellForItemAtIndexPath+
+    . Run the app! If there are documents in the container
 
 . Now we can start CREATING documents
 
@@ -259,15 +259,15 @@ The app is now associated with this type
 . Add a +UITextView+ to it, make it fill the screen and set it to Attributed (instead of Plain) 
 
 . Open +DocumentViewController+
-	. Implement +textView+, +document+, +documentURL+ properties
-	. Implement +viewWillAppear+ to open the document
-	
+    . Implement +textView+, +document+, +documentURL+ properties
+    . Implement +viewWillAppear+ to open the document
+    
 . Connect the text view to the +textView+ outlet
 
 . In ViewController.swift:
-	. Implement +didSelectItemAtIndexPath+
-	. Implement +prepareForSegue+
-	
+    . Implement +didSelectItemAtIndexPath+
+    . Implement +prepareForSegue+
+    
 . Run the app, make a document, it works!
 
 === Editing and saving documents
@@ -292,28 +292,28 @@ The app is now associated with this type
 . It'll be easier to do this without the top bar in the way, so select the Document View Controller, and in the Simulated Metrics section of the inspector, change Top Bar from Inferred to None
 
 . Add a scroll view, and constrain it thusly:
-	. Trailing space to container = 0 (not to margin!)
-	. Leading space to container = 0 (likewise)
-	. Top space to container = 0 - to get this, hold Option and "Vertical Spacing to Top Layout Guide" will change to "Top Space to Container Margin"
-	. Bottom space to container = 0
+    . Trailing space to container = 0 (not to margin!)
+    . Leading space to container = 0 (likewise)
+    . Top space to container = 0 - to get this, hold Option and "Vertical Spacing to Top Layout Guide" will change to "Top Space to Container Margin"
+    . Bottom space to container = 0
 
 The scroll view will now completely fill the screen; we'll now add stuff inside it
 
 In particular, we'll be adding a stack view, which will contain the text editor and the collection view that will show the list of attachments
 
 . Add a stack view as a child of the scroll view
-	 . Constrain it to the scroll view in the same way as the scroll view is constrained to ITS parent view - top, left, right and bottom all zero
-	 . Also constrain its width to be the same as the scroll view
-	
+     . Constrain it to the scroll view in the same way as the scroll view is constrained to ITS parent view - top, left, right and bottom all zero
+     . Also constrain its width to be the same as the scroll view
+    
 . Add a collection view to the stack view
-	. Add two constraints: constrain top space to the stack view, and constrain height to 88
-	. Set the cell size to 88x88
-	. Set its background color to 90% white (very slightly grey)
+    . Add two constraints: constrain top space to the stack view, and constrain height to 88
+    . Set the cell size to 88x88
+    . Set its background color to 90% white (very slightly grey)
 
 . Add a Text View to the stack view; it needs no constraints, since the stack view will size and position it
 
-	. Connect the Document View Controller's +textView+ outlet to this text view
-	. Turn Scrolling Enabled off for the text view
+    . Connect the Document View Controller's +textView+ outlet to this text view
+    . Turn Scrolling Enabled off for the text view
 
 . Run the app; the text now appears underneath the collection view
 
@@ -347,8 +347,8 @@ Now we implement a way for the document to determine the type of the attachment,
 . Connect the empty image view in AttachmentCell to the +imageView+ outlet of +AttachmentCell+
 
 . Add an image view to both, make them fill their cells (distance from all edges should be zero)
-	. For the AttachmentCell, make the Content Mode be Aspect Fill
-	. For the AddAttachmentCell, make the Content Mode be Center
+    . For the AttachmentCell, make the Content Mode be Aspect Fill
+    . For the AddAttachmentCell, make the Content Mode be Center
 
 . Add the AddAttachmentIcon image to the asset catalog
 . Set image for the AddAttachmentCell to AddAttachmentIcon
@@ -373,21 +373,21 @@ We need to create an interface for attachments. This will be a popover on iPad, 
 . Implement +didSelectItemAtIndexPath+ and +prepareForSegue+ in +DocumentViewController+
 . Run the app, open a doc, tap Add, you'll get a modal screen on iPhone and a popover on iPad
 . We need a way to close the popover on iPhone
-	. Add the extension to +DocumentViewController+ that makes it conform to +UIPopoverPresentationControllerDelegate+
-		. This adds a navigation controller that has a "Done" button in it to the view controller, but only when the popover is being presented as a full-screen modal
-	. When presenting the popover, make the popover presenter controller's delegate be +self+
+    . Add the extension to +DocumentViewController+ that makes it conform to +UIPopoverPresentationControllerDelegate+
+        . This adds a navigation controller that has a "Done" button in it to the view controller, but only when the popover is being presented as a full-screen modal
+    . When presenting the popover, make the popover presenter controller's delegate be +self+
 
 . Now we start adding the buttons that actually add new attachments
-	. Open AddAttachmentViewController.swift (the iOS version)
-	. Implement +AddAttachmentDelegate+ protocol
-	. Add +delegate+ property
-	. Add a Button to the Add Attachment view controller, name = "Add Photo"
-	. Connect it to a new action called +addPhoto+
-	. Implement +addPhoto+ to call the delegate's +addPhoto+ method and dismiss itself
-	
-	. Open DocumentViewController.swift
-	. Add the extension that makes +DocumentViewController+ conform to +AddAttachmentDelegate+, and the extension that makes it conform to +UIImagePickerControllerDelegate+
-	. Add code in +prepareForSegue+ to make the +DocumentViewController+ the delegate of the +AddAttachmentDelegate+
+    . Open AddAttachmentViewController.swift (the iOS version)
+    . Implement +AddAttachmentDelegate+ protocol
+    . Add +delegate+ property
+    . Add a Button to the Add Attachment view controller, name = "Add Photo"
+    . Connect it to a new action called +addPhoto+
+    . Implement +addPhoto+ to call the delegate's +addPhoto+ method and dismiss itself
+    
+    . Open DocumentViewController.swift
+    . Add the extension that makes +DocumentViewController+ conform to +AddAttachmentDelegate+, and the extension that makes it conform to +UIImagePickerControllerDelegate+
+    . Add code in +prepareForSegue+ to make the +DocumentViewController+ the delegate of the +AddAttachmentDelegate+
 . Run the app; you can now select images, and they appear in the list
 
 ==== Viewing attachments
@@ -425,8 +425,8 @@ This way we only need to write the code for "show an attachment"
 . We'll use the standard deleting gesture - tap and hold to display a Delete button
 
 . Go to the +AttachmentCell+ class
-	. Add +deleteButton+ outlet
-	. Add +editMode+ property
+    . Add +deleteButton+ outlet
+    . Add +editMode+ property
 . Add +isEditingAttachments+ property to DocumentViewController
 . In +cellForItemAtIndexPath+, set +editMode+ property of +AttachmentCell+
 . Add +beginEditMode+ action method - this makes all visible AttachmentCells enter edit mode, and adds a Done button
@@ -467,14 +467,14 @@ Location attachments will be JSON files that contain lat/long pairs, and they'll
 . Add a new view controller subclass called +LocationAttachmentViewController+, implement it
 . Go to the storyboard
 . Add a new view controller, make it use the LocationAttachmentViewController class
-	. Add a Map View to it, make it fill the constraints
-	. Turn on Shows User Location
-	. Connect it to the mapView outlet
-	. Make its delegate the view controller
-	. Add a toolbar, constrain it to the bottom of the window and make it fill the width
-	. Set the button item to show the Current Location image
-	. Connect this item to a new item called showCurrentLocationItem
-	. Connect it to a new action method called showCurrentLocation
+    . Add a Map View to it, make it fill the constraints
+    . Turn on Shows User Location
+    . Connect it to the mapView outlet
+    . Make its delegate the view controller
+    . Add a toolbar, constrain it to the bottom of the window and make it fill the width
+    . Set the button item to show the Current Location image
+    . Connect this item to a new item called showCurrentLocationItem
+    . Connect it to a new action method called showCurrentLocation
 
 . Connect it from the document view controller with a popover presentation called +ShowLocationAttachment+, set anchor to the document view controller's view
 
@@ -523,7 +523,7 @@ We need to describe to the system the type of activity is associated with editin
 
 . Go to the Notes target settings, open the Document Types
 . Add a new entry in Additional document type properties:
-	. +NSUbiquitousDocumentUserActivityType+ (string) = +au.com.secretlab.Notes.editing+
+    . +NSUbiquitousDocumentUserActivityType+ (string) = +au.com.secretlab.Notes.editing+
 
 . Now go to the same place in Notes-iOS, add the same entry
 
@@ -549,14 +549,92 @@ How to do it:
 
 . There are three different searching technologies: NSUserActivity, CoreSpotlight and web indexing
 
-	. NSUserActivity allows you to index parts of your app - for example if you have an app that downloads and shows recipes, every time the user views a recipe, you record that as an activity and describe how to get back to this screen; spotlight indexes this activity and displays it if the user searches for things that match the activity's description
-	
-	. CoreSpotlight gives you control over the search index - you manually submit metadata items into the index
-	
-	. Web archiving allows you to mark up websites for Apple's search crawler to view
+    . NSUserActivity allows you to index parts of your app - for example if you have an app that downloads and shows recipes, every time the user views a recipe, you record that as an activity and describe how to get back to this screen; spotlight indexes this activity and displays it if the user searches for things that match the activity's description
+    
+    . CoreSpotlight gives you control over the search index - you manually submit metadata items into the index
+    
+    . Web archiving allows you to mark up websites for Apple's search crawler to view
 
 . Import CoreSpotlight in DocumentViewController
 . Add searchable metadata to the document's user activity when the document is opened
 . Mark the activity as searchable
 
+*TODO: THIS IS UNTESTED ON FUNCTIONING iOS CODE*
+
+=== Today Screen Widgets
+
+We'll make an extension that lists your three most recently edited notes on the Today screen, and lets you jump straight to them
+
+. File->New->Target
+    . iOS -> Application Extension -> Today extension
+    . Product name = Notes-TodayScreen
+    . Embed In: Notes-iOS
+    . Click finish, Activate scheme when prompted
+
+First let's learn how to run extensions:
+
+. Run the target (⌘-R)
+. Xcode will provide a list of applications that it should try to launch and use to get to the extension
+    . Because this is a Today extension, it will suggest launching the Today app (that's the built-in app that appears when you swipe down from the top of the screen)
+    . Click Run
+    . The phone will launch
+    . You'll see a console error about constraints - this is an error in the template, and we'll be fixing it *TODO: CHECK THIS BEFORE RELEASE TO ENSURE THAT APPLE HASN'T FIXED IT IN THE MEANTIME*
+    
+. Delete the Hello World label
+
+. Add a table view
+    . Add the following constraints:
+        . Bottom to bottom layout guide, constant = 0
+        . Top to top layout guide, constant = 0
+        . Leading to leading margin, constant = 0
+        . Trailing to trailing margin, constant = 0
+        . Set the priority of all these constraints to 750
+    
+    . Update frame of table view (select it, open triangle tie fighter, Update Frames)
+    . Set content to dynamic prototypes
+    . Set number of prototypes to 1
+. Select the prototype cell
+    . Set style to basic
+    . Select the text label
+        . Set color to Light Text Color
+        . Set font to System Light 16.0
+
+. Connect the table view to the view controller, make it its delegate and data source
+
+. Open TodayViewController.swift
+    . Conform to UITableViewDelegate and UITableViewDatasource
+    . Implement number of rows = 3 and cell for row = returns cell with identifier "Cell"
+    . Run the app, you'll get rows
+    
+Now we need the extension to be able to view the documents
+
+. Go to Notes-TodayScreen target's settings, go to Capabilities
+. Turn on iCloud
+. Turn on iCloud Documents
+. Change containers option to Specify Custom Containers, turn on the same container as the iOS app (and no others)
+
+The extension can now access the iOS app's container!
+
+. Implement +TodayViewController+'s +fileList+ property
+. Implement +loadAvailableFiles+ to search for and return the list of documents
+. Implement +viewDidLoad+ to call +loadAvailableFiles+ and also establish access to the container
+. Implement the table view data source methods to return the list
+. Implement +widgetPerformUpdateWithCompletionHandler+ to re-run the check and to indicate whether the file list has changed or not
+
+Run the extension - a list of documents appears!
+
+Now we need to make the app open when a document is selected
+
+. Go to Notes-iOS's project, go to Info tab, scroll down to URL Type
+. Add a new one, scheme = "notes"
+
+. Open Notes-iOS ViewController.swift
+    . Implement +openDocumentWithPath+, which takes a path and attempts to open it
+. Open AppDelegate.swift
+    . Implement openURL to receive the URL and tell the document list controller to open the doc
+
+. Open TodayViewController
+    . Implement +didSelectRowAtIndexPath+ to open the URL
+    
+Run the extension again, tap a document; it opens!
 

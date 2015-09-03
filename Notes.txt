@@ -1,0 +1,28 @@
+Mac
+
+- Document model
+	- MVC is important
+- Document structured app (NSDocument)
+	- Saving and loading
+	- iCloud
+- UI Layout
+	- Text editor
+	- Attachments list
+	- Binding to document model
+- Prefences window
+	- NSUserDefaults binding
+
+- The attachments system
+	- Scrolling list
+	- Popovers and view controllers
+	- Adding and deleting
+	- Images
+	- Video
+	- Maps
+	- General files
+	- Opening
+	- Drag and drop?
+
+iOS
+
+Apple Watch
