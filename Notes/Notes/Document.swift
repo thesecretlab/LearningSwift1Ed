@@ -8,28 +8,43 @@
 
 import Cocoa
 
-class Document: NSDocument, AddAttachmentDelegate {
+
+extension NSFileWrapper {
+    dynamic var thumbnailImage : NSImage {
+        
+        if let fileExtension = self.preferredFilename?.componentsSeparatedByString(".").last {
+            return NSWorkspace.sharedWorkspace().iconForFileType(fileExtension)
+        } else {
+            return NSWorkspace.sharedWorkspace().iconForFileType("")
+        }
+    }
+}
+
+class Document: NSDocument, AddAttachmentDelegate, AttachmentViewDelegate {
     
     // Main text content
     var text : NSAttributedString = NSAttributedString()
     
+    // Directory file wrapper
+    var documentFileWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
+    
     // Attachments
     dynamic var attachedFiles : [NSFileWrapper]? {
         if let attachmentsDirectory = self.documentFileWrapper.fileWrappers?[NoteDocumentFileNames.AttachmentsDirectory.rawValue], let attachmentsFileWrappers = attachmentsDirectory.fileWrappers {
-            return Array(attachmentsFileWrappers.values)
+            let attachments = Array(attachmentsFileWrappers.values)
+            
+            return attachments
         } else {
             return nil
         }
     }
     
-    func addAttachmentAtURL(url:NSURL) throws {
-        // Ensure that we have an Attachments folder to store stuff in
+    private var attachmentsDirectoryWrapper : NSFileWrapper? {
         
         guard let fileWrappers = self.documentFileWrapper.fileWrappers else {
-            throw err(.CannotAccessAttachments)
+            NSLog("Attempting to access document's contents, but none found!")
+            return nil
         }
-        
-        self.willChangeValueForKey("attachedFiles")
         
         var attachmentsDirectoryWrapper = fileWrappers[NoteDocumentFileNames.AttachmentsDirectory.rawValue]
         
@@ -42,25 +57,7 @@ class Document: NSDocument, AddAttachmentDelegate {
             self.documentFileWrapper.addFileWrapper(attachmentsDirectoryWrapper!)
         }
         
-        let newAttachment = try NSFileWrapper(URL: url, options: NSFileWrapperReadingOptions.Immediate)
-        
-        attachmentsDirectoryWrapper?.addFileWrapper(newAttachment)
-        
-        self.updateChangeCount(NSDocumentChangeType.ChangeDone)
-        self.didChangeValueForKey("attachedFiles")
-    }
-    
-    // Directory file wrapper
-    var documentFileWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
-
-    override init() {
-        super.init()
-        // Add your subclass-specific initialization here.
-    }
-
-    override func windowControllerDidLoadNib(aController: NSWindowController) {
-        super.windowControllerDidLoadNib(aController)
-        // Add any code here that needs to be executed once the windowController has loaded the document's window.
+        return attachmentsDirectoryWrapper
     }
 
     override class func autosavesInPlace() -> Bool {
@@ -74,8 +71,6 @@ class Document: NSDocument, AddAttachmentDelegate {
     }
     
     override func readFromFileWrapper(fileWrapper: NSFileWrapper, ofType typeName: String) throws {
-        
-        
         
         // Ensure that we have additional file wrappers in this file wrapper
         guard let fileWrappers = fileWrapper.fileWrappers else {
@@ -165,18 +160,63 @@ class Document: NSDocument, AddAttachmentDelegate {
         
     }
     
-//    func collectionView(collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return self.attachedFiles?.count ?? 0
-//    }
-//    
-//    func collectionView(collectionView: NSCollectionView, itemForRepresentedObjectAtIndexPath indexPath: NSIndexPath) -> NSCollectionViewItem {
-//        
-//        let collectionItem = NSCollectionViewItem()
-//        collectionItem.textField?.stringValue = "Hi"
-//        
-//        return collectionItem
-//        
-//    }
+    func addAttachmentAtURL(url:NSURL) throws {
+        
+        guard attachmentsDirectoryWrapper != nil else {
+            throw err(.CannotAccessAttachments)
+        }
+        
+        self.willChangeValueForKey("attachedFiles")
+        
+        let newAttachment = try NSFileWrapper(URL: url, options: NSFileWrapperReadingOptions.Immediate)
+        
+        attachmentsDirectoryWrapper?.addFileWrapper(newAttachment)
+        
+        self.updateChangeCount(.ChangeDone)
+        self.didChangeValueForKey("attachedFiles")
+    }
+    
+    @IBOutlet weak var attachmentsArrayController : NSArrayController?
+    
+
+    
+    func openSelectedAttachment() {
+        if let selection = (self.attachmentsArrayController?.selection as? NSObjectController)?.content as? NSFileWrapper {
+            
+            // Ensure that the document is saved
+            self.autosaveWithImplicitCancellability(false, completionHandler: { (error) -> Void in
+                
+                var url = self.fileURL
+                url = url?.URLByAppendingPathComponent(NoteDocumentFileNames.AttachmentsDirectory.rawValue, isDirectory: true)
+                url = url?.URLByAppendingPathComponent(selection.preferredFilename!)
+                
+                
+                NSWorkspace.sharedWorkspace().openURL(url!)
+                
+            })
+            
+        }
+    }
 
 }
+
+
+@objc
+protocol AttachmentViewDelegate : NSObjectProtocol {
+    func openSelectedAttachment()
+}
+
+@objc
+class AttachmentView : NSView {
+    
+    @IBOutlet weak var delegate : AnyObject!
+    
+    override func mouseDown(theEvent: NSEvent) {
+        if theEvent.clickCount == 2 {
+            (self.delegate as? AttachmentViewDelegate)?.openSelectedAttachment()
+        }
+        super.mouseDown(theEvent)
+    }
+}
+
 

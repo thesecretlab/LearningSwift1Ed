@@ -16,6 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
+        // BEGIN access_to_icloud
         // Ensure we've got access to iCloud
         let backgroundQueue = NSOperationQueue()
         backgroundQueue.addOperationWithBlock() {
@@ -24,6 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 .URLForUbiquityContainerIdentifier(nil)
             print("Ubiquity container URL: \(ubiquityContainerURL)")
         }
+        // END access_to_icloud
         
         return true
     }

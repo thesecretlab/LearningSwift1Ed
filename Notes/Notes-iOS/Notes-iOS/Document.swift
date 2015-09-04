@@ -25,7 +25,6 @@ extension NSFileWrapper {
         
         // Ask the system if this file type conforms to the provided type
         return UTTypeConformsTo(fileType, type)
-        
     }
     
     func thumbnailImage() -> UIImage? {
@@ -55,6 +54,37 @@ class Document: UIDocument {
     
     var documentFileWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
     
+    // Attachments
+    dynamic var attachedFiles : [NSFileWrapper]? {
+        if let attachmentsDirectory = self.documentFileWrapper.fileWrappers?[NoteDocumentFileNames.AttachmentsDirectory.rawValue], let attachmentsFileWrappers = attachmentsDirectory.fileWrappers {
+            let attachments = Array(attachmentsFileWrappers.values)
+            
+            return attachments
+        } else {
+            return nil
+        }
+    }
+    
+    private var attachmentsDirectoryWrapper : NSFileWrapper? {
+        
+        guard let fileWrappers = self.documentFileWrapper.fileWrappers else {
+            NSLog("Attempting to access document's contents, but none found!")
+            return nil
+        }
+        
+        var attachmentsDirectoryWrapper = fileWrappers[NoteDocumentFileNames.AttachmentsDirectory.rawValue]
+        
+        if attachmentsDirectoryWrapper == nil {
+            
+            attachmentsDirectoryWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
+            
+            attachmentsDirectoryWrapper?.preferredFilename = NoteDocumentFileNames.AttachmentsDirectory.rawValue
+            
+            self.documentFileWrapper.addFileWrapper(attachmentsDirectoryWrapper!)
+        }
+        
+        return attachmentsDirectoryWrapper
+    }
     
     override func contentsForType(typeName: String) throws -> AnyObject {
         
@@ -88,93 +118,6 @@ class Document: UIDocument {
         
         // Keep a reference to the file wrapper
         self.documentFileWrapper = fileWrapper
-        
-    }
-    
-    // Attachments
-    dynamic var attachedFiles : [NSFileWrapper]? {
-        if let attachmentsDirectory = self.documentFileWrapper.fileWrappers?[NoteDocumentFileNames.AttachmentsDirectory.rawValue], let attachmentsFileWrappers = attachmentsDirectory.fileWrappers {
-            var attachments = Array(attachmentsFileWrappers.values)
-            
-            // TODO: This needs a little cleaning up
-            attachments.sortInPlace({ (first, second) -> Bool in
-                if let firstCreationDate = first.fileAttributes[NSFileModificationDate] as? NSDate,
-                    let secondCreationDate = second.fileAttributes[NSFileModificationDate] as? NSDate {
-                    return firstCreationDate.compare(secondCreationDate) == NSComparisonResult.OrderedAscending
-                } else {
-                    return false
-                }
-            })
-            
-            return attachments
-        } else {
-            return nil
-        }
-    }
-    
-    private var attachmentsDirectoryWrapper : NSFileWrapper? {
-        
-        guard let fileWrappers = self.documentFileWrapper.fileWrappers else {
-            NSLog("Attempting to access document's contents, but none found!")
-            return nil
-        }
-        
-        var attachmentsDirectoryWrapper = fileWrappers[NoteDocumentFileNames.AttachmentsDirectory.rawValue]
-        
-        if attachmentsDirectoryWrapper == nil {
-
-            attachmentsDirectoryWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
-            
-            attachmentsDirectoryWrapper?.preferredFilename = NoteDocumentFileNames.AttachmentsDirectory.rawValue
-            
-            self.documentFileWrapper.addFileWrapper(attachmentsDirectoryWrapper!)
-        }
-        
-        return attachmentsDirectoryWrapper
-    }
-    
-    func addAttachmentAtURL(url:NSURL) throws {
-        
-        guard attachmentsDirectoryWrapper != nil else {
-            throw err(.CannotAccessAttachments)
-        }
-        
-        self.willChangeValueForKey("attachedFiles")
-        
-        let newAttachment = try NSFileWrapper(URL: url, options: NSFileWrapperReadingOptions.Immediate)
-        
-        attachmentsDirectoryWrapper?.addFileWrapper(newAttachment)
-        
-        self.updateChangeCount(UIDocumentChangeKind.Done)
-        self.didChangeValueForKey("attachedFiles")
-    }
-    
-    func addAttachmentWithData(data: NSData, name: String) throws {
-        
-        guard attachmentsDirectoryWrapper != nil else {
-            throw err(.CannotAccessAttachments)
-        }
-        
-        let newAttachment = NSFileWrapper(regularFileWithContents: data)
-        
-        newAttachment.preferredFilename = name
-        
-        attachmentsDirectoryWrapper?.addFileWrapper(newAttachment)
-        
-        self.updateChangeCount(UIDocumentChangeKind.Done)
-        
-    }
-    
-    func deleteAttachment(attachment:NSFileWrapper) throws {
-        
-        guard attachmentsDirectoryWrapper != nil else {
-            throw err(.CannotAccessAttachments)
-        }
-
-        
-        attachmentsDirectoryWrapper?.removeFileWrapper(attachment)
-        
-        self.updateChangeCount(UIDocumentChangeKind.Done)
         
     }
     
@@ -212,5 +155,53 @@ class Document: UIDocument {
         }
         
     }
+    
+    func addAttachmentAtURL(url:NSURL) throws {
+        
+        guard attachmentsDirectoryWrapper != nil else {
+            throw err(.CannotAccessAttachments)
+        }
+        
+        self.willChangeValueForKey("attachedFiles")
+        
+        let newAttachment = try NSFileWrapper(URL: url, options: NSFileWrapperReadingOptions.Immediate)
+        
+        attachmentsDirectoryWrapper?.addFileWrapper(newAttachment)
+        
+        self.updateChangeCount(.Done)
+        self.didChangeValueForKey("attachedFiles")
+    }
+    
+    
+    
+    func addAttachmentWithData(data: NSData, name: String) throws {
+        
+        guard attachmentsDirectoryWrapper != nil else {
+            throw err(.CannotAccessAttachments)
+        }
+        
+        let newAttachment = NSFileWrapper(regularFileWithContents: data)
+        
+        newAttachment.preferredFilename = name
+        
+        attachmentsDirectoryWrapper?.addFileWrapper(newAttachment)
+        
+        self.updateChangeCount(.Done)
+        
+    }
+    
+    func deleteAttachment(attachment:NSFileWrapper) throws {
+        
+        guard attachmentsDirectoryWrapper != nil else {
+            throw err(.CannotAccessAttachments)
+        }
+        
+        
+        attachmentsDirectoryWrapper?.removeFileWrapper(attachment)
+        
+        self.updateChangeCount(.Done)
+        
+    }
+    
     
 }

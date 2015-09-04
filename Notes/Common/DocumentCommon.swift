@@ -33,4 +33,10 @@ enum ErrorCode : Int {
 
 extension Document {
     
+    
+    
+    
+    
+    
+    
 }

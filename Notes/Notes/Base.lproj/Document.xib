@@ -6,6 +6,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="Document" customModule="Notes" customModuleProvider="target">
             <connections>
+                <outlet property="attachmentsArrayController" destination="e5H-wE-sRu" id="rnJ-hW-Oj3"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
             </connections>
         </customObject>
@@ -63,7 +64,7 @@
                             <rect key="frame" x="1" y="1" width="425" height="98"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <collectionView id="8DL-U4-yfP">
+                                <collectionView selectable="YES" id="8DL-U4-yfP">
                                     <rect key="frame" x="0.0" y="0.0" width="425" height="98"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <animations/>
@@ -126,39 +127,40 @@
         </window>
         <collectionViewItem id="I5F-Wu-pAG">
             <connections>
-                <outlet property="textField" destination="yYB-PQ-3jv" id="cUn-YJ-nj7"/>
                 <outlet property="view" destination="tZs-6P-eQh" id="mjE-SN-ikS"/>
             </connections>
         </collectionViewItem>
-        <view id="tZs-6P-eQh">
+        <view id="tZs-6P-eQh" customClass="AttachmentView" customModule="Notes" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yYB-PQ-3jv">
-                    <rect key="frame" x="31" y="42" width="38" height="17"/>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jPs-q3-OKp">
+                    <rect key="frame" x="20" y="20" width="60" height="60"/>
                     <animations/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="XrC-C9-fJS">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="Vqh-Iv-9dz"/>
                     <connections>
-                        <binding destination="I5F-Wu-pAG" name="value" keyPath="representedObject.description" id="st1-Lg-j9e"/>
+                        <binding destination="I5F-Wu-pAG" name="value" keyPath="self.representedObject.thumbnailImage" id="QDK-Cn-uYz"/>
                     </connections>
-                </textField>
+                </imageView>
             </subviews>
             <constraints>
-                <constraint firstItem="yYB-PQ-3jv" firstAttribute="centerX" secondItem="tZs-6P-eQh" secondAttribute="centerX" id="BLh-4S-o69"/>
-                <constraint firstItem="yYB-PQ-3jv" firstAttribute="centerY" secondItem="tZs-6P-eQh" secondAttribute="centerY" id="j1L-Rh-xQf"/>
+                <constraint firstAttribute="bottom" secondItem="jPs-q3-OKp" secondAttribute="bottom" constant="20" symbolic="YES" id="9HX-gp-MRk"/>
+                <constraint firstAttribute="trailing" secondItem="jPs-q3-OKp" secondAttribute="trailing" constant="20" symbolic="YES" id="CKt-Ei-tOo"/>
+                <constraint firstItem="jPs-q3-OKp" firstAttribute="leading" secondItem="tZs-6P-eQh" secondAttribute="leading" constant="20" symbolic="YES" id="bJe-4t-inf"/>
+                <constraint firstItem="jPs-q3-OKp" firstAttribute="top" secondItem="tZs-6P-eQh" secondAttribute="top" constant="20" symbolic="YES" id="gV2-kI-LQQ"/>
             </constraints>
             <animations/>
+            <connections>
+                <outlet property="delegate" destination="-2" id="AfD-nz-ggZ"/>
+            </connections>
             <point key="canvasLocation" x="411" y="619"/>
         </view>
-        <arrayController id="e5H-wE-sRu">
+        <arrayController id="e5H-wE-sRu" userLabel="Attached Files">
             <connections>
                 <binding destination="-2" name="contentArray" keyPath="self.attachedFiles" id="kGm-65-T4A"/>
             </connections>
         </arrayController>
+        <collectionViewItem id="WfT-eJ-UY6"/>
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>
