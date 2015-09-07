@@ -50,41 +50,10 @@ extension NSFileWrapper {
 
 class Document: UIDocument {
     
+    // BEGIN document_base
     var text = NSAttributedString(string: "")
     
     var documentFileWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
-    
-    // Attachments
-    dynamic var attachedFiles : [NSFileWrapper]? {
-        if let attachmentsDirectory = self.documentFileWrapper.fileWrappers?[NoteDocumentFileNames.AttachmentsDirectory.rawValue], let attachmentsFileWrappers = attachmentsDirectory.fileWrappers {
-            let attachments = Array(attachmentsFileWrappers.values)
-            
-            return attachments
-        } else {
-            return nil
-        }
-    }
-    
-    private var attachmentsDirectoryWrapper : NSFileWrapper? {
-        
-        guard let fileWrappers = self.documentFileWrapper.fileWrappers else {
-            NSLog("Attempting to access document's contents, but none found!")
-            return nil
-        }
-        
-        var attachmentsDirectoryWrapper = fileWrappers[NoteDocumentFileNames.AttachmentsDirectory.rawValue]
-        
-        if attachmentsDirectoryWrapper == nil {
-            
-            attachmentsDirectoryWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
-            
-            attachmentsDirectoryWrapper?.preferredFilename = NoteDocumentFileNames.AttachmentsDirectory.rawValue
-            
-            self.documentFileWrapper.addFileWrapper(attachmentsDirectoryWrapper!)
-        }
-        
-        return attachmentsDirectoryWrapper
-    }
     
     override func contentsForType(typeName: String) throws -> AnyObject {
         
@@ -120,6 +89,40 @@ class Document: UIDocument {
         self.documentFileWrapper = fileWrapper
         
     }
+    // END document_base
+    
+    // Attachments
+    dynamic var attachedFiles : [NSFileWrapper]? {
+        if let attachmentsDirectory = self.documentFileWrapper.fileWrappers?[NoteDocumentFileNames.AttachmentsDirectory.rawValue], let attachmentsFileWrappers = attachmentsDirectory.fileWrappers {
+            let attachments = Array(attachmentsFileWrappers.values)
+            
+            return attachments
+        } else {
+            return nil
+        }
+    }
+    
+    private var attachmentsDirectoryWrapper : NSFileWrapper? {
+        
+        guard let fileWrappers = self.documentFileWrapper.fileWrappers else {
+            NSLog("Attempting to access document's contents, but none found!")
+            return nil
+        }
+        
+        var attachmentsDirectoryWrapper = fileWrappers[NoteDocumentFileNames.AttachmentsDirectory.rawValue]
+        
+        if attachmentsDirectoryWrapper == nil {
+            
+            attachmentsDirectoryWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
+            
+            attachmentsDirectoryWrapper?.preferredFilename = NoteDocumentFileNames.AttachmentsDirectory.rawValue
+            
+            self.documentFileWrapper.addFileWrapper(attachmentsDirectoryWrapper!)
+        }
+        
+        return attachmentsDirectoryWrapper
+    }
+    
     
     // Given an attachment, eventually returns its URL, if possible.
     // It might be nil if 1. this isn't one of our attachments or

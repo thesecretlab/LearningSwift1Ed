@@ -10,22 +10,18 @@ import UIKit
 import MobileCoreServices
 import CoreSpotlight
 
-class DocumentViewController: UIViewController, UITextViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
+// MARK: Base document support
+
+// BEGIN text_view_delegate
+class DocumentViewController: UIViewController, UITextViewDelegate {
+// END text_view_delegate
     
     @IBOutlet weak var attachmentsCollectionView : UICollectionView?
     
+    // BEGIN base_properties
     @IBOutlet weak var textView : UITextView?
     
-    private var shouldCloseOnDisappear = true
-    
     private var document : Document?
-    
-    private var isEditingAttachments = false
-    
-    func textViewDidChange(textView: UITextView) {
-        document?.text = textView.attributedText
-        document?.updateChangeCount(.Done)
-    }
     
     // The location of the document we're showing
     var documentURL:NSURL? {
@@ -36,7 +32,21 @@ class DocumentViewController: UIViewController, UITextViewDelegate, UICollection
             }
         }
     }
+    // END base_properties
+
     
+    private var shouldCloseOnDisappear = true
+    
+    private var isEditingAttachments = false
+    
+    // BEGIN text_view_did_change
+    func textViewDidChange(textView: UITextView) {
+        document?.text = textView.attributedText
+        document?.updateChangeCount(.Done)
+    }
+    // END text_view_did_change
+    
+    // BEGIN view_will_appear
     override func viewWillAppear(animated: Bool) {
         // Ensure that we actually have a document
         guard let document = self.document else {
@@ -51,9 +61,11 @@ class DocumentViewController: UIViewController, UITextViewDelegate, UICollection
                 if success == true {
                     self.textView?.attributedText = document.text
                     
+                    // BEGIN view_will_appear_attachment_support
                     self.attachmentsCollectionView?.reloadData()
+                    // END view_will_appear_attachment_support
                     
-                    
+                    // BEGIN view_will_appear_searching_support
                     // Add support for searching
                     document.userActivity?.title = document.localizedName
                     
@@ -67,8 +79,7 @@ class DocumentViewController: UIViewController, UITextViewDelegate, UICollection
                     
                     // We are now engaged in this activity
                     document.userActivity?.becomeCurrent()
-                    
-                    
+                    // END view_will_appear_searching_support
                     
                 } else {
                     
@@ -88,6 +99,7 @@ class DocumentViewController: UIViewController, UITextViewDelegate, UICollection
             }
         }
         
+        // BEGIN view_will_appear_attachment_support
         // We may be re-appearing after having presented an attachment,
         // which means that our 'don't close on disappear' flag has been set.
         // Regardless, clear that flag.
@@ -95,14 +107,70 @@ class DocumentViewController: UIViewController, UITextViewDelegate, UICollection
         
         // And re-load our list of attachments, in case it changed while we were away
         self.attachmentsCollectionView?.reloadData()
+        // END view_will_appear_attachment_support
     }
+    // END view_will_appear
     
+    // BEGIN view_will_disappear
     override func viewWillDisappear(animated: Bool) {
-        if shouldCloseOnDisappear {
-            self.document?.closeWithCompletionHandler(nil)
+        
+        // BEGIN view_will_disapper_conditional_closing
+        guard shouldCloseOnDisappear == true else {
+            return
         }
+        // END view_will_disapper_conditional_closing
+        
+        self.document?.closeWithCompletionHandler(nil)
     }
+    // END view_will_disappear
     
+
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        // If it's ShowAddAttachment, and the sender was a UICollectionViewCell, and we're doing it in a popover, and we're heading to an AddAttachmentViewController..
+        if segue.identifier == "ShowAddAttachment", let cell = sender as? UICollectionViewCell, let popover = segue.destinationViewController.popoverPresentationController, let addAttachmentViewController = segue.destinationViewController as? AddAttachmentViewController {
+            
+            // Don't close the document when we disappear
+            self.shouldCloseOnDisappear = false
+            
+            // Display the popover from here
+            popover.sourceView = cell
+            popover.sourceRect = cell.bounds
+            
+            // Part of the solution to the problem of no close button on iPhone
+            popover.delegate = self
+            
+            // Receive instructions to add attachments
+            addAttachmentViewController.delegate = self
+            
+        }
+        
+        // If we're going to an AttachmentViewer...
+        if let attachmentViewer = segue.destinationViewController as? AttachmentViewer {
+            
+            attachmentViewer.document = self.document!
+            
+            // If we were coming from a cell, get the attachment
+            // that this cell represents so that we can view it
+            if let cell = sender as? UICollectionViewCell, let indexPath = self.attachmentsCollectionView?.indexPathForCell(cell), let attachment = self.document?.attachedFiles?[indexPath.row] {
+                
+                attachmentViewer.attachmentFile = attachment
+            }
+            
+            // Don't close the document when showing the view controller
+            self.shouldCloseOnDisappear = false
+            
+            // Ensure that we add a close button to the popover on iPhone
+            segue.destinationViewController.popoverPresentationController?.delegate = self
+            
+            
+        }
+        
+    }
+}
+
+// MARK: - Collection view
+extension DocumentViewController : UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         // No cells if the document is closed or if it doesn't exist
@@ -210,48 +278,6 @@ class DocumentViewController: UIViewController, UITextViewDelegate, UICollection
         
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        
-        // If it's ShowAddAttachment, and the sender was a UICollectionViewCell, and we're doing it in a popover, and we're heading to an AddAttachmentViewController..
-        if segue.identifier == "ShowAddAttachment", let cell = sender as? UICollectionViewCell, let popover = segue.destinationViewController.popoverPresentationController, let addAttachmentViewController = segue.destinationViewController as? AddAttachmentViewController {
-            
-            // Don't close the document when we disappear
-            self.shouldCloseOnDisappear = false
-            
-            // Display the popover from here
-            popover.sourceView = cell
-            popover.sourceRect = cell.bounds
-            
-            // Part of the solution to the problem of no close button on iPhone
-            popover.delegate = self
-            
-            // Receive instructions to add attachments
-            addAttachmentViewController.delegate = self
-            
-        }
-        
-        // If we're going to an AttachmentViewer...
-        if let attachmentViewer = segue.destinationViewController as? AttachmentViewer {
-            
-            attachmentViewer.document = self.document!
-            
-            // If we were coming from a cell, get the attachment
-            // that this cell represents so that we can view it
-            if let cell = sender as? UICollectionViewCell, let indexPath = self.attachmentsCollectionView?.indexPathForCell(cell), let attachment = self.document?.attachedFiles?[indexPath.row] {
-                
-                attachmentViewer.attachmentFile = attachment
-            }
-            
-            // Don't close the document when showing the view controller
-            self.shouldCloseOnDisappear = false
-            
-            // Ensure that we add a close button to the popover on iPhone
-            segue.destinationViewController.popoverPresentationController?.delegate = self
-            
-            
-        }
-        
-    }
 }
 
 // This extension adds a navigation controller that contains a "Done" button to view controllers that are being presented in a popover, but that popover is appearing in full-screen mode

@@ -8,12 +8,17 @@
 
 import UIKit
 
+// BEGIN file_collection_view_cell
 class FileCollectionViewCell : UICollectionViewCell {
     @IBOutlet weak var fileNameLabel : UILabel?
 }
+// END file_collection_view_cell
 
-class ViewController: UICollectionViewController {
+// BEGIN document_list_view_controller
+class DocumentListViewController: UICollectionViewController {
+// END document_list_view_controller
     
+    // BEGIN metadata_query_properties
     var queryDidFinishGatheringObserver : AnyObject?
     var queryDidUpdateObserver: AnyObject?
     
@@ -26,6 +31,7 @@ class ViewController: UICollectionViewController {
         
         return metadataQuery
     }()
+    // END metadata_query_properties
     
     override func restoreUserActivityState(activity: NSUserActivity) {
         // We're being told to open a document
@@ -38,13 +44,14 @@ class ViewController: UICollectionViewController {
         
     }
     
+    // BEGIN view_did_load
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        self.navigationItem.leftBarButtonItem = self.editButtonItem()
         
+        // BEGIN view_did_load_create
         let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: "createDocument")
         self.navigationItem.rightBarButtonItem = addButton
+        // END view_did_load_create
         
         self.queryDidUpdateObserver = NSNotificationCenter.defaultCenter()
             .addObserverForName(NSMetadataQueryDidUpdateNotification,
@@ -61,9 +68,13 @@ class ViewController: UICollectionViewController {
         
         metadataQuery.startQuery()
     }
+    // END view_did_load
     
+    // BEGIN query_updated
     func queryUpdated() {
         self.collectionView?.reloadData()
+        
+        // BEGIN query_updated_download
         
         // Bail out if, for some reason, the metadata query's results
         // 
@@ -93,9 +104,11 @@ class ViewController: UICollectionViewController {
                 NSLog("Failed to start downloading item \(url): \(error)")
             }
         }
+        
+        // END query_updated_download
 
-    
     }
+    // END query_updated
     
     // MARK: - Collection View
     
@@ -104,35 +117,45 @@ class ViewController: UICollectionViewController {
         return 1
     }
     
+    // BEGIN collection_view_datasource
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         // There are as many cells as there are items in iCloud
         return self.metadataQuery.resultCount
     }
     
+    // BEGIN cellforitematindexpath
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         // Get our cell
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("FileCell", forIndexPath: indexPath) as! FileCollectionViewCell
         
+        // BEGIN cellforitematindexpath_openable
         // We'll use this to store whether or not this is an accessible cell
         let openable : Bool
+        // END cellforitematindexpath_openable
         
         // Attempt to get this object from the metadata query
         if let object = self.metadataQuery.resultAtIndex(indexPath.row) as? NSMetadataItem {
             // The display name is the visible name for the file
             cell.fileNameLabel!.text = object.valueForAttribute(NSMetadataItemDisplayNameKey) as? String
             
+            // BEGIN cellforitematindexpath_openable
             openable = itemIsOpenable(object)
+            // END cellforitematindexpath_openable
             
         } else {
             // No object for this index - this is unlikely, but
             // it's important to do _something_
             cell.fileNameLabel!.text = "<error>"
             
+            // BEGIN cellforitematindexpath_openable
             openable = false
+            // END cellforitematindexpath_openable
+            
         }
         
+        // BEGIN cellforitematindexpath_openable
         // If this cell is openable, make it fully visible, and
         // make the cell able to be touched
         if openable {
@@ -144,11 +167,16 @@ class ViewController: UICollectionViewController {
             cell.alpha = 0.5
             cell.userInteractionEnabled = false
         }
+        // END cellforitematindexpath_openable
+        
         
         return cell
         
     }
+    // END cellforitematindexpath
+    // END collection_view_datasource
     
+    // BEGIN item_is_openable
     // Returns true if the document can be opened right now
     func itemIsOpenable(item:NSMetadataItem?) -> Bool {
         
@@ -178,9 +206,8 @@ class ViewController: UICollectionViewController {
         } else {
             return false
         }
-        
-        
     }
+    // END item_is_openable
     
     func openDocumentWithPath(path : String)  {
         
@@ -192,6 +219,7 @@ class ViewController: UICollectionViewController {
         
     }
     
+    // BEGIN documents_urls
     var localDocumentsDirectoryURL : NSURL = {
         return NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
     }()
@@ -199,7 +227,10 @@ class ViewController: UICollectionViewController {
     var ubiquitousDocumentsDirectoryURL : NSURL? {
         return NSFileManager.defaultManager().URLForUbiquityContainerIdentifier(nil)?.URLByAppendingPathComponent("Documents")
     }
+    // END documents_urls
     
+    
+    // BEGIN create_document
     func createDocument() {
         // Create a name for this new document
         let documentName = "Document \(rand()).note"
@@ -225,7 +256,9 @@ class ViewController: UICollectionViewController {
             }
         }
     }
+    // END create_document
     
+    // BEGIN did_select_item_at_index_path
     override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
         // Did we select a cell that has an item that is openable?
@@ -236,7 +269,9 @@ class ViewController: UICollectionViewController {
         }
         
     }
-    
+    // BEGIN did_select_item_at_index_path
+
+    // BEGIN prepare_for_segue
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         // If the segue is "ShowDocument" and the destination view controller is a DocumentViewController...
@@ -244,14 +279,18 @@ class ViewController: UICollectionViewController {
         {
          
             let documentURL : NSURL
+            
             // If it's a metadata item and we can get the URL from it..
             if let item = sender as? NSMetadataItem, let url = item.valueForAttribute(NSMetadataItemURLKey) as? NSURL {
                 
                 documentURL = url
                 
+            // BEGIN prepare_for_segue_direct_url_support
             } else if let url = sender as? NSURL {
                 // We've received the URL directly
                 documentURL = url
+            // END prepare_for_segue_direct_url_support
+                
             } else {
                 // it's something else, oh no!
                 fatalError("ShowDocument segue was called with an invalid sender of type \(sender.dynamicType)")
@@ -261,6 +300,7 @@ class ViewController: UICollectionViewController {
             documentVC.documentURL = documentURL
         }
     }
+    // END prepare_for_segue
     
 }
 

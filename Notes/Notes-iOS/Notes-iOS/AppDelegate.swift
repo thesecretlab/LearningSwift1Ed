@@ -60,7 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 
                 navigationController.popToRootViewControllerAnimated(false)
                 
-                 (navigationController.topViewController as? ViewController)?.openDocumentWithPath(path)
+                 (navigationController.topViewController as? DocumentListViewController)?.openDocumentWithPath(path)
             }
             
             return true
