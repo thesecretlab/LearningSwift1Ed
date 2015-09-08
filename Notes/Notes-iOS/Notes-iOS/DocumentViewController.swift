@@ -16,7 +16,6 @@ import CoreSpotlight
 class DocumentViewController: UIViewController, UITextViewDelegate {
 // END text_view_delegate
     
-    @IBOutlet weak var attachmentsCollectionView : UICollectionView?
     
     // BEGIN base_properties
     @IBOutlet weak var textView : UITextView?
@@ -34,7 +33,10 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
     }
     // END base_properties
 
-    
+    // BEGIN attachments_collection_view
+    @IBOutlet weak var attachmentsCollectionView : UICollectionView?
+    // END attachments_collection_view
+
     private var shouldCloseOnDisappear = true
     
     private var isEditingAttachments = false
@@ -55,6 +57,7 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
             return
         }
         
+        // BEGIN view_will_appear_opening
         // If this document is not already open, open it
         if document.documentState.contains(UIDocumentState.Closed) {
             document.openWithCompletionHandler { (success) -> Void in
@@ -82,6 +85,7 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
                     // END view_will_appear_searching_support
                     
                 } else {
+        // END view_will_appear_opening
                     
                     // We can't open it! Show an alert!
                     let alertTitle = "Error"
@@ -170,7 +174,10 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
 }
 
 // MARK: - Collection view
+// BEGIN document_vc_collectionview
 extension DocumentViewController : UICollectionViewDataSource, UICollectionViewDelegate {
+    
+    // BEGIN document_vc_numberofitems
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         // No cells if the document is closed or if it doesn't exist
@@ -178,22 +185,36 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
             return 0
         }
         
+        guard let attachments = self.document?.attachedFiles else {
+            // No cells if we can't access the attached files list
+            return 0
+        }
+        
         // Return as many cells as we have, plus the add cell
-        return (self.document?.attachedFiles?.count ?? 0) + 1
+        return attachments.count + 1
     }
+    // END document_vc_numberofitems
     
-    
+    // BEGIN document_vc_cellforitem
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
+        // Work out how many cells we need to display
         let totalNumberOfCells = collectionView.numberOfItemsInSection(indexPath.section)
         
-        let isAddCell = indexPath.row == (totalNumberOfCells - 1)
+        // Figure out if we're being asked to configure the Add cell,
+        // or any other cell. If we're the last cell, it's the Add cell.
+        let isAddCell = (indexPath.row == (totalNumberOfCells - 1))
         
+        // The place to store the cell. By making it 'let', we're ensuring
+        // that we never accidentally fail to give it a value - the compiler will call us out.
         let cell : UICollectionViewCell
         
+        // Create and return the 'Add' cell if we need to
         if isAddCell {
             cell = collectionView.dequeueReusableCellWithReuseIdentifier("AddAttachmentCell", forIndexPath: indexPath)
         } else {
+            
+            // This is a regular attachment cell
             
             // Get the cell
             let attachmentCell = collectionView.dequeueReusableCellWithReuseIdentifier("AttachmentCell", forIndexPath: indexPath) as! AttachmentCell
@@ -205,6 +226,7 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
             // Give it to the cell
             attachmentCell.imageView?.image = image
             
+            // BEGIN document_vc_cellforitem_editsupport
             // Add a long-press gesture to it, if it doesn't
             // already have it
             let longPressGesture = UILongPressGestureRecognizer(target: self, action: "beginEditMode")
@@ -215,6 +237,7 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
             
             // Contact us when the user taps the delete button
             attachmentCell.delegate = self
+            // END document_vc_cellforitem_editsupport
             
             // Use this cell
             cell = attachmentCell
@@ -223,7 +246,9 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
         return cell
         
     }
-    
+    // END document_vc_cellforitem
+
+    // BEGIN document_vc_didselectitem
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
         // Do nothing if we are editing
@@ -277,8 +302,10 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
         }
         
     }
+    // END document_vc_didselectitem
     
 }
+// END document_vc_collectionview
 
 // This extension adds a navigation controller that contains a "Done" button to view controllers that are being presented in a popover, but that popover is appearing in full-screen mode
 extension DocumentViewController : UIPopoverPresentationControllerDelegate {
@@ -315,9 +342,12 @@ extension DocumentViewController : UIPopoverPresentationControllerDelegate {
     }
 }
 
+// BEGIN attachment_cell
 class AttachmentCell : UICollectionViewCell {
+    
     @IBOutlet weak var imageView : UIImageView?
     
+    // BEGIN attachment_cell_edit_support
     @IBOutlet weak var deleteButton : UIButton?
     
     var editMode = false {
@@ -332,6 +362,8 @@ class AttachmentCell : UICollectionViewCell {
     @IBAction func delete() {
         self.delegate?.attachmentCellWasDeleted(self)
     }
+    // END attachment_cell_edit_support
+
 }
 
 protocol AttachmentCellDelegate {

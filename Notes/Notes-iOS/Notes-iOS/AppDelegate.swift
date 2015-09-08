@@ -74,13 +74,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     func application(application: UIApplication, continueUserActivity userActivity: NSUserActivity, restorationHandler: ([AnyObject]?) -> Void) -> Bool {
         
         // Return to the list of documents
-        if let navigationController = self.window?.rootViewController as? UINavigationController, let topViewController = navigationController.topViewController {
+        if let navigationController = self.window?.rootViewController as? UINavigationController {
             navigationController.popToRootViewControllerAnimated(false)
             
             // We're now at the list of documents; tell the restoration 
             // system that this view controller needs to be informed
             // that we're continuing the activity
-            restorationHandler([topViewController])
+            if let topViewController = navigationController.topViewController {
+                restorationHandler([topViewController])
+            }
+            
             
             
             return true

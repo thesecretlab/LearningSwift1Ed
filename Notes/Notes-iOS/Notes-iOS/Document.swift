@@ -7,46 +7,63 @@
 //
 
 import UIKit
+
+// BEGIN import_mobilecoreservices
 import MobileCoreServices
+// END import_mobilecoreservices
 
 // Type info and thumbnails
+
+// BEGIN filewrapper_extension
 extension NSFileWrapper {
+    
+    // BEGIN conforms_to_type
     func conformsToType(type: CFString) -> Bool {
         
         // Get the extension of this file
         guard let fileExtension = self.preferredFilename?.componentsSeparatedByString(".").last else {
+            // If we can't get a file extension, assume that it doesn't conform
             return false
         }
         
         // Get the file type of the attachment based on its extension
         guard let fileType = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, nil)?.takeRetainedValue() else {
+            // If we can't figure out the file type from the extension, it also doesn't conform
             return false
         }
         
         // Ask the system if this file type conforms to the provided type
         return UTTypeConformsTo(fileType, type)
     }
+    // END conforms_to_type
     
+    // BEGIN thumbnail_image
     func thumbnailImage() -> UIImage? {
-        
-        // Ensure that we can get the contents of the file
-        guard let attachmentContent = self.regularFileContents else {
-            return nil
-        }
         
         if self.conformsToType(kUTTypeImage) {
             // If it's an image, return it as a UIImage
+            
+            // Ensure that we can get the contents of the file
+            guard let attachmentContent = self.regularFileContents else {
+                return nil
+            }
+            
+            // Attempt to
             return UIImage(data: attachmentContent)
-        } else if self.conformsToType(kUTTypeJSON) {
+        }
+        
+        if self.conformsToType(kUTTypeJSON) {
             // JSON files used to store locations
             return UIImage(named: "Location")
-        } else {
-            // We don't know what type it is, so return a generic icon
-            return UIImage(named: "File")
         }
+        
+        // We don't know what type it is, so return a generic icon
+        return UIImage(named: "File")
     }
+    // END thumbnail_image
 
 }
+// END filewrapper_extension
 
 class Document: UIDocument {
     
@@ -91,37 +108,75 @@ class Document: UIDocument {
     }
     // END document_base
     
-    // Attachments
-    dynamic var attachedFiles : [NSFileWrapper]? {
-        if let attachmentsDirectory = self.documentFileWrapper.fileWrappers?[NoteDocumentFileNames.AttachmentsDirectory.rawValue], let attachmentsFileWrappers = attachmentsDirectory.fileWrappers {
-            let attachments = Array(attachmentsFileWrappers.values)
-            
-            return attachments
-        } else {
-            return nil
-        }
-    }
-    
+    // BEGIN document_attachment_dir
     private var attachmentsDirectoryWrapper : NSFileWrapper? {
         
+        // Ensure that we can actually work with this document
         guard let fileWrappers = self.documentFileWrapper.fileWrappers else {
             NSLog("Attempting to access document's contents, but none found!")
             return nil
         }
         
+        // Try to get the attachments directory
         var attachmentsDirectoryWrapper = fileWrappers[NoteDocumentFileNames.AttachmentsDirectory.rawValue]
         
+        // If it doesn't exist..
         if attachmentsDirectoryWrapper == nil {
             
+            // Create it
             attachmentsDirectoryWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
-            
             attachmentsDirectoryWrapper?.preferredFilename = NoteDocumentFileNames.AttachmentsDirectory.rawValue
             
+            // And then add it
             self.documentFileWrapper.addFileWrapper(attachmentsDirectoryWrapper!)
+            
+            // We made a change to the file, so record that
+            self.updateChangeCount(UIDocumentChangeKind.Done)
         }
         
+        // Either way, return it
         return attachmentsDirectoryWrapper
     }
+    // END document_attachment_dir
+    
+    // Attachments
+    // BEGIN document_attachments
+    dynamic var attachedFiles : [NSFileWrapper]? {
+        
+        // Get the contents of the attachments directory directory
+        guard let attachmentsFileWrappers = attachmentsDirectoryWrapper?.fileWrappers else {
+            NSLog("Can't access the attachments directory!")
+            return nil
+        }
+        
+        // attachmentsFileWrappers is a dictionary mapping filenames
+        // to NSFileWrapper objects; we only care about the NSFileWrappers,
+        // so return that as an array
+        return Array(attachmentsFileWrappers.values)
+            
+    }
+    // END document_attachments
+
+    // BEGIN document_add_attachments
+    func addAttachmentAtURL(url:NSURL) throws {
+        
+        // Ensure that we have a place to put attachments
+        guard attachmentsDirectoryWrapper != nil else {
+            throw err(.CannotAccessAttachments)
+        }
+        
+        // Create the new attachment with this file, or throw an error
+        let newAttachment = try NSFileWrapper(URL: url,
+            options: NSFileWrapperReadingOptions.Immediate)
+        
+        // Add it to the attachments directory
+        attachmentsDirectoryWrapper?.addFileWrapper(newAttachment)
+        
+        // Mark ourselves as needing to save
+        self.updateChangeCount(UIDocumentChangeKind.Done)
+    }
+    // END document_add_attachments
+    
     
     
     // Given an attachment, eventually returns its URL, if possible.
@@ -159,21 +214,6 @@ class Document: UIDocument {
         
     }
     
-    func addAttachmentAtURL(url:NSURL) throws {
-        
-        guard attachmentsDirectoryWrapper != nil else {
-            throw err(.CannotAccessAttachments)
-        }
-        
-        self.willChangeValueForKey("attachedFiles")
-        
-        let newAttachment = try NSFileWrapper(URL: url, options: NSFileWrapperReadingOptions.Immediate)
-        
-        attachmentsDirectoryWrapper?.addFileWrapper(newAttachment)
-        
-        self.updateChangeCount(.Done)
-        self.didChangeValueForKey("attachedFiles")
-    }
     
     
     
