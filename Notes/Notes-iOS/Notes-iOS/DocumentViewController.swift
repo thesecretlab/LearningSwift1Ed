@@ -37,9 +37,14 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var attachmentsCollectionView : UICollectionView?
     // END attachments_collection_view
 
+    // BEGIN attachments_close_support_property
     private var shouldCloseOnDisappear = true
+    // END attachments_close_support_property
     
+    
+    // BEGIN attachments_editing_attachments_property
     private var isEditingAttachments = false
+    // END attachments_editing_attachments_property
     
     // BEGIN text_view_did_change
     func textViewDidChange(textView: UITextView) {
@@ -119,7 +124,7 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
     override func viewWillDisappear(animated: Bool) {
         
         // BEGIN view_will_disapper_conditional_closing
-        guard shouldCloseOnDisappear == true else {
+        if shouldCloseOnDisappear == false {
             return
         }
         // END view_will_disapper_conditional_closing
@@ -129,34 +134,51 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
     // END view_will_disappear
     
 
+    // BEGIN prepare_for_segue
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
-        // If it's ShowAddAttachment, and the sender was a UICollectionViewCell, and we're doing it in a popover, and we're heading to an AddAttachmentViewController..
-        if segue.identifier == "ShowAddAttachment", let cell = sender as? UICollectionViewCell, let popover = segue.destinationViewController.popoverPresentationController, let addAttachmentViewController = segue.destinationViewController as? AddAttachmentViewController {
-            
+        // If it's ShowAddAttachment, and the sender was a UICollectionViewCell, 
+        // and we're doing it in a popover, and we're heading to an
+        // AddAttachmentViewController..
+        if segue.identifier == "ShowAddAttachment",
+            let cell = sender as? UICollectionViewCell,
+            let popover = segue.destinationViewController.popoverPresentationController,
+            let addAttachmentViewController =
+                segue.destinationViewController as? AddAttachmentViewController
+        {
+            // BEGIN prepare_for_segue_close_on_disappear
             // Don't close the document when we disappear
             self.shouldCloseOnDisappear = false
+            // END prepare_for_segue_close_on_disappear
             
             // Display the popover from here
             popover.sourceView = cell
             popover.sourceRect = cell.bounds
             
-            // Part of the solution to the problem of no close button on iPhone
+            // BEGIN prepare_for_segue_popover_delegate
+            // Tell the popover to consult us about how to present
+            // this view (we'll need to change it on iPhone)
             popover.delegate = self
+            // END prepare_for_segue_popover_delegate
             
+            // BEGIN prepare_for_segue_popover_attachment_delegate
             // Receive instructions to add attachments
             addAttachmentViewController.delegate = self
-            
+            // END prepare_for_segue_popover_attachment_delegate
         }
         
+        // BEGIN prepare_for_segue_attachments
         // If we're going to an AttachmentViewer...
         if let attachmentViewer = segue.destinationViewController as? AttachmentViewer {
             
+            // Give the attachment viewer our document
             attachmentViewer.document = self.document!
             
             // If we were coming from a cell, get the attachment
             // that this cell represents so that we can view it
-            if let cell = sender as? UICollectionViewCell, let indexPath = self.attachmentsCollectionView?.indexPathForCell(cell), let attachment = self.document?.attachedFiles?[indexPath.row] {
+            if let cell = sender as? UICollectionViewCell,
+                let indexPath = self.attachmentsCollectionView?.indexPathForCell(cell),
+                let attachment = self.document?.attachedFiles?[indexPath.row] {
                 
                 attachmentViewer.attachmentFile = attachment
             }
@@ -166,11 +188,11 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
             
             // Ensure that we add a close button to the popover on iPhone
             segue.destinationViewController.popoverPresentationController?.delegate = self
-            
-            
         }
+        // END prepare_for_segue_attachments
         
     }
+    // END prepare_for_segue
 }
 
 // MARK: - Collection view
@@ -227,16 +249,21 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
             attachmentCell.imageView?.image = image
             
             // BEGIN document_vc_cellforitem_editsupport
+            
+            // The cell should be in edit mode if the view controller is
+            attachmentCell.editMode = isEditingAttachments
+            
+            // BEGIN document_vc_cellforitem_editsupport_deletesupport
             // Add a long-press gesture to it, if it doesn't
             // already have it
             let longPressGesture = UILongPressGestureRecognizer(target: self, action: "beginEditMode")
             attachmentCell.gestureRecognizers = [longPressGesture]
             
-            // The cell should be in edit mode if the view controller is
-            attachmentCell.editMode = isEditingAttachments
-            
+            // BEGIN document_vc_cellforitem_editsupport_deletesupport_delegate
             // Contact us when the user taps the delete button
             attachmentCell.delegate = self
+            // END document_vc_cellforitem_editsupport_deletesupport_delegate
+            // END document_vc_cellforitem_editsupport_deletesupport
             // END document_vc_cellforitem_editsupport
             
             // Use this cell
@@ -251,11 +278,13 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
     // BEGIN document_vc_didselectitem
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
+        // BEGIN document_vc_didselectitem_edit_support
         // Do nothing if we are editing
         if self.isEditingAttachments {
             return
         }
-        
+        // END document_vc_didselectitem_edit_support
+
         // Work out how many cells we have
         let totalNumberOfCells = collectionView.numberOfItemsInSection(indexPath.section)
         
@@ -264,7 +293,9 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
         // If we have selected the last cell, show the Add screen
         if indexPath.row == totalNumberOfCells-1 {
             self.performSegueWithIdentifier("ShowAddAttachment", sender: selectedCell)
-        } else {
+        }
+        // BEGIN document_vc_didselectitem_attachments
+        else {
             // Otherwise, show a different view controller based on the type
             // of the attachment
             if let attachment = self.document?.attachedFiles?[indexPath.row] {
@@ -273,11 +304,16 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
                 
                 if attachment.conformsToType(kUTTypeImage) {
                     segueName = "ShowImageAttachment"
+                    
+                // BEGIN document_vc_didselectitem_attachments_location
                 } else if attachment.conformsToType(kUTTypeJSON) {
                     segueName = "ShowLocationAttachment"
+                // END document_vc_didselectitem_attachments_location
                 } else {
-                    // We have no view controller for this. Instead,
-                    // show a UIDocumentInteractionController
+                    
+                    // We have no view controller for this. 
+                    // BEGIN document_vc_didselectitem_attachments_location_documentcontroller
+                    // Instead, show a UIDocumentInteractionController
                     
                     self.document?.URLForAttachment(attachment, completion: { (url) -> Void in
                         
@@ -288,26 +324,27 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
                         }
                         
                     })
-                    
-                    
+                    // END document_vc_didselectitem_attachments_location_documentcontroller
                     
                     segueName = nil
                 }
                 
+                // If we have a segue, run it now
                 if let theSegue = segueName {
                     self.performSegueWithIdentifier(theSegue, sender: selectedCell)
                 }
-                
             }
         }
-        
+        // END document_vc_didselectitem_attachments
     }
     // END document_vc_didselectitem
     
 }
 // END document_vc_collectionview
 
+
 // This extension adds a navigation controller that contains a "Done" button to view controllers that are being presented in a popover, but that popover is appearing in full-screen mode
+// BEGIN document_view_controller_popover_management
 extension DocumentViewController : UIPopoverPresentationControllerDelegate {
     
     // Called by the system to determine which view controller should be the content of the popover
@@ -324,6 +361,7 @@ extension DocumentViewController : UIPopoverPresentationControllerDelegate {
             let navigationController = UINavigationController(rootViewController: controller.presentedViewController)
             
             // Create and set up a "Done" button, and add it to the navigation controller
+            // It will call the 'dismissModalView' button, below
             let closeButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.Done, target: self, action: "dismissModalView")
             
             presentedViewController.navigationItem.rightBarButtonItem = closeButton
@@ -341,6 +379,7 @@ extension DocumentViewController : UIPopoverPresentationControllerDelegate {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
 }
+// END document_view_controller_popover_management
 
 // BEGIN attachment_cell
 class AttachmentCell : UICollectionViewCell {
@@ -357,20 +396,30 @@ class AttachmentCell : UICollectionViewCell {
         }
     }
     
+    // BEGIN attachment_cell_delete_support_delegate
     var delegate : AttachmentCellDelegate?
+    // END attachment_cell_delete_support_delegate
     
+    // BEGIN attachment_cell_delete_support_deletemethod
     @IBAction func delete() {
         self.delegate?.attachmentCellWasDeleted(self)
     }
+    // END attachment_cell_delete_support_deletemethod
+    
     // END attachment_cell_edit_support
 
 }
+// END attachment_cell
 
+// BEGIN attachment_cell_delegate
 protocol AttachmentCellDelegate {
     func attachmentCellWasDeleted(cell: AttachmentCell)
 }
+// END attachment_cell_delegate
 
+// BEGIN document_view_controller_attachment_cell_delegate_impl
 extension DocumentViewController : AttachmentCellDelegate {
+    
     func attachmentCellWasDeleted(cell: AttachmentCell) {
         guard let indexPath = self.attachmentsCollectionView?.indexPathForCell(cell) else {
             return
@@ -391,20 +440,36 @@ extension DocumentViewController : AttachmentCellDelegate {
         
     }
 }
+// END document_view_controller_attachment_cell_delegate_impl
 
+// BEGIN document_add_attachment_delegate_implementation
 extension DocumentViewController : AddAttachmentDelegate {
+    
+    // BEGIN document_add_attachment_delegate_implementation_photo
     func addPhoto() {
+        // BEGIN document_add_attachment_delegate_implementation_photo_impl
         let picker = UIImagePickerController()
         picker.delegate = self
+        
+        // BEGIN document_add_attachment_delegate_implementation_photo_impl_close_on_disappear
         self.shouldCloseOnDisappear = false
+        // END document_add_attachment_delegate_implementation_photo_impl_close_on_disappear
+        
         self.presentViewController(picker, animated: true, completion: nil)
+        // END document_add_attachment_delegate_implementation_photo_impl
     }
+    // END document_add_attachment_delegate_implementation_photo
     
+    // BEGIN document_add_attachment_delegate_implementation_location
     func addLocation() {
         self.performSegueWithIdentifier("ShowLocationAttachment", sender: nil)
     }
+    // END document_add_attachment_delegate_implementation_location
+    
 }
+// END document_add_attachment_delegate_implementation
 
+// BEGIN document_image_controller_support
 extension DocumentViewController : UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
@@ -425,14 +490,14 @@ extension DocumentViewController : UIImagePickerControllerDelegate, UINavigation
         }
         
         self.dismissViewControllerAnimated(true, completion: nil)
-        
     }
-    
-    
 }
+// END document_image_controller_support
 
-// The protocol inherits from NSObejctProtocol to ensure that Swift
+// The protocol inherits from NSObjectProtocol to ensure that Swift
 // realises that any AttachmentView must be a class and not a struct
+
+// BEGIN attachment_viewer_protocol
 protocol AttachmentViewer : NSObjectProtocol {
     
     // The attachment to view. If this is nil, 
@@ -443,11 +508,13 @@ protocol AttachmentViewer : NSObjectProtocol {
     // The document attached to this file
     var document : Document? { get set }
 }
+// END attachment_viewer_protocol
 
 // Attachment editing
 extension DocumentViewController {
     
-    @IBAction func beginEditMode() {
+    // BEGIN begin_edit_mode
+    func beginEditMode() {
         
         self.isEditingAttachments = true
         
@@ -467,7 +534,9 @@ extension DocumentViewController {
         self.navigationItem.rightBarButtonItem = doneButton
         
     }
+    // END begin_edit_mode
     
+    // BEGIN end_edit_mode
     func endEditMode() {
         
         self.isEditingAttachments = false
@@ -485,4 +554,5 @@ extension DocumentViewController {
         
         self.navigationItem.rightBarButtonItem = nil
     }
+    // END end_edit_mode
 }

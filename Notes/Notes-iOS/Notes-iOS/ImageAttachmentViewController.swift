@@ -8,13 +8,21 @@
 
 import UIKit
 
+// BEGIN image_view_controller_definition
 class ImageAttachmentViewController: UIViewController, AttachmentViewer {
+// END image_view_controller_definition
     
+    // BEGIN image_vc_outlet
     @IBOutlet weak var imageView : UIImageView?
+    // END image_vc_outlet
     
+    // BEGIN image_vc_attachmentviewer
     var attachmentFile : NSFileWrapper?
+    
     var document : Document?
+    // END image_vc_attachmentviewer
 
+    // BEGIN view_did_load
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -24,14 +32,11 @@ class ImageAttachmentViewController: UIViewController, AttachmentViewer {
             self.imageView?.image = image
         }
     }
+    // END view_did_load
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     @IBAction func shareImage(sender: UIBarButtonItem) {
         
+        // Ensure that we're actually showing an image
         guard let image = self.imageView?.image else {
             return
         }

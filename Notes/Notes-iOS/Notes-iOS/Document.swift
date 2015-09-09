@@ -52,10 +52,12 @@ extension NSFileWrapper {
             return UIImage(data: attachmentContent)
         }
         
+        // BEGIN thumbnail_image_location
         if self.conformsToType(kUTTypeJSON) {
             // JSON files used to store locations
             return UIImage(named: "Location")
         }
+        // END thumbnail_image_location
         
         // We don't know what type it is, so return a generic icon
         return UIImage(named: "File")
@@ -233,6 +235,7 @@ class Document: UIDocument {
         
     }
     
+    // BEGIN delete_attachment
     func deleteAttachment(attachment:NSFileWrapper) throws {
         
         guard attachmentsDirectoryWrapper != nil else {
@@ -245,6 +248,7 @@ class Document: UIDocument {
         self.updateChangeCount(.Done)
         
     }
+    // END delete_attachment
     
     
 }

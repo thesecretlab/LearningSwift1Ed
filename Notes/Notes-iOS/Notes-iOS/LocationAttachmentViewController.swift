@@ -7,25 +7,39 @@
 //
 
 import UIKit
+
+// BEGIN mapkit_frameworks
 import MapKit
 import CoreLocation
+// END mapkit_frameworks
 
 let defaultCoordinate = CLLocationCoordinate2D(latitude: -42.882743, longitude: 147.330234)
 
+// BEGIN map_protocols
 class LocationAttachmentViewController: UIViewController, AttachmentViewer, MKMapViewDelegate {
+// END map_protocols
     
+    
+    // BEGIN mapview_property
     @IBOutlet weak var mapView : MKMapView?
+    // END mapview_property
     
+    // BEGIN attachment_protocol_compliance
     var attachmentFile : NSFileWrapper?
     
     var document : Document?
+    // END attachment_protocol_compliance
     
-    let locationManager = CLLocationManager()
     
     @IBOutlet weak var showCurrentLocationButton: UIBarButtonItem?
     
-    let locationPinAnnotation = MKPointAnnotation()
+    // BEGIN location_pins
+    let locationManager = CLLocationManager()
     
+    let locationPinAnnotation = MKPointAnnotation()
+    // END location_pins
+    
+    // BEGIN view_will_appear
     override func viewWillAppear(animated: Bool) {
         
         locationPinAnnotation.title = "Drag to place"
@@ -81,8 +95,6 @@ class LocationAttachmentViewController: UIViewController, AttachmentViewer, MKMa
         super.viewDidLoad()
         
         locationManager.requestWhenInUseAuthorization()
-        
-        
     }
     
     func mapView(mapView: MKMapView, didUpdateUserLocation userLocation: MKUserLocation) {
@@ -188,19 +200,19 @@ class LocationAttachmentViewController: UIViewController, AttachmentViewer, MKMa
     func closeAttachmentWithoutSaving() {
         self.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
     }
+    // END view_will_appear
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+
     
 
+    // BEGIN show_current_location
     @IBAction func showCurrentLocation(sender: AnyObject) {
         
         // This will zoom to the current location
         self.mapView?.setUserTrackingMode(.Follow, animated: true)
         
     }
+    // END show_current_location
     
     
 }

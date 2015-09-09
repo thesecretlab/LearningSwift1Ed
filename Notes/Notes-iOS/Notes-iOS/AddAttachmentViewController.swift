@@ -8,34 +8,37 @@
 
 import UIKit
 
+// BEGIN add_attachment_delegate
 protocol AddAttachmentDelegate {
     func addPhoto()
+    // BEGIN add_attachment_delegate_location
     func addLocation()
+    // END add_attachment_delegate_location
 }
+// END add_attachment_delegate
 
 class AddAttachmentViewController: UIViewController {
     
+    // BEGIN add_attachment_delegate_property
     var delegate : AddAttachmentDelegate?
+    // END add_attachment_delegate_property
     
-    @IBAction func addPhoto(sender: UIButton) {
-        self.presentingViewController?.dismissViewControllerAnimated(true, completion: { delegate?.addPhoto() })
+    // BEGIN add_attachment_addphoto
+    @IBAction func addPhoto(sender: AnyObject) {
+        self.presentingViewController?
+            .dismissViewControllerAnimated(true, completion: {
+                self.delegate?.addPhoto()
+            })
     }
+    // END add_attachment_addphoto
     
-    @IBAction func addLocation(sender: UIButton) {
-        self.presentingViewController?.dismissViewControllerAnimated(true, completion: { delegate?.addLocation() })
+    // BEGIN add_attachment_addlocation
+    @IBAction func addLocation(sender: AnyObject) {
+        self.presentingViewController?
+            .dismissViewControllerAnimated(true, completion: {
+                self.delegate?.addLocation()
+            })
     }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-
+    // END add_attachment_addlocation
 
 }
