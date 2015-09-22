@@ -49,7 +49,8 @@ class DocumentListViewController: UICollectionViewController {
         super.viewDidLoad()
         
         // BEGIN view_did_load_create
-        let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: "createDocument")
+        let addButton = UIBarButtonItem(barButtonSystemItem: .Add,
+            target: self, action: "createDocument")
         self.navigationItem.rightBarButtonItem = addButton
         // END view_did_load_create
         
@@ -77,7 +78,7 @@ class DocumentListViewController: UICollectionViewController {
         // BEGIN query_updated_download
         
         // Bail out if, for some reason, the metadata query's results
-        // 
+        // can't be accessed
         guard let items = self.metadataQuery.results as? [NSMetadataItem]  else {
             return
         }
@@ -91,14 +92,17 @@ class DocumentListViewController: UICollectionViewController {
             }
             
             // Ensure that we can get the file URL for this item
-            guard let url = item.valueForAttribute(NSMetadataItemURLKey) as? NSURL else {
+            guard let url =
+                item.valueForAttribute(NSMetadataItemURLKey) as? NSURL else {
                 // We need to have the URL to download it, so bail out
                 continue
             }
             
             // Ask the system to try to download it
             do {
-                try NSFileManager.defaultManager().startDownloadingUbiquitousItemAtURL(url)
+                try NSFileManager.defaultManager()
+                    .startDownloadingUbiquitousItemAtURL(url)
+                
             } catch let error as NSError {                
                 // Log it if there was a problem
                 NSLog("Failed to start downloading item \(url): \(error)")
@@ -112,23 +116,29 @@ class DocumentListViewController: UICollectionViewController {
     
     // MARK: - Collection View
     
-    override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    override func numberOfSectionsInCollectionView(
+        collectionView: UICollectionView) -> Int {
+            
         // We only ever have one section
         return 1
     }
     
     // BEGIN collection_view_datasource
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func collectionView(collectionView: UICollectionView,
+        numberOfItemsInSection section: Int) -> Int {
         
         // There are as many cells as there are items in iCloud
         return self.metadataQuery.resultCount
     }
     
     // BEGIN cellforitematindexpath
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    override func collectionView(collectionView: UICollectionView,
+        cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         // Get our cell
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("FileCell", forIndexPath: indexPath) as! FileCollectionViewCell
+        let cell = collectionView
+            .dequeueReusableCellWithReuseIdentifier("FileCell",
+                forIndexPath: indexPath) as! FileCollectionViewCell
         
         // BEGIN cellforitematindexpath_openable
         // We'll use this to store whether or not this is an accessible cell
@@ -136,9 +146,11 @@ class DocumentListViewController: UICollectionViewController {
         // END cellforitematindexpath_openable
         
         // Attempt to get this object from the metadata query
-        if let object = self.metadataQuery.resultAtIndex(indexPath.row) as? NSMetadataItem {
+        if let object = self.metadataQuery.resultAtIndex(indexPath.row)
+            as? NSMetadataItem {
             // The display name is the visible name for the file
-            cell.fileNameLabel!.text = object.valueForAttribute(NSMetadataItemDisplayNameKey) as? String
+            cell.fileNameLabel!.text = object
+                .valueForAttribute(NSMetadataItemDisplayNameKey) as? String
             
             // BEGIN cellforitematindexpath_openable
             openable = itemIsOpenable(object)
@@ -186,14 +198,16 @@ class DocumentListViewController: UICollectionViewController {
         }
         
         // Get the URL from the item or bail out
-        guard let url = item.valueForAttribute(NSMetadataItemURLKey) as? NSURL else {
+        guard let url =
+            item.valueForAttribute(NSMetadataItemURLKey) as? NSURL else {
             return false
         }
         
         // Ask the system for the download status
         var downloadStatus : AnyObject?
         do {
-            try url.getResourceValue(&downloadStatus, forKey: NSURLUbiquitousItemDownloadingStatusKey)
+            try url.getResourceValue(&downloadStatus,
+                forKey: NSURLUbiquitousItemDownloadingStatusKey)
         } catch let error as NSError {
             NSLog("Failed to get downloading status for \(url): \(error)")
             // If we can't get that, we can't open it
@@ -221,11 +235,13 @@ class DocumentListViewController: UICollectionViewController {
     
     // BEGIN documents_urls
     var localDocumentsDirectoryURL : NSURL = {
-        return NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
+        return NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory,
+            inDomains: .UserDomainMask).first!
     }()
     
     var ubiquitousDocumentsDirectoryURL : NSURL? {
-        return NSFileManager.defaultManager().URLForUbiquityContainerIdentifier(nil)?.URLByAppendingPathComponent("Documents")
+        return NSFileManager.defaultManager().URLForUbiquityContainerIdentifier(nil)?
+            .URLByAppendingPathComponent("Documents")
     }
     // END documents_urls
     
@@ -236,19 +252,25 @@ class DocumentListViewController: UICollectionViewController {
         let documentName = "Document \(rand()).note"
         
         // Work out where we're going to store it, temporarily
-        let documentDestinationURL = localDocumentsDirectoryURL.URLByAppendingPathComponent(documentName)
+        let documentDestinationURL = localDocumentsDirectoryURL
+            .URLByAppendingPathComponent(documentName)
         
         // Create the document and try to save it locally
         let newDocument = Document(fileURL:documentDestinationURL)
-        newDocument.saveToURL(documentDestinationURL, forSaveOperation: .ForCreating) { (success) -> Void in
+        newDocument.saveToURL(documentDestinationURL,
+            forSaveOperation: .ForCreating) { (success) -> Void in
             
             // If we successfully created it, attempt to move it to iCloud
-            if success == true, let ubiquitousDestinationURL = self.ubiquitousDocumentsDirectoryURL?.URLByAppendingPathComponent(documentName) {
+            if success == true, let ubiquitousDestinationURL =
+                self.ubiquitousDocumentsDirectoryURL?
+                    .URLByAppendingPathComponent(documentName) {
                 
                 // Perform the move to iCloud in the background
                 NSOperationQueue().addOperationWithBlock { () -> Void in
                     do {
-                        try NSFileManager.defaultManager().setUbiquitous(true, itemAtURL: documentDestinationURL, destinationURL: ubiquitousDestinationURL)
+                        try NSFileManager.defaultManager()
+                            .setUbiquitous(true, itemAtURL: documentDestinationURL,
+                                destinationURL: ubiquitousDestinationURL)
                     } catch let error as NSError {
                         NSLog("Error storing document in iCloud! \(error)")
                     }
@@ -259,29 +281,34 @@ class DocumentListViewController: UICollectionViewController {
     // END create_document
     
     // BEGIN did_select_item_at_index_path
-    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    override func collectionView(collectionView: UICollectionView,
+        didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
         // Did we select a cell that has an item that is openable?
-        if let selectedItem = self.metadataQuery.resultAtIndex(indexPath.row) as? NSMetadataItem where itemIsOpenable(selectedItem) {
+        if let selectedItem = self.metadataQuery
+            .resultAtIndex(indexPath.row) as? NSMetadataItem
+            where itemIsOpenable(selectedItem) {
             
             self.performSegueWithIdentifier("ShowDocument", sender: selectedItem)
             
         }
         
     }
-    // BEGIN did_select_item_at_index_path
+    // END did_select_item_at_index_path
 
-    // BEGIN prepare_for_segue
+    // BEGIN prepare_for_segue_list
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         // If the segue is "ShowDocument" and the destination view controller is a DocumentViewController...
-        if segue.identifier == "ShowDocument", let documentVC = segue.destinationViewController as? DocumentViewController
+        if segue.identifier == "ShowDocument",
+            let documentVC = segue.destinationViewController as? DocumentViewController
         {
          
             let documentURL : NSURL
             
             // If it's a metadata item and we can get the URL from it..
-            if let item = sender as? NSMetadataItem, let url = item.valueForAttribute(NSMetadataItemURLKey) as? NSURL {
+            if let item = sender as? NSMetadataItem,
+                let url = item.valueForAttribute(NSMetadataItemURLKey) as? NSURL {
                 
                 documentURL = url
                 
@@ -293,14 +320,15 @@ class DocumentListViewController: UICollectionViewController {
                 
             } else {
                 // it's something else, oh no!
-                fatalError("ShowDocument segue was called with an invalid sender of type \(sender.dynamicType)")
+                fatalError("ShowDocument segue was called with an " +
+                    "invalid sender of type \(sender.dynamicType)")
             }
             
             // Provide the url to the view controller
             documentVC.documentURL = documentURL
         }
     }
-    // END prepare_for_segue
+    // END prepare_for_segue_list
     
 }
 

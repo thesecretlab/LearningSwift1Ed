@@ -22,17 +22,18 @@ class ImageAttachmentViewController: UIViewController, AttachmentViewer {
     var document : Document?
     // END image_vc_attachmentviewer
 
-    // BEGIN view_did_load
+    // BEGIN view_did_load_image
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // If we have data, and can make an image out of it...
-        if let data = attachmentFile?.regularFileContents, let image = UIImage(data: data) {
+        if let data = attachmentFile?.regularFileContents,
+            let image = UIImage(data: data) {
             // Set the image
             self.imageView?.image = image
         }
     }
-    // END view_did_load
+    // END view_did_load_image
 
     @IBAction func shareImage(sender: UIBarButtonItem) {
         
@@ -41,16 +42,21 @@ class ImageAttachmentViewController: UIViewController, AttachmentViewer {
             return
         }
         
-        let activityController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        let activityController = UIActivityViewController(
+            activityItems: [image], applicationActivities: nil)
         
-        // If we are being presented in a window that's a Regular width, show it in a popover (rather than the default modal)
-        if UIApplication.sharedApplication().keyWindow?.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClass.Regular {
+        // If we are being presented in a window that's a Regular width,
+        // show it in a popover (rather than the default modal)
+        if UIApplication.sharedApplication().keyWindow?.traitCollection
+            .horizontalSizeClass == UIUserInterfaceSizeClass.Regular {
             activityController.modalPresentationStyle = .Popover
             
-            activityController.popoverPresentationController?.barButtonItem = sender
+            activityController.popoverPresentationController?
+                .barButtonItem = sender
         }
         
-        self.presentViewController(activityController, animated: true, completion: nil)
+        self.presentViewController(activityController, animated: true,
+            completion: nil)
         
     }
 

@@ -13,10 +13,12 @@ import MapKit
 import CoreLocation
 // END mapkit_frameworks
 
-let defaultCoordinate = CLLocationCoordinate2D(latitude: -42.882743, longitude: 147.330234)
+let defaultCoordinate =
+    CLLocationCoordinate2D(latitude: -42.882743, longitude: 147.330234)
 
 // BEGIN map_protocols
-class LocationAttachmentViewController: UIViewController, AttachmentViewer, MKMapViewDelegate {
+class LocationAttachmentViewController: UIViewController,
+    AttachmentViewer, MKMapViewDelegate {
 // END map_protocols
     
     
@@ -39,7 +41,7 @@ class LocationAttachmentViewController: UIViewController, AttachmentViewer, MKMa
     let locationPinAnnotation = MKPointAnnotation()
     // END location_pins
     
-    // BEGIN view_will_appear
+    // BEGIN view_will_appear_location
     override func viewWillAppear(animated: Bool) {
         
         locationPinAnnotation.title = "Drag to place"
@@ -50,11 +52,15 @@ class LocationAttachmentViewController: UIViewController, AttachmentViewer, MKMa
         if let data = attachmentFile?.regularFileContents {
             
             do {
-                guard let loadedData = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as? [String:CLLocationDegrees] else {
+                guard let loadedData =
+                    try NSJSONSerialization.JSONObjectWithData(data,
+                        options: NSJSONReadingOptions())
+                        as? [String:CLLocationDegrees] else {
                     return
                 }
                 
-                if let latitude = loadedData["lat"], let longitude = loadedData["long"] {
+                if let latitude = loadedData["lat"],
+                    let longitude = loadedData["long"] {
                     
                     
                     let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -69,18 +75,21 @@ class LocationAttachmentViewController: UIViewController, AttachmentViewer, MKMa
             }
             
             // Make the Done button save the attachment
-            let doneButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "addAttachmentAndClose")
+            let doneButton = UIBarButtonItem(barButtonSystemItem: .Done,
+                target: self, action: "addAttachmentAndClose")
             self.navigationItem.rightBarButtonItem = doneButton
             
             
         } else {
             // Set up for editing - create a 'cancel' button that dismisses the view
             
-            let cancelButton = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "closeAttachmentWithoutSaving")
+            let cancelButton = UIBarButtonItem(barButtonSystemItem: .Cancel,
+                target: self, action: "closeAttachmentWithoutSaving")
             self.navigationItem.leftBarButtonItem = cancelButton
             
             // Now add the Done button that adds the attachment
-            let doneButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "addAttachmentAndClose")
+            let doneButton = UIBarButtonItem(barButtonSystemItem: .Done,
+                target: self, action: "addAttachmentAndClose")
             self.navigationItem.rightBarButtonItem = doneButton
             
             // Get notified about the user's location; we'll use
@@ -97,7 +106,8 @@ class LocationAttachmentViewController: UIViewController, AttachmentViewer, MKMa
         locationManager.requestWhenInUseAuthorization()
     }
     
-    func mapView(mapView: MKMapView, didUpdateUserLocation userLocation: MKUserLocation) {
+    func mapView(mapView: MKMapView,
+        didUpdateUserLocation userLocation: MKUserLocation) {
         
         
         // If we know the user's location, we can zoom to it
@@ -111,7 +121,8 @@ class LocationAttachmentViewController: UIViewController, AttachmentViewer, MKMa
             locationPinAnnotation.coordinate = coordinate
             self.mapView?.addAnnotation(locationPinAnnotation)
             
-            self.mapView?.selectAnnotation(locationPinAnnotation, animated: true)
+            self.mapView?.selectAnnotation(locationPinAnnotation,
+                animated: true)
         }
     }
     
@@ -127,18 +138,23 @@ class LocationAttachmentViewController: UIViewController, AttachmentViewer, MKMa
         }
     }
     
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+    func mapView(mapView: MKMapView,
+        viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         
         let reuseID = "Location"
         
         if let pointAnnotation = annotation as? MKPointAnnotation {
             
-            if let existingAnnotation = self.mapView?.dequeueReusableAnnotationViewWithIdentifier(reuseID) {
+            if let existingAnnotation = self.mapView?
+                .dequeueReusableAnnotationViewWithIdentifier(reuseID) {
+                    
                 existingAnnotation.annotation = annotation
                 return existingAnnotation
             } else {
                 
-                let annotationView = MKPinAnnotationView(annotation: pointAnnotation, reuseIdentifier: reuseID)
+                let annotationView =
+                    MKPinAnnotationView(annotation: pointAnnotation,
+                        reuseIdentifier: reuseID)
                 
                 annotationView.draggable = true
                 
@@ -173,7 +189,9 @@ class LocationAttachmentViewController: UIViewController, AttachmentViewer, MKMa
             ]
             
             do {
-                let locationData = try NSJSONSerialization.dataWithJSONObject(locationDict, options: NSJSONWritingOptions())
+                let locationData = try NSJSONSerialization
+                    .dataWithJSONObject(locationDict,
+                        options: NSJSONWritingOptions())
 
                 let locationName : String
                 
@@ -186,7 +204,8 @@ class LocationAttachmentViewController: UIViewController, AttachmentViewer, MKMa
                     locationName = newFileName
                 }
                 
-                try self.document?.addAttachmentWithData(locationData, name: locationName)
+                try self.document?.addAttachmentWithData(locationData,
+                    name: locationName)
             
                 
             } catch let error as NSError {
@@ -194,13 +213,15 @@ class LocationAttachmentViewController: UIViewController, AttachmentViewer, MKMa
             }
         }
         
-        self.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+        self.presentingViewController?.dismissViewControllerAnimated(true,
+            completion: nil)
     }
     
     func closeAttachmentWithoutSaving() {
-        self.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+        self.presentingViewController?.dismissViewControllerAnimated(true,
+            completion: nil)
     }
-    // END view_will_appear
+    // END view_will_appear_location
 
 
     

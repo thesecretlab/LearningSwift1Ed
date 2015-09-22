@@ -77,7 +77,8 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
                     // Add support for searching
                     document.userActivity?.title = document.localizedName
                     
-                    let contentAttributeSet = CSSearchableItemAttributeSet(itemContentType: document.fileType!)
+                    let contentAttributeSet
+                        = CSSearchableItemAttributeSet(itemContentType: document.fileType!)
                     contentAttributeSet.title = document.localizedName
                     contentAttributeSet.contentDescription = document.text.string
                     
@@ -89,16 +90,20 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
                     document.userActivity?.becomeCurrent()
                     // END view_will_appear_searching_support
                     
-                } else {
+                }
         // END view_will_appear_opening
+                else
+                {
                     
                     // We can't open it! Show an alert!
                     let alertTitle = "Error"
                     let alertMessage = "Failed to open document"
-                    let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: UIAlertControllerStyle.Alert)
+                    let alert = UIAlertController(title: alertTitle,
+                        message: alertMessage, preferredStyle: UIAlertControllerStyle.Alert)
                     
                     // Add a button that returns to the previous screen
-                    alert.addAction(UIAlertAction(title: "Close", style: .Default, handler: { (action) -> Void in
+                    alert.addAction(UIAlertAction(title: "Close",
+                        style: .Default, handler: { (action) -> Void in
                         self.navigationController?.popViewControllerAnimated(true)
                     }))
                     
@@ -108,15 +113,16 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
             }
         }
         
-        // BEGIN view_will_appear_attachment_support
+        // BEGIN view_will_appear_dont_close_on_opening_attachments
         // We may be re-appearing after having presented an attachment,
         // which means that our 'don't close on disappear' flag has been set.
         // Regardless, clear that flag.
         self.shouldCloseOnDisappear = true
         
-        // And re-load our list of attachments, in case it changed while we were away
+        // And re-load our list of attachments, in case it changed 
+        // while we were away
         self.attachmentsCollectionView?.reloadData()
-        // END view_will_appear_attachment_support
+        // END view_will_appear_dont_close_on_opening_attachments
     }
     // END view_will_appear
     
@@ -169,7 +175,8 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
         
         // BEGIN prepare_for_segue_attachments
         // If we're going to an AttachmentViewer...
-        if let attachmentViewer = segue.destinationViewController as? AttachmentViewer {
+        if let attachmentViewer
+            = segue.destinationViewController as? AttachmentViewer {
             
             // Give the attachment viewer our document
             attachmentViewer.document = self.document!
@@ -200,7 +207,8 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
 extension DocumentViewController : UICollectionViewDataSource, UICollectionViewDelegate {
     
     // BEGIN document_vc_numberofitems
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(collectionView: UICollectionView,
+        numberOfItemsInSection section: Int) -> Int {
         
         // No cells if the document is closed or if it doesn't exist
         if self.document!.documentState.contains(.Closed) {
@@ -218,7 +226,8 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
     // END document_vc_numberofitems
     
     // BEGIN document_vc_cellforitem
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(collectionView: UICollectionView,
+        cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         // Work out how many cells we need to display
         let totalNumberOfCells = collectionView.numberOfItemsInSection(indexPath.section)
@@ -228,18 +237,22 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
         let isAddCell = (indexPath.row == (totalNumberOfCells - 1))
         
         // The place to store the cell. By making it 'let', we're ensuring
-        // that we never accidentally fail to give it a value - the compiler will call us out.
+        // that we never accidentally fail to give it a value - the 
+        // compiler will call us out.
         let cell : UICollectionViewCell
         
         // Create and return the 'Add' cell if we need to
         if isAddCell {
-            cell = collectionView.dequeueReusableCellWithReuseIdentifier("AddAttachmentCell", forIndexPath: indexPath)
+            cell = collectionView.dequeueReusableCellWithReuseIdentifier(
+                "AddAttachmentCell", forIndexPath: indexPath)
         } else {
             
             // This is a regular attachment cell
             
             // Get the cell
-            let attachmentCell = collectionView.dequeueReusableCellWithReuseIdentifier("AttachmentCell", forIndexPath: indexPath) as! AttachmentCell
+            let attachmentCell = collectionView
+                .dequeueReusableCellWithReuseIdentifier("AttachmentCell",
+                    forIndexPath: indexPath) as! AttachmentCell
             
             // Get a thumbnail image for the attachment
             let attachment = self.document?.attachedFiles?[indexPath.row]
@@ -256,7 +269,8 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
             // BEGIN document_vc_cellforitem_editsupport_deletesupport
             // Add a long-press gesture to it, if it doesn't
             // already have it
-            let longPressGesture = UILongPressGestureRecognizer(target: self, action: "beginEditMode")
+            let longPressGesture = UILongPressGestureRecognizer(target: self,
+                action: "beginEditMode")
             attachmentCell.gestureRecognizers = [longPressGesture]
             
             // BEGIN document_vc_cellforitem_editsupport_deletesupport_delegate
@@ -276,7 +290,8 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
     // END document_vc_cellforitem
 
     // BEGIN document_vc_didselectitem
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(collectionView: UICollectionView,
+        didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
         // BEGIN document_vc_didselectitem_edit_support
         // Do nothing if we are editing
@@ -286,7 +301,8 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
         // END document_vc_didselectitem_edit_support
 
         // Work out how many cells we have
-        let totalNumberOfCells = collectionView.numberOfItemsInSection(indexPath.section)
+        let totalNumberOfCells = collectionView
+            .numberOfItemsInSection(indexPath.section)
         
         let selectedCell = collectionView.cellForItemAtIndexPath(indexPath)
         
@@ -315,12 +331,16 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
                     // BEGIN document_vc_didselectitem_attachments_location_documentcontroller
                     // Instead, show a UIDocumentInteractionController
                     
-                    self.document?.URLForAttachment(attachment, completion: { (url) -> Void in
+                    self.document?.URLForAttachment(attachment,
+                        completion: { (url) -> Void in
                         
                         if let url = url, cell = selectedCell {
-                            let documentInteraction = UIDocumentInteractionController(URL: url)
+                            let documentInteraction
+                                = UIDocumentInteractionController(URL: url)
                             
-                            documentInteraction.presentOptionsMenuFromRect(cell.bounds, inView: cell, animated: true)
+                            documentInteraction
+                                .presentOptionsMenuFromRect(cell.bounds,
+                                    inView: cell, animated: true)
                         }
                         
                     })
@@ -331,7 +351,8 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
                 
                 // If we have a segue, run it now
                 if let theSegue = segueName {
-                    self.performSegueWithIdentifier(theSegue, sender: selectedCell)
+                    self.performSegueWithIdentifier(theSegue,
+                        sender: selectedCell)
                 }
             }
         }
@@ -348,25 +369,34 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
 extension DocumentViewController : UIPopoverPresentationControllerDelegate {
     
     // Called by the system to determine which view controller should be the content of the popover
-    func presentationController(controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
+    func presentationController(controller: UIPresentationController,
+        viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle)
+        -> UIViewController? {
         
         // Get the view controller that we want to present
         let presentedViewController = controller.presentedViewController
         
         // If we're showing a popover, and that popover is being shown
         // as a full-screen modal (which happens on iPhone)..
-        if style == UIModalPresentationStyle.FullScreen && controller is UIPopoverPresentationController {
+        if style == UIModalPresentationStyle.FullScreen && controller
+            is UIPopoverPresentationController {
             
             // Create a navigation controller that contains the content
-            let navigationController = UINavigationController(rootViewController: controller.presentedViewController)
+            let navigationController = UINavigationController(rootViewController:
+                controller.presentedViewController)
             
-            // Create and set up a "Done" button, and add it to the navigation controller
+            // Create and set up a "Done" button, and add it to the 
+            // navigation controller.
             // It will call the 'dismissModalView' button, below
-            let closeButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.Done, target: self, action: "dismissModalView")
+            let closeButton = UIBarButtonItem(title: "Done",
+                style: UIBarButtonItemStyle.Done, target: self,
+                action: "dismissModalView")
             
-            presentedViewController.navigationItem.rightBarButtonItem = closeButton
+            presentedViewController.navigationItem
+                .rightBarButtonItem = closeButton
             
-            // Tell the system that the content should be this new navigation controller
+            // Tell the system that the content should be this new 
+            // navigation controller.
             return navigationController
         } else {
             
@@ -421,17 +451,20 @@ protocol AttachmentCellDelegate {
 extension DocumentViewController : AttachmentCellDelegate {
     
     func attachmentCellWasDeleted(cell: AttachmentCell) {
-        guard let indexPath = self.attachmentsCollectionView?.indexPathForCell(cell) else {
+        guard let indexPath = self.attachmentsCollectionView?
+            .indexPathForCell(cell) else {
             return
         }
         
-        guard let attachment = self.document?.attachedFiles?[indexPath.row] else {
+        guard let attachment = self.document?
+            .attachedFiles?[indexPath.row] else {
             return
         }
         do {
             try self.document?.deleteAttachment(attachment)
             
-            self.attachmentsCollectionView?.deleteItemsAtIndexPaths([indexPath])
+            self.attachmentsCollectionView?
+                .deleteItemsAtIndexPaths([indexPath])
             
             self.endEditMode()
         } catch let error as NSError {
@@ -470,17 +503,21 @@ extension DocumentViewController : AddAttachmentDelegate {
 // END document_add_attachment_delegate_implementation
 
 // BEGIN document_image_controller_support
-extension DocumentViewController : UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension DocumentViewController : UIImagePickerControllerDelegate,
+    UINavigationControllerDelegate {
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+    func imagePickerController(picker: UIImagePickerController,
+        didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         
-        let imageToUse = info[UIImagePickerControllerEditedImage] ?? info[UIImagePickerControllerOriginalImage]
+        let imageToUse = info[UIImagePickerControllerEditedImage]
+            ?? info[UIImagePickerControllerOriginalImage]
         
         if let image = imageToUse as? UIImage,
             let imageData = UIImageJPEGRepresentation(image, 0.8) {
             
                 do {
-                    try self.document?.addAttachmentWithData(imageData, name: "Image \(arc4random()).jpg")
+                    try self.document?.addAttachmentWithData(imageData,
+                        name: "Image \(arc4random()).jpg")
                     
                     self.attachmentsCollectionView?.reloadData()
                     
@@ -530,7 +567,8 @@ extension DocumentViewController {
             }
         }
         
-        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done, target: self, action: "endEditMode")
+        let doneButton = UIBarButtonItem(barButtonSystemItem:
+            UIBarButtonSystemItem.Done, target: self, action: "endEditMode")
         self.navigationItem.rightBarButtonItem = doneButton
         
     }

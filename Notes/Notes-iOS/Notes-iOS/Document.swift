@@ -21,14 +21,18 @@ extension NSFileWrapper {
     func conformsToType(type: CFString) -> Bool {
         
         // Get the extension of this file
-        guard let fileExtension = self.preferredFilename?.componentsSeparatedByString(".").last else {
+        guard let fileExtension = self.preferredFilename?
+            .componentsSeparatedByString(".").last else {
             // If we can't get a file extension, assume that it doesn't conform
             return false
         }
         
         // Get the file type of the attachment based on its extension
-        guard let fileType = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, nil)?.takeRetainedValue() else {
-            // If we can't figure out the file type from the extension, it also doesn't conform
+        guard let fileType = UTTypeCreatePreferredIdentifierForTag(
+            kUTTagClassFilenameExtension, fileExtension, nil)?
+            .takeRetainedValue() else {
+            // If we can't figure out the file type from the extension,
+            // it also doesn't conform
             return false
         }
         
@@ -48,7 +52,7 @@ extension NSFileWrapper {
                 return nil
             }
             
-            // Attempt to
+            // Attempt to convert the file's contents to text
             return UIImage(data: attachmentContent)
         }
         
@@ -76,19 +80,25 @@ class Document: UIDocument {
     
     override func contentsForType(typeName: String) throws -> AnyObject {
         
-        let textRTFData = try self.text.dataFromRange(NSRange(0..<self.text.length), documentAttributes: [NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType])
+        let textRTFData = try self.text.dataFromRange(
+            NSRange(0..<self.text.length),
+            documentAttributes:
+                [NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType])
         
-        if let oldTextFileWrapper = self.documentFileWrapper.fileWrappers?[NoteDocumentFileNames.TextFile.rawValue] {
+        if let oldTextFileWrapper = self.documentFileWrapper
+            .fileWrappers?[NoteDocumentFileNames.TextFile.rawValue] {
             self.documentFileWrapper.removeFileWrapper(oldTextFileWrapper)
             
         }
         
-        self.documentFileWrapper.addRegularFileWithContents(textRTFData, preferredFilename: NoteDocumentFileNames.TextFile.rawValue)
+        self.documentFileWrapper.addRegularFileWithContents(textRTFData,
+            preferredFilename: NoteDocumentFileNames.TextFile.rawValue)
         
         return self.documentFileWrapper
     }
 
-    override func loadFromContents(contents: AnyObject, ofType typeName: String?) throws {
+    override func loadFromContents(contents: AnyObject,
+        ofType typeName: String?) throws {
         
         // Ensure that we've been given a file wrapper
         guard let fileWrapper = contents as? NSFileWrapper else {
@@ -97,12 +107,16 @@ class Document: UIDocument {
         
         // Ensure that this file wrapper contains the text file,
         // and that we can read it
-        guard let textFileWrapper = fileWrapper.fileWrappers?[NoteDocumentFileNames.TextFile.rawValue], let textFileData = textFileWrapper.regularFileContents else {
+        guard let textFileWrapper = fileWrapper
+            .fileWrappers?[NoteDocumentFileNames.TextFile.rawValue],
+            let textFileData = textFileWrapper.regularFileContents else {
             throw err(.CannotLoadText)
         }
         
         // Read in the RTF
-        self.text = try NSAttributedString(data: textFileData, options: [NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType], documentAttributes: nil)
+        self.text = try NSAttributedString(data: textFileData,
+            options: [NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType],
+            documentAttributes: nil)
         
         // Keep a reference to the file wrapper
         self.documentFileWrapper = fileWrapper
@@ -120,14 +134,16 @@ class Document: UIDocument {
         }
         
         // Try to get the attachments directory
-        var attachmentsDirectoryWrapper = fileWrappers[NoteDocumentFileNames.AttachmentsDirectory.rawValue]
+        var attachmentsDirectoryWrapper =
+            fileWrappers[NoteDocumentFileNames.AttachmentsDirectory.rawValue]
         
         // If it doesn't exist..
         if attachmentsDirectoryWrapper == nil {
             
             // Create it
             attachmentsDirectoryWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
-            attachmentsDirectoryWrapper?.preferredFilename = NoteDocumentFileNames.AttachmentsDirectory.rawValue
+            attachmentsDirectoryWrapper?.preferredFilename =
+                NoteDocumentFileNames.AttachmentsDirectory.rawValue
             
             // And then add it
             self.documentFileWrapper.addFileWrapper(attachmentsDirectoryWrapper!)
@@ -146,7 +162,8 @@ class Document: UIDocument {
     dynamic var attachedFiles : [NSFileWrapper]? {
         
         // Get the contents of the attachments directory directory
-        guard let attachmentsFileWrappers = attachmentsDirectoryWrapper?.fileWrappers else {
+        guard let attachmentsFileWrappers =
+            attachmentsDirectoryWrapper?.fileWrappers else {
             NSLog("Can't access the attachments directory!")
             return nil
         }
@@ -188,7 +205,8 @@ class Document: UIDocument {
     func URLForAttachment(attachment: NSFileWrapper, completion: NSURL? -> Void) {
         
         // Ensure that this is an attachment we have
-        guard let attachments = self.attachedFiles where attachments.contains(attachment) else {
+        guard let attachments = self.attachedFiles
+                where attachments.contains(attachment) else {
             completion(nil)
             return
         }
@@ -204,7 +222,10 @@ class Document: UIDocument {
                 
                 // We're now certain that attachments actually
                 // exit on disk, so we can get their URL
-                let attachmentURL = self.fileURL.URLByAppendingPathComponent(NoteDocumentFileNames.AttachmentsDirectory.rawValue, isDirectory: true).URLByAppendingPathComponent(fileName)
+                let attachmentURL = self.fileURL
+                    .URLByAppendingPathComponent(
+                        NoteDocumentFileNames.AttachmentsDirectory.rawValue,
+                        isDirectory: true).URLByAppendingPathComponent(fileName)
                 
                 completion(attachmentURL)
                 

@@ -8,35 +8,51 @@
 
 import Foundation
 
-// We can be throwing a lot of errors in this class, and they'll all be in the same error domain and using error codes from the same enum, so here's a little convenience func to save typing and space
-func err(code: ErrorCode, _ userInfo:[NSObject:AnyObject]?=nil)  -> NSError {
-    return NSError(domain: ErrorDomain, code: code.rawValue, userInfo: userInfo)
-}
+// BEGIN document_common
+// We can be throwing a lot of errors in this class, and they'll all 
+// be in the same error domain and using error codes from the same 
+// enum, so here's a little convenience func to save typing and space
 
+// BEGIN error_func
 let ErrorDomain = "NotesErrorDomain"
 
+func err(code: ErrorCode, _ userInfo:[NSObject:AnyObject]?=nil)  -> NSError {
+    // Generate an NSError object, using ErrorDomain, and using whatever
+    // value we were passed.
+    return NSError(domain: ErrorDomain, code: code.rawValue, userInfo: userInfo)
+}
+// END error_func
+
+// BEGIN document_file_names
 // Names of files/directories in the package
 enum NoteDocumentFileNames : String {
-    case DocumentFile = "Document.plist"
+    /// The file that contains the text of the document, in
+    /// Rich Text Format.
     case TextFile = "Text.rtf"
+    
+    /// The folder that all attachments will be kept in.
     case AttachmentsDirectory = "Attachments"
 }
+// END document_file_names
 
-// Things that can go wrong.
+/// Things that can go wrong.
+// BEGIN error_codes
 enum ErrorCode : Int {
+    
+    /// We couldn't find the document at all.
     case CannotAccessDocument
+    
+    /// We couldn't access any file wrappers inside this document.
     case CannotLoadFileWrappers
+    
+    /// We couldn't load the Text.rtf file.
     case CannotLoadText
+    
+    /// We couldn't access the Attachments folder.
     case CannotAccessAttachments
+    
+    /// We couldn't save the Text.rtf file.
     case CannotSaveText
 }
-
-extension Document {
-    
-    
-    
-    
-    
-    
-    
-}
+// END error_codes
+// END document_common

@@ -20,7 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         // Ensure we've got access to iCloud
         let backgroundQueue = NSOperationQueue()
         backgroundQueue.addOperationWithBlock() {
-            // Pass 'nil' to this method to get the URL for the first iCloud // container listed in the app's entitlements
+            // Pass 'nil' to this method to get the URL for the first
+            // iCloud container listed in the app's entitlements
             let ubiquityContainerURL = NSFileManager.defaultManager()
                 .URLForUbiquityContainerIdentifier(nil)
             print("Ubiquity container URL: \(ubiquityContainerURL)")

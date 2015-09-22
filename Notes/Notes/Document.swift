@@ -9,6 +9,7 @@
 import Cocoa
 
 
+// BEGIN filewrapper_icon
 extension NSFileWrapper {
     dynamic var thumbnailImage : NSImage {
         
@@ -19,26 +20,38 @@ extension NSFileWrapper {
         }
     }
 }
+// END filewrapper_icon
 
-class Document: NSDocument, AddAttachmentDelegate, AttachmentViewDelegate {
+class Document: NSDocument, AttachmentViewDelegate {
     
+    // BEGIN text_property
     // Main text content
     var text : NSAttributedString = NSAttributedString()
+    // END text_property
     
+    // BEGIN document_file_wrapper
     // Directory file wrapper
     var documentFileWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
+    // END document_file_wrapper
     
     // Attachments
+    // BEGIN attached_files_property
     dynamic var attachedFiles : [NSFileWrapper]? {
-        if let attachmentsDirectory = self.documentFileWrapper.fileWrappers?[NoteDocumentFileNames.AttachmentsDirectory.rawValue], let attachmentsFileWrappers = attachmentsDirectory.fileWrappers {
+        if let attachmentsDirectory = self.documentFileWrapper
+            .fileWrappers?[NoteDocumentFileNames.AttachmentsDirectory.rawValue],
+            let attachmentsFileWrappers = attachmentsDirectory.fileWrappers {
+                
             let attachments = Array(attachmentsFileWrappers.values)
             
             return attachments
+                
         } else {
             return nil
         }
     }
+    // END attached_files_property
     
+    // BEGIN attachments_directory
     private var attachmentsDirectoryWrapper : NSFileWrapper? {
         
         guard let fileWrappers = self.documentFileWrapper.fileWrappers else {
@@ -59,6 +72,7 @@ class Document: NSDocument, AddAttachmentDelegate, AttachmentViewDelegate {
         
         return attachmentsDirectoryWrapper
     }
+    // END attachments_directory
 
     override class func autosavesInPlace() -> Bool {
         return true
@@ -70,7 +84,9 @@ class Document: NSDocument, AddAttachmentDelegate, AttachmentViewDelegate {
         return "Document"
     }
     
-    override func readFromFileWrapper(fileWrapper: NSFileWrapper, ofType typeName: String) throws {
+    // BEGIN read_from_file_wrapper
+    override func readFromFileWrapper(fileWrapper: NSFileWrapper,
+        ofType typeName: String) throws {
         
         // Ensure that we have additional file wrappers in this file wrapper
         guard let fileWrappers = fileWrapper.fileWrappers else {
@@ -78,13 +94,15 @@ class Document: NSDocument, AddAttachmentDelegate, AttachmentViewDelegate {
         }
         
         // Ensure that we can access the document text
-        guard let documentTextData = fileWrappers[NoteDocumentFileNames.TextFile.rawValue]?.regularFileContents else {
+        guard let documentTextData =
+            fileWrappers[NoteDocumentFileNames.TextFile.rawValue]?
+                .regularFileContents else {
             throw err(.CannotLoadText)
         }
         
         // Load the text data as RTF
-        
-        guard let documentText = NSAttributedString(RTF: documentTextData, documentAttributes: nil) else {
+        guard let documentText = NSAttributedString(RTF: documentTextData,
+            documentAttributes: nil) else {
             throw err(.CannotLoadText)
         }
         
@@ -94,30 +112,41 @@ class Document: NSDocument, AddAttachmentDelegate, AttachmentViewDelegate {
         self.text = documentText
         
     }
+    // END read_from_file_wrapper
     
+    // BEGIN file_wrapper_of_type
     override func fileWrapperOfType(typeName: String) throws -> NSFileWrapper {
         
         let textRTFData = try self.text.dataFromRange(NSRange(0..<self.text.length), documentAttributes: [NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType])
         
+        // If the current document file wrapper already contains a
+        // text file, remove it - we'll replace it with a new one
         if let oldTextFileWrapper = self.documentFileWrapper.fileWrappers?[NoteDocumentFileNames.TextFile.rawValue] {
             self.documentFileWrapper.removeFileWrapper(oldTextFileWrapper)
-            
         }
         
+        // Save the text data into the file
         self.documentFileWrapper.addRegularFileWithContents(textRTFData, preferredFilename: NoteDocumentFileNames.TextFile.rawValue)
         
+        // Return the main document's file wrapper - this is what will
+        // be saved on disk
         return self.documentFileWrapper
-        
-        
     }
+    // END file_wrapper_of_type
 
+    // BEGIN popover
     var popover : NSPopover?
+    // END popover
 
+
+    // BEGIN add_attachment_method
     @IBAction func addAttachment(sender: NSButton) {
         
         if let viewController = AddAttachmentViewController(nibName:"AddAttachmentViewController", bundle:NSBundle.mainBundle()) {
             
+            // BEGIN add_attachment_method
             viewController.delegate = self
+            // END add_attachment_method
             
             self.popover = NSPopover()
             
@@ -129,37 +158,11 @@ class Document: NSDocument, AddAttachmentDelegate, AttachmentViewDelegate {
         }
         
     }
+    // END add_attachment_method
     
     
     
-    func addFile() {
-        
-        let panel = NSOpenPanel()
-        
-        panel.allowsMultipleSelection = false
-        panel.canChooseDirectories = false
-        panel.canChooseFiles = true
-        
-        
-        panel.beginWithCompletionHandler { (result) -> Void in
-            if result == NSModalResponseOK {
-                
-                if let resultURL = panel.URLs.first {
-                    do {
-                        try self.addAttachmentAtURL(resultURL)
-                    } catch let error as NSError {
-                        NSApp.presentError(error, modalForWindow: self.windowForSheet!, delegate: nil, didPresentSelector: nil, contextInfo: nil)
-                    } catch {
-                        
-                    }
-                }
-                
-            }
-        }
-        
-        
-    }
-    
+    // BEGIN add_attachment_at_url
     func addAttachmentAtURL(url:NSURL) throws {
         
         guard attachmentsDirectoryWrapper != nil else {
@@ -175,6 +178,7 @@ class Document: NSDocument, AddAttachmentDelegate, AttachmentViewDelegate {
         self.updateChangeCount(.ChangeDone)
         self.didChangeValueForKey("attachedFiles")
     }
+    // END add_attachment_at_url
     
     @IBOutlet weak var attachmentsArrayController : NSArrayController?
     
@@ -200,6 +204,52 @@ class Document: NSDocument, AddAttachmentDelegate, AttachmentViewDelegate {
 
 }
 
+// BEGIN document_addattachmentdelegate_extension
+extension Document : AddAttachmentDelegate {
+    
+    // BEGIN document_addattachmentdelegate_extension_impl
+    // BEGIN add_file
+    func addFile() {
+        
+        let panel = NSOpenPanel()
+        
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        
+        
+        panel.beginWithCompletionHandler { (result) -> Void in
+            if result == NSModalResponseOK {
+                
+                if let resultURL = panel.URLs.first {
+                    do {
+                        // We were given a URL - copy it in!
+                        try self.addAttachmentAtURL(resultURL)
+                    } catch let error as NSError {
+                        
+                        // There was an error - show the user
+                        NSApp.presentError(error,
+                            modalForWindow: self.windowForSheet!,
+                            delegate: nil,
+                            didPresentSelector: nil,
+                            contextInfo: nil)
+                        
+                    } catch {
+                        
+                    }
+                }
+                
+            }
+        }
+        
+        
+    }
+    // END add_file
+    // END document_addattachmentdelegate_extension_impl
+}
+// END document_addattachmentdelegate_extension
+
+
 
 @objc
 protocol AttachmentViewDelegate : NSObjectProtocol {
@@ -218,5 +268,24 @@ class AttachmentView : NSView {
         super.mouseDown(theEvent)
     }
 }
+
+/*
+// Not included in the class because we're actually using readFromFileWrapper 
+// and fileWrapperOfType, and having implementations of readFromData and 
+// dataOfType in the class changes the behaviour of the NSDocument system
+
+// BEGIN read_from_data
+override func readFromData(data: NSData, ofType typeName: String) throws {
+    // Load data from "data".
+}
+// END read_from_data
+
+// BEGIN data_of_type
+override func dataOfType(typeName: String) throws -> NSData {
+    // Return an NSData object.
+    return "Hello".dataUsingEncoding(NSUTF8StringEncoding)!
+}
+// END data_of_type
+*/
 
 

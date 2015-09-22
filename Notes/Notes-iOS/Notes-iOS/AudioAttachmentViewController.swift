@@ -24,10 +24,12 @@ class AudioAttachmentViewController: UIViewController, AttachmentViewer {
         let fileName = self.attachmentFile?.preferredFilename ??
             "Recording \(Int(arc4random())).wav"
         
-        let temporaryURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).URLByAppendingPathComponent(fileName)
+        let temporaryURL = NSURL(fileURLWithPath: NSTemporaryDirectory())
+            .URLByAppendingPathComponent(fileName)
         
         do {
-            self.audioRecorder = try AVAudioRecorder(URL: temporaryURL, settings: [:])
+            self.audioRecorder = try AVAudioRecorder(URL: temporaryURL,
+                settings: [:])
             
             self.audioRecorder?.record()
         } catch let error as NSError {
