@@ -19,6 +19,8 @@ class ImageAttachmentViewController: UIViewController, AttachmentViewer {
     // BEGIN image_vc_attachmentviewer
     var attachmentFile : NSFileWrapper?
     
+    @IBOutlet var filterButtons: [UIButton]!
+    
     var document : Document?
     // END image_vc_attachmentviewer
 
@@ -31,10 +33,51 @@ class ImageAttachmentViewController: UIViewController, AttachmentViewer {
             let image = UIImage(data: data) {
             // Set the image
             self.imageView?.image = image
+                
+                prepareFilterPreviews()
         }
     }
     // END view_did_load_image
+    
+    func prepareFilterPreviews() {
+        
+        let filters : [CIFilter?] = [
+            CIFilter(name: "CIPhotoEffectChrome"),
+            CIFilter(name: "CIPhotoEffectNoir"),
+            CIFilter(name: "CIPhotoEffectInstant"),
+        ]
+        
+        guard let image = self.imageView?.image else {
+            return
+        }
+        
+        for (number, filter) in filters.enumerate() {
+            
+            let button = filterButtons[number]
+            
+            let unprocessedImage = CIImage(image: image)
+            
+            filter?.setValue(unprocessedImage, forKey: kCIInputImageKey)
+            
+            if let processedCIImage = filter?.valueForKey(kCIOutputImageKey) as? CIImage{
+                
+                let processedImage = UIImage(CIImage: processedCIImage)
+                
+                
+                button.setImage(processedImage, forState: UIControlState.Normal)
+            }
+            
+            
+        }
+        
+        
+    }
 
+    @IBAction func showFilteredImage(sender: UIButton) {
+        
+        self.imageView?.image = sender.imageForState(UIControlState.Normal)
+        
+    }
     @IBAction func shareImage(sender: UIBarButtonItem) {
         
         // Ensure that we're actually showing an image

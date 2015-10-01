@@ -32,6 +32,12 @@ enum NoteDocumentFileNames : String {
     
     /// The folder that all attachments will be kept in.
     case AttachmentsDirectory = "Attachments"
+    
+    /// The QuickLook folder.
+    case QuickLookDirectory = "QuickLook"
+    
+    /// The QuickLook text file, which goes in the QuickLook directory.
+    case QuickLookTextFile = "Preview.rtf"
 }
 // END document_file_names
 
@@ -53,6 +59,9 @@ enum ErrorCode : Int {
     
     /// We couldn't save the Text.rtf file.
     case CannotSaveText
+    
+    /// We couldn't save an attachment.
+    case CannotSaveAttachment
 }
 // END error_codes
 // END document_common

@@ -11,6 +11,25 @@ import UIKit
 // BEGIN file_collection_view_cell
 class FileCollectionViewCell : UICollectionViewCell {
     @IBOutlet weak var fileNameLabel : UILabel?
+    
+    @IBOutlet weak var deleteButton : UIButton?
+    
+    func setEditing(editing: Bool, animated:Bool) {
+        let alpha : CGFloat = editing ? 1.0 : 0.0
+        if animated {
+            UIView.animateWithDuration(0.25) { () -> Void in
+                self.deleteButton?.alpha = alpha
+            }
+        } else {
+            self.deleteButton?.alpha = alpha
+        }
+    }
+    
+    @IBAction func deleteTapped() {
+        deletionHander?()
+    }
+    
+    var deletionHander : (Void -> Void)?
 }
 // END file_collection_view_cell
 
@@ -67,9 +86,18 @@ class DocumentListViewController: UICollectionViewController {
                     self.queryUpdated()
         }
         
+        self.navigationItem.leftBarButtonItem = self.editButtonItem()
+        
         metadataQuery.startQuery()
     }
     // END view_did_load
+    
+    override func setEditing(editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        for visibleCell in self.collectionView?.visibleCells() as! [FileCollectionViewCell] {
+            visibleCell.setEditing(editing, animated: animated)
+        }
+    }
     
     // BEGIN query_updated
     func queryUpdated() {
@@ -104,8 +132,8 @@ class DocumentListViewController: UICollectionViewController {
                     .startDownloadingUbiquitousItemAtURL(url)
                 
             } catch let error as NSError {                
-                // Log it if there was a problem
-                NSLog("Failed to start downloading item \(url): \(error)")
+                // Problem! :(
+                
             }
         }
         
@@ -151,10 +179,23 @@ class DocumentListViewController: UICollectionViewController {
             // The display name is the visible name for the file
             cell.fileNameLabel!.text = object
                 .valueForAttribute(NSMetadataItemDisplayNameKey) as? String
+                
             
             // BEGIN cellforitematindexpath_openable
             openable = itemIsOpenable(object)
             // END cellforitematindexpath_openable
+                
+            if let url = object.valueForAttribute(NSMetadataItemURLKey) as? NSURL {
+            
+                cell.setEditing(self.editing, animated: false)
+                cell.deletionHander = {
+                    self.deleteDocumentAtURL(url)
+                }
+            } else {
+                // No URL = not editing
+                cell.setEditing(self.editing, animated: false)
+                cell.deletionHander = nil
+            }
             
         } else {
             // No object for this index - this is unlikely, but
@@ -166,6 +207,8 @@ class DocumentListViewController: UICollectionViewController {
             // END cellforitematindexpath_openable
             
         }
+            
+        
         
         // BEGIN cellforitematindexpath_openable
         // If this cell is openable, make it fully visible, and
@@ -187,6 +230,19 @@ class DocumentListViewController: UICollectionViewController {
     }
     // END cellforitematindexpath
     // END collection_view_datasource
+    
+    func deleteDocumentAtURL(url: NSURL) {
+        do {
+            try NSFileManager.defaultManager().removeItemAtURL(url)
+            
+        } catch let error as NSError {
+            let alert = UIAlertController(title: "Error deleting", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
+            alert.addAction(UIAlertAction(title: "Done", style: .Default, handler: nil))
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
+        
+        
+    }
     
     // BEGIN item_is_openable
     // Returns true if the document can be opened right now

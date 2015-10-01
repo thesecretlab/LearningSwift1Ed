@@ -32,4 +32,6 @@ class AddAttachmentViewController: NSViewController {
         self.delegate?.addFile()
     }
     // END add_file
+    
+    
 }

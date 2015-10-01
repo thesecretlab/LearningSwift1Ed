@@ -7,17 +7,47 @@
 //
 
 import Cocoa
-
+import MapKit
+import AddressBook
+import CoreLocation
+import QuickLook
 
 // BEGIN filewrapper_icon
 extension NSFileWrapper {
+    
+    dynamic var fileExtension : String? {
+        return self.preferredFilename?.componentsSeparatedByString(".").last
+    }
+    
     dynamic var thumbnailImage : NSImage {
         
-        if let fileExtension = self.preferredFilename?.componentsSeparatedByString(".").last {
+        if let fileExtension = self.fileExtension {
             return NSWorkspace.sharedWorkspace().iconForFileType(fileExtension)
         } else {
             return NSWorkspace.sharedWorkspace().iconForFileType("")
         }
+    }
+    
+    func conformsToType(type: CFString) -> Bool {
+        
+        // Get the extension of this file
+        guard let fileExtension = self.preferredFilename?
+            .componentsSeparatedByString(".").last else {
+                // If we can't get a file extension, assume that it doesn't conform
+                return false
+        }
+        
+        // Get the file type of the attachment based on its extension
+        guard let fileType = UTTypeCreatePreferredIdentifierForTag(
+            kUTTagClassFilenameExtension, fileExtension, nil)?
+            .takeRetainedValue() else {
+                // If we can't figure out the file type from the extension,
+                // it also doesn't conform
+                return false
+        }
+        
+        // Ask the system if this file type conforms to the provided type
+        return UTTypeConformsTo(fileType, type)
     }
 }
 // END filewrapper_icon
@@ -33,6 +63,8 @@ class Document: NSDocument, AttachmentViewDelegate {
     // Directory file wrapper
     var documentFileWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
     // END document_file_wrapper
+    
+    @IBOutlet var attachmentsList : NSCollectionView!
     
     // Attachments
     // BEGIN attached_files_property
@@ -84,6 +116,10 @@ class Document: NSDocument, AttachmentViewDelegate {
         return "Document"
     }
     
+    override func windowControllerDidLoadNib(windowController: NSWindowController) {
+        self.attachmentsList.registerForDraggedTypes([NSURLPboardType])
+    }
+    
     // BEGIN read_from_file_wrapper
     override func readFromFileWrapper(fileWrapper: NSFileWrapper,
         ofType typeName: String) throws {
@@ -125,6 +161,20 @@ class Document: NSDocument, AttachmentViewDelegate {
             self.documentFileWrapper.removeFileWrapper(oldTextFileWrapper)
         }
         
+        // Create the QuickLook folder
+        let quicklookPreview = NSFileWrapper(regularFileWithContents: textRTFData)
+        let quickLookFolderFileWrapper = NSFileWrapper(directoryWithFileWrappers: [NoteDocumentFileNames.QuickLookTextFile.rawValue:quicklookPreview])
+        quickLookFolderFileWrapper.preferredFilename = NoteDocumentFileNames.QuickLookDirectory.rawValue
+        
+        // Remove the old QuickLook folder if it existed
+        if let oldQuickLookFolder = self.documentFileWrapper
+            .fileWrappers?[NoteDocumentFileNames.QuickLookDirectory.rawValue] {
+            self.documentFileWrapper.removeFileWrapper(oldQuickLookFolder)
+        }
+        
+        // Add the new QuickLook folder
+        self.documentFileWrapper.addFileWrapper(quickLookFolderFileWrapper)
+        
         // Save the text data into the file
         self.documentFileWrapper.addRegularFileWithContents(textRTFData, preferredFilename: NoteDocumentFileNames.TextFile.rawValue)
         
@@ -144,9 +194,9 @@ class Document: NSDocument, AttachmentViewDelegate {
         
         if let viewController = AddAttachmentViewController(nibName:"AddAttachmentViewController", bundle:NSBundle.mainBundle()) {
             
-            // BEGIN add_attachment_method
+            // BEGIN add_attachment_method_delegate
             viewController.delegate = self
-            // END add_attachment_method
+            // END add_attachment_method_delegate
             
             self.popover = NSPopover()
             
@@ -182,20 +232,42 @@ class Document: NSDocument, AttachmentViewDelegate {
     
     @IBOutlet weak var attachmentsArrayController : NSArrayController?
     
-
-    
     func openSelectedAttachment() {
-        if let selection = (self.attachmentsArrayController?.selection as? NSObjectController)?.content as? NSFileWrapper {
+        if let selection = self.attachedFiles?[self.attachmentsArrayController?.selectionIndex ?? 0] {
             
             // Ensure that the document is saved
             self.autosaveWithImplicitCancellability(false, completionHandler: { (error) -> Void in
                 
-                var url = self.fileURL
-                url = url?.URLByAppendingPathComponent(NoteDocumentFileNames.AttachmentsDirectory.rawValue, isDirectory: true)
-                url = url?.URLByAppendingPathComponent(selection.preferredFilename!)
+                if selection.conformsToType(kUTTypeJSON),
+                    let data = selection.regularFileContents,
+                    let json = try? NSJSONSerialization
+                        .JSONObjectWithData(data, options: NSJSONReadingOptions())
+                        as? NSDictionary  {
+                    
+                    if let lat = json?["lat"] as? CLLocationDegrees,
+                        let lon = json?["long"] as? CLLocationDegrees {
+                            
+                            let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                            
+                            let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: nil)
+                            
+                            let mapItem = MKMapItem(placemark: placemark)
+                            
+                            mapItem.openInMapsWithLaunchOptions(nil);
+                    
+                    }
+                            
+                    
+                } else {
+                    
+                    var url = self.fileURL
+                    url = url?.URLByAppendingPathComponent(NoteDocumentFileNames.AttachmentsDirectory.rawValue, isDirectory: true)
+                    url = url?.URLByAppendingPathComponent(selection.preferredFilename!)
+                    
+                    NSWorkspace.sharedWorkspace().openURL(url!)
+                }
                 
                 
-                NSWorkspace.sharedWorkspace().openURL(url!)
                 
             })
             
@@ -249,7 +321,34 @@ extension Document : AddAttachmentDelegate {
 }
 // END document_addattachmentdelegate_extension
 
+// BEGIN collectionview_dragndrop
+extension Document : NSCollectionViewDelegate {
+    func collectionView(collectionView: NSCollectionView, validateDrop draggingInfo: NSDraggingInfo, proposedIndex proposedDropIndex: UnsafeMutablePointer<Int>, dropOperation proposedDropOperation: UnsafeMutablePointer<NSCollectionViewDropOperation>) -> NSDragOperation {
+        
+        return NSDragOperation.Copy
+    }
+    
+    func collectionView(collectionView: NSCollectionView, acceptDrop draggingInfo: NSDraggingInfo, index: Int, dropOperation: NSCollectionViewDropOperation) -> Bool {
 
+        let pasteboard = draggingInfo.draggingPasteboard()
+        
+        if pasteboard.types?.contains(NSURLPboardType) == true,
+            let url = NSURL(fromPasteboard: pasteboard)
+        {
+            NSLog("Dropped \(url.path)")
+            do {
+                try self.addAttachmentAtURL(url)
+            } catch let error as NSError {
+                self.presentError(error)
+                return false
+            }
+            return true
+        }
+        
+        return false
+    }
+}
+// END collectionview_dragndrop
 
 @objc
 protocol AttachmentViewDelegate : NSObjectProtocol {
@@ -259,10 +358,12 @@ protocol AttachmentViewDelegate : NSObjectProtocol {
 @objc
 class AttachmentView : NSView {
     
+    
+    
     @IBOutlet weak var delegate : AnyObject!
     
     override func mouseDown(theEvent: NSEvent) {
-        if theEvent.clickCount == 2 {
+        if theEvent.clickCount > 1 {
             (self.delegate as? AttachmentViewDelegate)?.openSelectedAttachment()
         }
         super.mouseDown(theEvent)
@@ -287,5 +388,6 @@ override func dataOfType(typeName: String) throws -> NSData {
 }
 // END data_of_type
 */
+
 
 

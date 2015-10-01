@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="8187.4" systemVersion="15A263e" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="8187.4"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="8191"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="Document" customModule="Notes" customModuleProvider="target">
             <connections>
                 <outlet property="attachmentsArrayController" destination="e5H-wE-sRu" id="rnJ-hW-Oj3"/>
+                <outlet property="attachmentsList" destination="8DL-U4-yfP" id="up8-0e-z3T"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
             </connections>
         </customObject>
@@ -14,9 +15,10 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="xOd-HO-29H" userLabel="Window">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="133" y="235" width="507" height="413"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1366" height="745"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <value key="minSize" type="size" width="94" height="86"/>
             <view key="contentView" id="gIp-Ho-8D9">
                 <rect key="frame" x="0.0" y="0.0" width="507" height="413"/>
@@ -28,7 +30,7 @@
                             <rect key="frame" x="1" y="1" width="465" height="263"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <textView importsGraphics="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="mM8-tM-reW">
+                                <textView importsGraphics="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" linkDetection="YES" dataDetection="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="mM8-tM-reW">
                                     <rect key="frame" x="0.0" y="0.0" width="465" height="263"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <animations/>
@@ -71,6 +73,8 @@
                                     <color key="primaryBackgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <connections>
                                         <binding destination="e5H-wE-sRu" name="content" keyPath="arrangedObjects" id="udq-r0-xRv"/>
+                                        <binding destination="e5H-wE-sRu" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="udq-r0-xRv" id="N7a-mE-Rcv"/>
+                                        <outlet property="delegate" destination="-2" id="4ne-ZD-Fcb"/>
                                         <outlet property="itemPrototype" destination="I5F-Wu-pAG" id="fAX-7p-Wzn"/>
                                     </connections>
                                 </collectionView>
@@ -124,6 +128,7 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-x8E"/>
             </connections>
+            <point key="canvasLocation" x="277.5" y="318.5"/>
         </window>
         <collectionViewItem id="I5F-Wu-pAG">
             <connections>
@@ -134,8 +139,19 @@
             <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jPs-q3-OKp">
-                    <rect key="frame" x="20" y="20" width="60" height="60"/>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MAu-io-Tcx">
+                    <rect key="frame" x="31" y="20" width="38" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="OLI-8m-KtR">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="I5F-Wu-pAG" name="value" keyPath="self.representedObject.fileExtension" id="9Oo-Vg-BWx"/>
+                    </connections>
+                </textField>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jPs-q3-OKp">
+                    <rect key="frame" x="20" y="45" width="60" height="35"/>
                     <animations/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="Vqh-Iv-9dz"/>
                     <connections>
@@ -144,23 +160,24 @@
                 </imageView>
             </subviews>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="jPs-q3-OKp" secondAttribute="bottom" constant="20" symbolic="YES" id="9HX-gp-MRk"/>
-                <constraint firstAttribute="trailing" secondItem="jPs-q3-OKp" secondAttribute="trailing" constant="20" symbolic="YES" id="CKt-Ei-tOo"/>
-                <constraint firstItem="jPs-q3-OKp" firstAttribute="leading" secondItem="tZs-6P-eQh" secondAttribute="leading" constant="20" symbolic="YES" id="bJe-4t-inf"/>
-                <constraint firstItem="jPs-q3-OKp" firstAttribute="top" secondItem="tZs-6P-eQh" secondAttribute="top" constant="20" symbolic="YES" id="gV2-kI-LQQ"/>
+                <constraint firstItem="jPs-q3-OKp" firstAttribute="centerX" secondItem="MAu-io-Tcx" secondAttribute="centerX" id="8Ek-uP-MYM"/>
+                <constraint firstItem="jPs-q3-OKp" firstAttribute="leading" secondItem="tZs-6P-eQh" secondAttribute="leading" constant="20" symbolic="YES" id="9A8-PN-3fV"/>
+                <constraint firstAttribute="trailing" secondItem="jPs-q3-OKp" secondAttribute="trailing" constant="20" symbolic="YES" id="ECy-28-1c3"/>
+                <constraint firstItem="jPs-q3-OKp" firstAttribute="top" secondItem="tZs-6P-eQh" secondAttribute="top" constant="20" symbolic="YES" id="tJc-vU-jsM"/>
+                <constraint firstItem="MAu-io-Tcx" firstAttribute="top" secondItem="jPs-q3-OKp" secondAttribute="bottom" constant="8" symbolic="YES" id="ult-gv-uPW"/>
+                <constraint firstAttribute="bottom" secondItem="MAu-io-Tcx" secondAttribute="bottom" constant="20" symbolic="YES" id="xbt-1d-T0X"/>
             </constraints>
             <animations/>
             <connections>
                 <outlet property="delegate" destination="-2" id="AfD-nz-ggZ"/>
             </connections>
-            <point key="canvasLocation" x="411" y="619"/>
+            <point key="canvasLocation" x="352" y="654"/>
         </view>
         <arrayController id="e5H-wE-sRu" userLabel="Attached Files">
             <connections>
                 <binding destination="-2" name="contentArray" keyPath="self.attachedFiles" id="kGm-65-T4A"/>
             </connections>
         </arrayController>
-        <collectionViewItem id="WfT-eJ-UY6"/>
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>

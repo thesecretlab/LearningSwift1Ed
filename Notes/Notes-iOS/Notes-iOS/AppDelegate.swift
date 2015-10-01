@@ -71,6 +71,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         return false
     }
     
+    func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
+        
+        // Extract the document and open it
+        if notification.category == Document.alertCategory,
+            let url = notification.userInfo?["owner"] as? String,
+            let navigationController = self.window?.rootViewController as? UINavigationController
+            {
+            if let path = NSURL(string: url)?.path {
+                navigationController.popToRootViewControllerAnimated(false)
+                
+                (navigationController.topViewController as? DocumentListViewController)?.openDocumentWithPath(path)
+            }
+        }
+        
+    }
+    
+    func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
+        
+        if identifier == Document.alertSnoozeAction {
+            // Reschedule the notification
+            notification.fireDate = NSDate(timeIntervalSinceNow: 5)
+            application.scheduleLocalNotification(notification)
+        }
+        
+        completionHandler();
+    }
+    
+    
+    
     
     func application(application: UIApplication, continueUserActivity userActivity: NSUserActivity, restorationHandler: ([AnyObject]?) -> Void) -> Bool {
         

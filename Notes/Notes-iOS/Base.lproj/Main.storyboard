@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8187.4" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vC3-pB-5Vb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vC3-pB-5Vb">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8151.3"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -29,16 +29,29 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ULf-Tg-6LZ">
-                                            <rect key="frame" x="8" y="151" width="164" height="21"/>
+                                            <rect key="frame" x="8" y="151.5" width="164" height="20.5"/>
                                             <animations/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4PB-Uz-1V2">
-                                            <rect key="frame" x="8" y="8" width="164" height="135"/>
+                                            <rect key="frame" x="8" y="8" width="164" height="135.5"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tt6-jk-Pjl">
+                                                    <rect key="frame" x="138" y="4" width="22" height="24"/>
+                                                    <state key="normal" image="Delete"/>
+                                                    <connections>
+                                                        <action selector="deleteTapped" destination="usJ-Ka-hUt" eventType="touchUpInside" id="d65-Hb-Qko"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
                                             <animations/>
                                             <color key="backgroundColor" red="1" green="0.90909864036449439" blue="0.76549001302654185" alpha="1" colorSpace="calibratedRGB"/>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="Tt6-jk-Pjl" secondAttribute="trailing" constant="4" id="aAB-um-N62"/>
+                                                <constraint firstItem="Tt6-jk-Pjl" firstAttribute="top" secondItem="4PB-Uz-1V2" secondAttribute="top" constant="4" id="bOe-PQ-jQ7"/>
+                                            </constraints>
                                         </view>
                                     </subviews>
                                     <animations/>
@@ -56,6 +69,7 @@
                                     <constraint firstAttribute="trailingMargin" secondItem="4PB-Uz-1V2" secondAttribute="trailing" id="skR-Cv-UWW"/>
                                 </constraints>
                                 <connections>
+                                    <outlet property="deleteButton" destination="Tt6-jk-Pjl" id="rhM-ek-P21"/>
                                     <outlet property="fileNameLabel" destination="ULf-Tg-6LZ" id="y0M-XS-RKh"/>
                                 </connections>
                             </collectionViewCell>
@@ -89,7 +103,7 @@
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Lrw-wP-kHg">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="FOy-1U-vjq">
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="FOy-1U-vjq">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="118"/>
                                         <subviews>
                                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="bHe-2S-qe3">
@@ -174,11 +188,12 @@
                                                     <outlet property="delegate" destination="q79-Lx-AiG" id="lk6-sA-x38"/>
                                                 </connections>
                                             </collectionView>
-                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kgn-3l-q76">
+                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kgn-3l-q76">
                                                 <rect key="frame" x="0.0" y="88" width="600" height="30"/>
                                                 <animations/>
                                                 <attributedString key="attributedText"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                <dataDetectorType key="dataDetectorTypes" link="YES"/>
                                                 <connections>
                                                     <outlet property="delegate" destination="q79-Lx-AiG" id="hsH-Pt-pvr"/>
                                                 </connections>
@@ -224,14 +239,50 @@
                         <segue destination="2nH-CZ-eCO" kind="popoverPresentation" identifier="ShowLocationAttachment" popoverAnchorView="zLd-bK-ZgR" id="Lh1-CA-r6e">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
-                        <segue destination="dsl-YK-yAC" kind="popoverPresentation" identifier="ShowAddAttachment" popoverAnchorView="zLd-bK-ZgR" id="PYI-hF-oNi">
+                        <segue destination="FAy-If-e8Q" kind="popoverPresentation" identifier="ShowAudioAttachment" popoverAnchorView="zLd-bK-ZgR" id="ZKT-sR-DfW">
+                            <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                        </segue>
+                        <segue destination="tsS-vb-46z" kind="popoverPresentation" identifier="ShowNotificationAttachment" popoverAnchorView="zLd-bK-ZgR" id="S82-P0-m8y">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ljM-FA-lcs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1340" y="44"/>
+            <point key="canvasLocation" x="1314" y="70"/>
+        </scene>
+        <!--Notification Attachment View Controller-->
+        <scene sceneID="pce-aw-IKQ">
+            <objects>
+                <viewController id="tsS-vb-46z" customClass="NotificationAttachmentViewController" customModule="Notes_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="W0J-iN-Iy9"/>
+                        <viewControllerLayoutGuide type="bottom" id="gXj-Yw-Ovy"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="LnK-0b-Gda">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="qvY-Mg-4ya">
+                                <rect key="frame" x="140" y="192" width="320" height="216"/>
+                                <date key="date" timeIntervalSinceReferenceDate="465293936.27265698">
+                                    <!--2015-09-30 08:18:56 +0000-->
+                                </date>
+                            </datePicker>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="qvY-Mg-4ya" firstAttribute="centerX" secondItem="LnK-0b-Gda" secondAttribute="centerX" id="CIO-v2-riF"/>
+                            <constraint firstItem="qvY-Mg-4ya" firstAttribute="centerY" secondItem="LnK-0b-Gda" secondAttribute="centerY" id="j0v-FT-gKB"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="datePicker" destination="qvY-Mg-4ya" id="hk7-WK-93q"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ho1-Lg-8EL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2098" y="70"/>
         </scene>
         <!--Location Attachment View Controller-->
         <scene sceneID="KfP-TQ-n8M">
@@ -285,55 +336,6 @@
             </objects>
             <point key="canvasLocation" x="953" y="877"/>
         </scene>
-        <!--Add Attachment View Controller-->
-        <scene sceneID="wh8-QC-mN4">
-            <objects>
-                <viewController id="dsl-YK-yAC" customClass="AddAttachmentViewController" customModule="Notes_iOS" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="DgV-ve-eMs"/>
-                        <viewControllerLayoutGuide type="bottom" id="ako-ei-6EE"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="3OQ-BU-Qtp">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="5jX-cj-iev">
-                                <rect key="frame" x="20" y="20" width="560" height="580"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z0x-TC-Ksz">
-                                        <rect key="frame" x="244" y="0.0" width="72" height="290"/>
-                                        <animations/>
-                                        <state key="normal" title="Add Photo"/>
-                                        <connections>
-                                            <action selector="addPhoto:" destination="dsl-YK-yAC" eventType="touchUpInside" id="gim-9m-9TJ"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m84-oC-hYC">
-                                        <rect key="frame" x="235" y="290" width="90" height="290"/>
-                                        <animations/>
-                                        <state key="normal" title="Add Location"/>
-                                        <connections>
-                                            <action selector="addLocation:" destination="dsl-YK-yAC" eventType="touchUpInside" id="7KT-14-bXB"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <animations/>
-                            </stackView>
-                        </subviews>
-                        <animations/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="5jX-cj-iev" firstAttribute="top" secondItem="DgV-ve-eMs" secondAttribute="bottom" id="4VO-re-ZLJ"/>
-                            <constraint firstItem="ako-ei-6EE" firstAttribute="top" secondItem="5jX-cj-iev" secondAttribute="bottom" id="O6L-jo-Gvu"/>
-                            <constraint firstItem="5jX-cj-iev" firstAttribute="leading" secondItem="3OQ-BU-Qtp" secondAttribute="leadingMargin" id="jNm-AV-pd9"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="5jX-cj-iev" secondAttribute="trailing" id="xL3-ee-ffj"/>
-                        </constraints>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="aRA-f6-DnI" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2103" y="44"/>
-        </scene>
         <!--Image Attachment View Controller-->
         <scene sceneID="5aU-Kb-lRB">
             <objects>
@@ -361,13 +363,64 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uMR-6r-Dn5">
+                                <rect key="frame" x="0.0" y="481" width="600" height="75"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QBm-PG-Wk6">
+                                        <rect key="frame" x="492" y="0.0" width="88" height="75"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="88" id="1Ve-hj-kf0"/>
+                                        </constraints>
+                                        <state key="normal" image="Location"/>
+                                        <connections>
+                                            <action selector="showFilteredImage:" destination="g2L-PQ-RmG" eventType="touchUpInside" id="48s-C3-At0"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jcm-st-cwW">
+                                        <rect key="frame" x="256" y="0.0" width="88" height="75"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="88" id="7JU-E3-rld"/>
+                                        </constraints>
+                                        <state key="normal" image="Location"/>
+                                        <connections>
+                                            <action selector="showFilteredImage:" destination="g2L-PQ-RmG" eventType="touchUpInside" id="a84-bv-Wlt"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bH9-vF-kw2">
+                                        <rect key="frame" x="20" y="0.0" width="88" height="75"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="88" id="Zbe-uX-bjO"/>
+                                        </constraints>
+                                        <state key="normal" image="Location"/>
+                                        <connections>
+                                            <action selector="showFilteredImage:" destination="g2L-PQ-RmG" eventType="touchUpInside" id="hrK-XJ-ULU"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.5" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstItem="QBm-PG-Wk6" firstAttribute="centerY" secondItem="uMR-6r-Dn5" secondAttribute="centerY" id="CUt-5V-1j0"/>
+                                    <constraint firstItem="QBm-PG-Wk6" firstAttribute="height" secondItem="uMR-6r-Dn5" secondAttribute="height" id="FZ4-zl-02W"/>
+                                    <constraint firstItem="bH9-vF-kw2" firstAttribute="leading" secondItem="uMR-6r-Dn5" secondAttribute="leading" constant="20" symbolic="YES" id="Ga0-lp-Ymf"/>
+                                    <constraint firstItem="jcm-st-cwW" firstAttribute="height" secondItem="uMR-6r-Dn5" secondAttribute="height" id="Ifm-Ne-rcY"/>
+                                    <constraint firstItem="bH9-vF-kw2" firstAttribute="height" secondItem="uMR-6r-Dn5" secondAttribute="height" id="KB5-O4-9yr"/>
+                                    <constraint firstAttribute="height" constant="75" id="OJp-Ku-6wY"/>
+                                    <constraint firstItem="jcm-st-cwW" firstAttribute="centerX" secondItem="uMR-6r-Dn5" secondAttribute="centerX" id="UX7-RR-mns"/>
+                                    <constraint firstItem="jcm-st-cwW" firstAttribute="centerY" secondItem="uMR-6r-Dn5" secondAttribute="centerY" id="lAz-H9-phe"/>
+                                    <constraint firstItem="bH9-vF-kw2" firstAttribute="centerY" secondItem="uMR-6r-Dn5" secondAttribute="centerY" id="tkp-pO-jrm"/>
+                                    <constraint firstAttribute="trailing" secondItem="QBm-PG-Wk6" secondAttribute="trailing" constant="20" symbolic="YES" id="wAo-d4-4gs"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="ZXO-ue-NIv" firstAttribute="leading" secondItem="k0V-mY-79F" secondAttribute="leading" id="4RF-nw-DCo"/>
+                            <constraint firstItem="uMR-6r-Dn5" firstAttribute="leading" secondItem="Rbh-KX-UCb" secondAttribute="leading" id="C3B-yV-pqb"/>
                             <constraint firstItem="Yeh-Zj-9ib" firstAttribute="top" secondItem="k0V-mY-79F" secondAttribute="bottom" id="EQJ-Yq-00q"/>
+                            <constraint firstAttribute="trailing" secondItem="uMR-6r-Dn5" secondAttribute="trailing" id="F6X-I8-WvT"/>
                             <constraint firstItem="ZXO-ue-NIv" firstAttribute="trailing" secondItem="k0V-mY-79F" secondAttribute="trailing" id="GfB-Ro-36o"/>
+                            <constraint firstItem="ZXO-ue-NIv" firstAttribute="top" secondItem="uMR-6r-Dn5" secondAttribute="bottom" id="HU9-a1-Zne"/>
                             <constraint firstItem="k0V-mY-79F" firstAttribute="leading" secondItem="Rbh-KX-UCb" secondAttribute="leading" id="K5d-nA-ac7"/>
                             <constraint firstItem="ZXO-ue-NIv" firstAttribute="bottom" secondItem="Yeh-Zj-9ib" secondAttribute="top" id="hDQ-cv-t8X"/>
                             <constraint firstAttribute="trailing" secondItem="k0V-mY-79F" secondAttribute="trailing" id="iCi-zf-zyK"/>
@@ -377,11 +430,69 @@
                     <navigationItem key="navigationItem" id="R3B-JH-BDD"/>
                     <connections>
                         <outlet property="imageView" destination="k0V-mY-79F" id="AFe-oh-zc5"/>
+                        <outletCollection property="filterButtons" destination="jcm-st-cwW" collectionClass="NSMutableArray" id="CXn-t7-sgd"/>
+                        <outletCollection property="filterButtons" destination="bH9-vF-kw2" collectionClass="NSMutableArray" id="ZuR-gL-hX9"/>
+                        <outletCollection property="filterButtons" destination="QBm-PG-Wk6" collectionClass="NSMutableArray" id="45a-yb-3cd"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XHH-dU-3yZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1821" y="877"/>
+        </scene>
+        <!--Audio Attachment View Controller-->
+        <scene sceneID="OzY-fC-KHh">
+            <objects>
+                <viewController id="FAy-If-e8Q" customClass="AudioAttachmentViewController" customModule="Notes_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="18m-3g-bpl"/>
+                        <viewControllerLayoutGuide type="bottom" id="MIR-rx-iuR"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Tmt-0o-raL">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="RTa-9R-jfm">
+                                <rect key="frame" x="278" y="240.5" width="44" height="119"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wn8-GA-Acp">
+                                        <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
+                                        <state key="normal" image="Record"/>
+                                        <connections>
+                                            <action selector="recordTapped:" destination="FAy-If-e8Q" eventType="touchUpInside" id="4HR-Gd-KWJ"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FEM-2Y-khh">
+                                        <rect key="frame" x="0.0" y="44" width="44" height="44"/>
+                                        <state key="normal" image="Play"/>
+                                        <connections>
+                                            <action selector="playTapped:" destination="FAy-If-e8Q" eventType="touchUpInside" id="weI-iu-sbL"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rde-UY-R8L">
+                                        <rect key="frame" x="0.0" y="88" width="44" height="31"/>
+                                        <state key="normal" image="Stop"/>
+                                        <connections>
+                                            <action selector="stopTapped:" destination="FAy-If-e8Q" eventType="touchUpInside" id="Atm-Y5-Cam"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="RTa-9R-jfm" firstAttribute="centerX" secondItem="Tmt-0o-raL" secondAttribute="centerX" id="8RA-58-izl"/>
+                            <constraint firstItem="RTa-9R-jfm" firstAttribute="centerY" secondItem="Tmt-0o-raL" secondAttribute="centerY" id="nlw-J4-Ctr"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="playButton" destination="FEM-2Y-khh" id="be5-O0-dow"/>
+                        <outlet property="recordButton" destination="wn8-GA-Acp" id="8se-aD-dkO"/>
+                        <outlet property="stopButton" destination="rde-UY-R8L" id="pE3-y6-vSl"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZXH-3v-BYT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1390" y="1545"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="r7l-gg-dq7">
@@ -404,5 +515,9 @@
         <image name="AddAttachment" width="25" height="26"/>
         <image name="Current Location" width="24" height="24"/>
         <image name="Delete" width="22" height="24"/>
+        <image name="Location" width="88" height="88"/>
+        <image name="Play" width="26" height="44"/>
+        <image name="Record" width="44" height="44"/>
+        <image name="Stop" width="31" height="31"/>
     </resources>
 </document>

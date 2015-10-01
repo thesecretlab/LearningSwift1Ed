@@ -14,6 +14,7 @@ protocol AddAttachmentDelegate {
     // BEGIN add_attachment_delegate_location
     func addLocation()
     // END add_attachment_delegate_location
+    func addAudio()
 }
 // END add_attachment_delegate
 
@@ -40,5 +41,13 @@ class AddAttachmentViewController: UIViewController {
             })
     }
     // END add_attachment_addlocation
+    
+
+    @IBAction func addAudio(sender: AnyObject) {
+        self.presentingViewController?
+            .dismissViewControllerAnimated(true, completion: {
+                self.delegate?.addAudio()
+            })
+    }
 
 }

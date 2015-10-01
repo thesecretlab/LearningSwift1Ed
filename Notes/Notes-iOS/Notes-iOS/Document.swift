@@ -61,7 +61,21 @@ extension NSFileWrapper {
             // JSON files used to store locations
             return UIImage(named: "Location")
         }
+        
         // END thumbnail_image_location
+        
+        
+        if (self.conformsToType(kUTTypeAudio)) {
+            return UIImage(named: "Audio")
+        }
+        
+        if (self.conformsToType(kUTTypeMovie)) {
+            return UIImage(named: "Video")
+        }
+        
+        if self.conformsToType(kUTTypeContact) {
+            return UIImage(named: "Contact")
+        }
         
         // We don't know what type it is, so return a generic icon
         return UIImage(named: "File")
@@ -73,8 +87,15 @@ extension NSFileWrapper {
 
 class Document: UIDocument {
     
+    static let alertSnoozeAction = "snooze"
+    static let alertCategory = "notes-alert"
+    
     // BEGIN document_base
-    var text = NSAttributedString(string: "")
+    var text = NSAttributedString(string: "") {
+        didSet {
+            self.updateChangeCount(UIDocumentChangeKind.Done)
+        }
+    }
     
     var documentFileWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
     
@@ -177,8 +198,8 @@ class Document: UIDocument {
     // END document_attachments
 
     // BEGIN document_add_attachments
-    func addAttachmentAtURL(url:NSURL) throws {
-        
+    func addAttachmentAtURL(url:NSURL) throws -> NSFileWrapper {
+    
         // Ensure that we have a place to put attachments
         guard attachmentsDirectoryWrapper != nil else {
             throw err(.CannotAccessAttachments)
@@ -193,6 +214,8 @@ class Document: UIDocument {
         
         // Mark ourselves as needing to save
         self.updateChangeCount(UIDocumentChangeKind.Done)
+        
+        return newAttachment
     }
     // END document_add_attachments
     
@@ -271,5 +294,47 @@ class Document: UIDocument {
     }
     // END delete_attachment
     
+    
+    
+    var localNotification: UILocalNotification? {
+        
+        get {
+            if let allNotifications = UIApplication.sharedApplication().scheduledLocalNotifications {
+                
+                return allNotifications.filter({ (item:UILocalNotification) -> Bool in
+                    
+                    
+                    // If it has an "owner", and is scheduled to appear in the future..
+                    if let owner = item.userInfo?["owner"] as? String where
+                        item.fireDate?.timeIntervalSinceNow > 0
+                        {
+                            // Then it is ours if the owner equals our own URL
+                        return owner == self.fileURL.absoluteString
+                    } else {
+                        return false
+                    }
+                    
+                }).first
+                
+            } else {
+                return nil
+            }
+
+        }
+        
+        set {
+            if let currentNotification = self.localNotification {
+                UIApplication.sharedApplication().cancelLocalNotification(currentNotification)
+            }
+            
+            if let theNotification = newValue {
+                var userInfo = theNotification.userInfo ?? [:]
+                userInfo["owner"] = self.fileURL.absoluteString
+                theNotification.userInfo = userInfo
+                
+                UIApplication.sharedApplication().scheduleLocalNotification(theNotification)
+            }
+        }
+    }
     
 }
