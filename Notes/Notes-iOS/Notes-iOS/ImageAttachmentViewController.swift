@@ -19,11 +19,13 @@ class ImageAttachmentViewController: UIViewController, AttachmentViewer {
     // BEGIN image_vc_attachmentviewer
     var attachmentFile : NSFileWrapper?
     
-    @IBOutlet var filterButtons: [UIButton]!
-    
     var document : Document?
     // END image_vc_attachmentviewer
-
+    
+    // BEGIN filter_buttons_property
+    @IBOutlet var filterButtons: [UIButton]!
+    // END filter_buttons_property
+    
     // BEGIN view_did_load_image
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,12 +35,17 @@ class ImageAttachmentViewController: UIViewController, AttachmentViewer {
             let image = UIImage(data: data) {
             // Set the image
             self.imageView?.image = image
-                
-                prepareFilterPreviews()
+              
+            // BEGIN view_did_load_image_filter_support
+            prepareFilterPreviews()
+            // END view_did_load_image_filter_support
         }
     }
     // END view_did_load_image
     
+    var filteredImages : [UIImage] = []
+    
+    // BEGIN prepare_filter_previews
     func prepareFilterPreviews() {
         
         let filters : [CIFilter?] = [
@@ -51,6 +58,8 @@ class ImageAttachmentViewController: UIViewController, AttachmentViewer {
             return
         }
         
+        let context = CIContext(options: nil)
+        
         for (number, filter) in filters.enumerate() {
             
             let button = filterButtons[number]
@@ -59,25 +68,29 @@ class ImageAttachmentViewController: UIViewController, AttachmentViewer {
             
             filter?.setValue(unprocessedImage, forKey: kCIInputImageKey)
             
-            if let processedCIImage = filter?.valueForKey(kCIOutputImageKey) as? CIImage{
-                
-                let processedImage = UIImage(CIImage: processedCIImage)
-                
-                
-                button.setImage(processedImage, forState: UIControlState.Normal)
+            if let processedCIImage =
+                filter?.valueForKey(kCIOutputImageKey) as? CIImage{
+                    
+                    // Render the result into a CGImage
+                let image = context.createCGImage(processedCIImage,
+                    fromRect: CGRect(origin: CGPointZero, size: image.size))
+                    
+                button.setImage(UIImage(CGImage: image), forState: UIControlState.Normal)
             }
-            
-            
         }
-        
-        
     }
+    // END prepare_filter_previews
 
+    // BEGIN show_filtered_image
     @IBAction func showFilteredImage(sender: UIButton) {
         
         self.imageView?.image = sender.imageForState(UIControlState.Normal)
+        self.imageView?.contentMode = .ScaleAspectFit
         
     }
+    // END show_filtered_image
+    
+    // BEGIN image_attachment_share_image
     @IBAction func shareImage(sender: UIBarButtonItem) {
         
         // Ensure that we're actually showing an image
@@ -102,6 +115,7 @@ class ImageAttachmentViewController: UIViewController, AttachmentViewer {
             completion: nil)
         
     }
+    // END image_attachment_share_image
 
     /*
     // MARK: - Navigation

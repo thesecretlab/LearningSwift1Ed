@@ -34,7 +34,6 @@
 		686048071B97DDD500575481 /* Notes-TodayScreen.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 686047FA1B97DDD500575481 /* Notes-TodayScreen.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		6889C1BB1BBB91BB0066454F /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 6889C1BA1BBB91BB0066454F /* Settings.bundle */; settings = {ASSET_TAGS = (); }; };
 		6889C1BD1BBBD1840066454F /* NotificationAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6889C1BC1BBBD1840066454F /* NotificationAttachmentViewController.swift */; settings = {ASSET_TAGS = (); }; };
-		68D6178C1B8EA1AF0049C16A /* AddAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D6178B1B8EA1AF0049C16A /* AddAttachmentViewController.swift */; };
 		68D6178E1B8ED82A0049C16A /* ImageAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D6178D1B8ED82A0049C16A /* ImageAttachmentViewController.swift */; };
 		68D617901B8F263B0049C16A /* LocationAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D6178F1B8F263B0049C16A /* LocationAttachmentViewController.swift */; };
 /* End PBXBuildFile section */
@@ -133,7 +132,6 @@
 		686048041B97DDD500575481 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6889C1BA1BBB91BB0066454F /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		6889C1BC1BBBD1840066454F /* NotificationAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotificationAttachmentViewController.swift; path = "Notes-iOS/NotificationAttachmentViewController.swift"; sourceTree = "<group>"; };
-		68D6178B1B8EA1AF0049C16A /* AddAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddAttachmentViewController.swift; path = "Notes-iOS/AddAttachmentViewController.swift"; sourceTree = "<group>"; };
 		68D6178D1B8ED82A0049C16A /* ImageAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageAttachmentViewController.swift; path = "Notes-iOS/ImageAttachmentViewController.swift"; sourceTree = "<group>"; };
 		68D6178F1B8F263B0049C16A /* LocationAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocationAttachmentViewController.swift; path = "Notes-iOS/LocationAttachmentViewController.swift"; sourceTree = "<group>"; };
 		68EFED591B97FB9200399E16 /* Notes-TodayScreen.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Notes-TodayScreen.entitlements"; sourceTree = "<group>"; };
@@ -201,7 +199,6 @@
 				685195E51B8D60A200548D79 /* DocumentListViewController.swift */,
 				685196181B8D7F5B00548D79 /* DocumentViewController.swift */,
 				685196161B8D653600548D79 /* Document.swift */,
-				68D6178B1B8EA1AF0049C16A /* AddAttachmentViewController.swift */,
 				68D6178D1B8ED82A0049C16A /* ImageAttachmentViewController.swift */,
 				6848C6321B8FD9D2000B3B00 /* AudioAttachmentViewController.swift */,
 				68D6178F1B8F263B0049C16A /* LocationAttachmentViewController.swift */,
@@ -608,7 +605,6 @@
 				6848C6331B8FD9D3000B3B00 /* AudioAttachmentViewController.swift in Sources */,
 				68D617901B8F263B0049C16A /* LocationAttachmentViewController.swift in Sources */,
 				685195E41B8D60A200548D79 /* AppDelegate.swift in Sources */,
-				68D6178C1B8EA1AF0049C16A /* AddAttachmentViewController.swift in Sources */,
 				685196151B8D622A00548D79 /* DocumentCommon.swift in Sources */,
 				685196171B8D653600548D79 /* Document.swift in Sources */,
 				6889C1BD1BBBD1840066454F /* NotificationAttachmentViewController.swift in Sources */,

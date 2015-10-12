@@ -8,14 +8,23 @@
 
 import UIKit
 
+// BEGIN notification_vc_attachment_protocol
 class NotificationAttachmentViewController: UIViewController, AttachmentViewer {
     
     var document : Document?
     var attachmentFile : NSFileWrapper?
+// END notification_vc_attachment_protocol
     
     @IBOutlet var datePicker : UIDatePicker!
 
+    // BEGIN notification_vc_impl
+    
+    var notificationSettingsWereRegisteredObserver : AnyObject?
+    
+    
     override func viewWillAppear(animated:Bool) {
+        
+        
         
         if let notification = self.document?.localNotification {
             let cancelButton = UIBarButtonItem(barButtonSystemItem: .Trash,
@@ -38,6 +47,21 @@ class NotificationAttachmentViewController: UIViewController, AttachmentViewer {
             target: self, action: "setNotificationAndClose")
         self.navigationItem.rightBarButtonItem = doneButton
 
+        // Register for changes to user notification settings
+        notificationSettingsWereRegisteredObserver = NSNotificationCenter
+            .defaultCenter().addObserverForName(
+                NotesApplicationDidRegisterUserNotificationSettings,
+                object: nil, queue: nil,
+                usingBlock: { (notification) -> Void in
+                    
+                    if let settings = UIApplication.sharedApplication()
+                        .currentUserNotificationSettings() where
+                        settings.types.contains(.Alert) == true {
+                            self.datePicker.enabled = true
+                            self.datePicker.userInteractionEnabled = true
+                            doneButton.enabled = true
+                    }
+            })
         
         if let settings = UIApplication.sharedApplication().currentUserNotificationSettings() where
             settings.types.contains(.Alert) != true {
@@ -60,11 +84,6 @@ class NotificationAttachmentViewController: UIViewController, AttachmentViewer {
                 self.datePicker.userInteractionEnabled = false
                 doneButton.enabled = false
         }
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     func setNotificationAndClose() {
@@ -97,15 +116,6 @@ class NotificationAttachmentViewController: UIViewController, AttachmentViewer {
         self.presentingViewController?.dismissViewControllerAnimated(true,
             completion: nil)
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
+    // END notification_vc_impl
 
 }

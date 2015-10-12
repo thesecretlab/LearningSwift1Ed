@@ -8,6 +8,10 @@
 
 import UIKit
 
+// BEGIN settings_notification_name
+let NotesApplicationDidRegisterUserNotificationSettings = "NotesApplicationDidRegisterUserNotificationSettings"
+// END settings_notification_name
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
     
@@ -53,6 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
+    // BEGIN open_url
     func application(app: UIApplication, openURL url: NSURL, options: [String : AnyObject]) -> Bool {
         if url.scheme == "notes", let path = url.path {
             
@@ -70,7 +75,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         
         return false
     }
+    // END open_url
     
+    // BEGIN local_notification_received
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
         
         // Extract the document and open it
@@ -97,11 +104,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         
         completionHandler();
     }
+    // END local_notification_received
+
     
     
     
-    
-    func application(application: UIApplication, continueUserActivity userActivity: NSUserActivity, restorationHandler: ([AnyObject]?) -> Void) -> Bool {
+    // BEGIN application_continue_activity
+    func application(application: UIApplication,
+        continueUserActivity userActivity: NSUserActivity,
+        restorationHandler: ([AnyObject]?) -> Void) -> Bool {
         
         // Return to the list of documents
         if let navigationController = self.window?.rootViewController as? UINavigationController {
@@ -120,6 +131,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         }
         return false
     }
+    // END application_continue_activity
+    
+    // BEGIN application_did_register
+    func application(application: UIApplication, didRegisterUserNotificationSettings notificationSettings: UIUserNotificationSettings) {
+        
+        NSNotificationCenter.defaultCenter().postNotificationName(NotesApplicationDidRegisterUserNotificationSettings, object: self)
+    }
+    // END application_did_register
     
     
     

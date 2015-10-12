@@ -12,8 +12,12 @@ import UIKit
 class FileCollectionViewCell : UICollectionViewCell {
     @IBOutlet weak var fileNameLabel : UILabel?
     
+    @IBOutlet weak var imageView : UIImageView?
+    
+    // BEGIN file_collection_view_cell_delete_support
     @IBOutlet weak var deleteButton : UIButton?
     
+    // BEGIN file_collection_view_cell_delete_support_editing
     func setEditing(editing: Bool, animated:Bool) {
         let alpha : CGFloat = editing ? 1.0 : 0.0
         if animated {
@@ -24,12 +28,19 @@ class FileCollectionViewCell : UICollectionViewCell {
             self.deleteButton?.alpha = alpha
         }
     }
+    // END file_collection_view_cell_delete_support_editing
     
+    // BEGIN file_collection_view_cell_delete_support_handler
+    var deletionHander : (Void -> Void)?
+    // END file_collection_view_cell_delete_support_handler
+    
+    // BEGIN file_collection_view_cell_delete_support_action
     @IBAction func deleteTapped() {
         deletionHander?()
     }
+    // END file_collection_view_cell_delete_support_action
     
-    var deletionHander : (Void -> Void)?
+    // END file_collection_view_cell_delete_support
 }
 // END file_collection_view_cell
 
@@ -47,11 +58,20 @@ class DocumentListViewController: UICollectionViewController {
             [NSMetadataQueryUbiquitousDocumentsScope]
         metadataQuery.predicate = NSPredicate(format: "%K LIKE '*.note'",
             NSMetadataItemFSNameKey)
+        metadataQuery.sortDescriptors = [
+            NSSortDescriptor(key: NSMetadataItemFSContentChangeDateKey,
+                ascending: false)
+        ]
         
         return metadataQuery
     }()
     // END metadata_query_properties
     
+    // BEGIN file_list_property
+    var availableFiles : [NSURL] = []
+    // END file_list_property
+    
+    // BEGIN restore_user_activity_state
     override func restoreUserActivityState(activity: NSUserActivity) {
         // We're being told to open a document
         
@@ -62,16 +82,17 @@ class DocumentListViewController: UICollectionViewController {
         }
         
     }
+    // END restore_user_activity_state
     
-    // BEGIN view_did_load
+    // BEGIN doc_list_view_did_load
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // BEGIN view_did_load_create
+        // BEGIN doc_list_view_did_load_create
         let addButton = UIBarButtonItem(barButtonSystemItem: .Add,
             target: self, action: "createDocument")
         self.navigationItem.rightBarButtonItem = addButton
-        // END view_did_load_create
+        // END doc_list_view_did_load_create
         
         self.queryDidUpdateObserver = NSNotificationCenter.defaultCenter()
             .addObserverForName(NSMetadataQueryDidUpdateNotification,
@@ -86,18 +107,22 @@ class DocumentListViewController: UICollectionViewController {
                     self.queryUpdated()
         }
         
+        // BEGIN doc_list_view_did_load_edit_support
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
+        // END doc_list_view_did_load_edit_support
         
         metadataQuery.startQuery()
     }
-    // END view_did_load
+    // END doc_list_view_did_load
     
+    // BEGIN document_list_editing
     override func setEditing(editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
         for visibleCell in self.collectionView?.visibleCells() as! [FileCollectionViewCell] {
             visibleCell.setEditing(editing, animated: animated)
         }
     }
+    // END document_list_editing
     
     // BEGIN query_updated
     func queryUpdated() {
@@ -110,14 +135,10 @@ class DocumentListViewController: UICollectionViewController {
         guard let items = self.metadataQuery.results as? [NSMetadataItem]  else {
             return
         }
+        
+        availableFiles = []
 
         for item in items {
-            
-            // Check to see if we already have the latest version downloaded
-            if itemIsOpenable(item) == true {
-                // We only need to download if it isn't already openable
-                continue
-            }
             
             // Ensure that we can get the file URL for this item
             guard let url =
@@ -126,6 +147,16 @@ class DocumentListViewController: UICollectionViewController {
                 continue
             }
             
+            // Add it to the list of available files
+            availableFiles.append(url)
+            
+            // Check to see if we already have the latest version downloaded
+            if itemIsOpenable(url) == true {
+                // We only need to download if it isn't already openable
+                continue
+            }
+            
+            
             // Ask the system to try to download it
             do {
                 try NSFileManager.defaultManager()
@@ -133,6 +164,7 @@ class DocumentListViewController: UICollectionViewController {
                 
             } catch let error as NSError {                
                 // Problem! :(
+                print("Error downloading item! \(error)")
                 
             }
         }
@@ -156,7 +188,7 @@ class DocumentListViewController: UICollectionViewController {
         numberOfItemsInSection section: Int) -> Int {
         
         // There are as many cells as there are items in iCloud
-        return self.metadataQuery.resultCount
+        return self.availableFiles.count
     }
     
     // BEGIN cellforitematindexpath
@@ -173,42 +205,40 @@ class DocumentListViewController: UICollectionViewController {
         let openable : Bool
         // END cellforitematindexpath_openable
         
-        // Attempt to get this object from the metadata query
-        if let object = self.metadataQuery.resultAtIndex(indexPath.row)
-            as? NSMetadataItem {
-            // The display name is the visible name for the file
-            cell.fileNameLabel!.text = object
-                .valueForAttribute(NSMetadataItemDisplayNameKey) as? String
-                
+        // Get this object from the metadata query
+        let url = availableFiles[indexPath.row]
             
-            // BEGIN cellforitematindexpath_openable
-            openable = itemIsOpenable(object)
-            // END cellforitematindexpath_openable
-                
-            if let url = object.valueForAttribute(NSMetadataItemURLKey) as? NSURL {
-            
-                cell.setEditing(self.editing, animated: false)
-                cell.deletionHander = {
-                    self.deleteDocumentAtURL(url)
-                }
-            } else {
-                // No URL = not editing
-                cell.setEditing(self.editing, animated: false)
-                cell.deletionHander = nil
+        // Get the display name
+        var fileName : AnyObject?
+        do {
+            try url.getResourceValue(&fileName, forKey: NSURLNameKey)
+            if let fileName = fileName as? String {
+                cell.fileNameLabel!.text = fileName
             }
-            
-        } else {
-            // No object for this index - this is unlikely, but
-            // it's important to do _something_
-            cell.fileNameLabel!.text = "<error>"
-            
-            // BEGIN cellforitematindexpath_openable
-            openable = false
-            // END cellforitematindexpath_openable
-            
+        } catch {
+            cell.fileNameLabel!.text = "<<error>>"
         }
             
+        // Get the thumbnail image, if it exists
+        let thumbnailImageURL = url.URLByAppendingPathComponent(NoteDocumentFileNames.QuickLookDirectory.rawValue , isDirectory: true).URLByAppendingPathComponent(NoteDocumentFileNames.QuickLookThumbnail.rawValue, isDirectory: false)
         
+            if let path = thumbnailImageURL.path, let image = UIImage(contentsOfFile: path) {
+                cell.imageView?.image = image
+            } else {
+                cell.imageView?.image = nil
+            }
+        
+        
+        // BEGIN cellforitematindexpath_openable
+        openable = itemIsOpenable(url)
+        // END cellforitematindexpath_openable
+        
+        // BEGIN cellforitematindexpath_editing
+        cell.setEditing(self.editing, animated: false)
+        cell.deletionHander = {
+            self.deleteDocumentAtURL(url)
+        }
+        // END cellforitematindexpath_editing
         
         // BEGIN cellforitematindexpath_openable
         // If this cell is openable, make it fully visible, and
@@ -231,31 +261,42 @@ class DocumentListViewController: UICollectionViewController {
     // END cellforitematindexpath
     // END collection_view_datasource
     
+    // BEGIN delete_document
     func deleteDocumentAtURL(url: NSURL) {
-        do {
-            try NSFileManager.defaultManager().removeItemAtURL(url)
-            
-        } catch let error as NSError {
-            let alert = UIAlertController(title: "Error deleting", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
-            alert.addAction(UIAlertAction(title: "Done", style: .Default, handler: nil))
-            self.presentViewController(alert, animated: true, completion: nil)
+        
+        let fileCoordinator = NSFileCoordinator(filePresenter: nil)
+        fileCoordinator.coordinateWritingItemAtURL(url,
+            options: .ForDeleting, error: nil) { (urlForModifying) -> Void in
+            do {
+                try NSFileManager.defaultManager().removeItemAtURL(urlForModifying)
+                
+                // Remove the URL from the list
+                if let index = self.availableFiles.indexOf(url) {
+                    self.availableFiles.removeAtIndex(index)
+                }
+                // Update the collection
+                self.collectionView?.reloadData()
+                
+            } catch let error as NSError {
+                let alert = UIAlertController(title: "Error deleting",
+                    message: error.localizedDescription,
+                    preferredStyle: UIAlertControllerStyle.Alert)
+                
+                alert.addAction(UIAlertAction(title: "Done",
+                    style: .Default, handler: nil))
+                
+                self.presentViewController(alert, animated: true, completion: nil)
+            }
         }
-        
-        
     }
+    // END delete_document
     
     // BEGIN item_is_openable
     // Returns true if the document can be opened right now
-    func itemIsOpenable(item:NSMetadataItem?) -> Bool {
+    func itemIsOpenable(url:NSURL?) -> Bool {
         
         // Return false if item is nil
-        guard let item = item else {
-            return false
-        }
-        
-        // Get the URL from the item or bail out
-        guard let url =
-            item.valueForAttribute(NSMetadataItemURLKey) as? NSURL else {
+        guard let url = url else {
             return false
         }
         
@@ -279,6 +320,7 @@ class DocumentListViewController: UICollectionViewController {
     }
     // END item_is_openable
     
+    // BEGIN open_doc_at_path
     func openDocumentWithPath(path : String)  {
         
         // Build a file URL from this path
@@ -288,6 +330,7 @@ class DocumentListViewController: UICollectionViewController {
         self.performSegueWithIdentifier("ShowDocument", sender: url)
         
     }
+    // END open_doc_at_path
     
     // BEGIN documents_urls
     var localDocumentsDirectoryURL : NSURL = {
@@ -304,8 +347,9 @@ class DocumentListViewController: UICollectionViewController {
     
     // BEGIN create_document
     func createDocument() {
+        
         // Create a name for this new document
-        let documentName = "Document \(rand()).note"
+        let documentName = "Document \(arc4random()).note"
         
         // Work out where we're going to store it, temporarily
         let documentDestinationURL = localDocumentsDirectoryURL
@@ -327,8 +371,15 @@ class DocumentListViewController: UICollectionViewController {
                         try NSFileManager.defaultManager()
                             .setUbiquitous(true, itemAtURL: documentDestinationURL,
                                 destinationURL: ubiquitousDestinationURL)
+                        
+                        NSOperationQueue.mainQueue().addOperationWithBlock { () -> Void in
+                            // Open the document
+                            if let path = ubiquitousDestinationURL.path {
+                                self.openDocumentWithPath(path)
+                            }
+                        }
                     } catch let error as NSError {
-                        NSLog("Error storing document in iCloud! \(error)")
+                        NSLog("Error storing document in iCloud! \(error.localizedDescription)")
                     }
                 }
             }
@@ -341,12 +392,10 @@ class DocumentListViewController: UICollectionViewController {
         didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
         // Did we select a cell that has an item that is openable?
-        if let selectedItem = self.metadataQuery
-            .resultAtIndex(indexPath.row) as? NSMetadataItem
-            where itemIsOpenable(selectedItem) {
+        let selectedItem = availableFiles[indexPath.row]
             
+        if itemIsOpenable(selectedItem) {
             self.performSegueWithIdentifier("ShowDocument", sender: selectedItem)
-            
         }
         
     }

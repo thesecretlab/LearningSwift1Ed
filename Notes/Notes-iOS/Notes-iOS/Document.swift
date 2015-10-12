@@ -64,18 +64,23 @@ extension NSFileWrapper {
         
         // END thumbnail_image_location
         
-        
+        // BEGIN thumbnail_image_audio
         if (self.conformsToType(kUTTypeAudio)) {
             return UIImage(named: "Audio")
         }
+        // END thumbnail_image_audio
         
+        // BEGIN thumbnail_image_movie
         if (self.conformsToType(kUTTypeMovie)) {
             return UIImage(named: "Video")
         }
+        // END thumbnail_image_movie
         
+        // BEGIN thumbnail_image_contact
         if self.conformsToType(kUTTypeContact) {
             return UIImage(named: "Contact")
         }
+        // END thumbnail_image_contact
         
         // We don't know what type it is, so return a generic icon
         return UIImage(named: "File")
@@ -87,8 +92,10 @@ extension NSFileWrapper {
 
 class Document: UIDocument {
     
+    // BEGIN notification_constants
     static let alertSnoozeAction = "snooze"
     static let alertCategory = "notes-alert"
+    // END notification_constants
     
     // BEGIN document_base
     var text = NSAttributedString(string: "") {
@@ -99,6 +106,7 @@ class Document: UIDocument {
     
     var documentFileWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
     
+    // BEGIN document_contents_for_type
     override func contentsForType(typeName: String) throws -> AnyObject {
         
         let textRTFData = try self.text.dataFromRange(
@@ -109,14 +117,37 @@ class Document: UIDocument {
         if let oldTextFileWrapper = self.documentFileWrapper
             .fileWrappers?[NoteDocumentFileNames.TextFile.rawValue] {
             self.documentFileWrapper.removeFileWrapper(oldTextFileWrapper)
-            
         }
+        
+        // BEGIN document_base_quicklook
+        // Create the QuickLook folder
+        
+        let thumbnailImageData = self.iconImageDataWithSize(CGSize(width: 512, height: 512))!
+        let thumbnailWrapper = NSFileWrapper(regularFileWithContents: thumbnailImageData)
+        
+        let quicklookPreview = NSFileWrapper(regularFileWithContents: textRTFData)
+        let quickLookFolderFileWrapper = NSFileWrapper(directoryWithFileWrappers: [
+            NoteDocumentFileNames.QuickLookTextFile.rawValue: quicklookPreview,
+            NoteDocumentFileNames.QuickLookThumbnail.rawValue: thumbnailWrapper
+            ])
+        quickLookFolderFileWrapper.preferredFilename = NoteDocumentFileNames.QuickLookDirectory.rawValue
+        
+        // Remove the old QuickLook folder if it existed
+        if let oldQuickLookFolder = self.documentFileWrapper
+            .fileWrappers?[NoteDocumentFileNames.QuickLookDirectory.rawValue] {
+                self.documentFileWrapper.removeFileWrapper(oldQuickLookFolder)
+        }
+        
+        // Add the new QuickLook folder
+        self.documentFileWrapper.addFileWrapper(quickLookFolderFileWrapper)
+        // END document_base_quicklook
         
         self.documentFileWrapper.addRegularFileWithContents(textRTFData,
             preferredFilename: NoteDocumentFileNames.TextFile.rawValue)
         
         return self.documentFileWrapper
     }
+    // END document_contents_for_type
 
     override func loadFromContents(contents: AnyObject,
         ofType typeName: String?) throws {
@@ -295,11 +326,12 @@ class Document: UIDocument {
     // END delete_attachment
     
     
-    
+    // BEGIN notification_property
     var localNotification: UILocalNotification? {
         
         get {
-            if let allNotifications = UIApplication.sharedApplication().scheduledLocalNotifications {
+            if let allNotifications = UIApplication.sharedApplication()
+                .scheduledLocalNotifications {
                 
                 return allNotifications.filter({ (item:UILocalNotification) -> Bool in
                     
@@ -319,7 +351,6 @@ class Document: UIDocument {
             } else {
                 return nil
             }
-
         }
         
         set {
@@ -336,5 +367,42 @@ class Document: UIDocument {
             }
         }
     }
+    // END notification_property
+    
+    // BEGIN ios_thumbnail_icon
+    func iconImageDataWithSize(size: CGSize) -> NSData? {
+        UIGraphicsBeginImageContext(size)
+        defer {
+            UIGraphicsEndImageContext()
+        }
+        
+        let entireImageRect = CGRect(origin: CGPointZero, size: size)
+        
+        // Fill the background with white
+        let backgroundRect = UIBezierPath(rect: entireImageRect)
+        UIColor.whiteColor().setFill()
+        backgroundRect.fill()
+        
+        if self.attachedFiles?.count >= 1 {
+            // Render our text, and the first attachment
+            let attachmentImage = self.attachedFiles?[0].thumbnailImage()
+            
+            var firstHalf : CGRect = CGRectZero
+            var secondHalf : CGRect = CGRectZero
+            
+            CGRectDivide(entireImageRect, &firstHalf, &secondHalf,
+                entireImageRect.size.height / 2.0, CGRectEdge.MinYEdge)
+            
+            self.text.drawInRect(firstHalf)
+            attachmentImage?.drawInRect(secondHalf)
+        } else {
+            // Just render our text
+            self.text.drawInRect(entireImageRect)
+        }
+        
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        return UIImagePNGRepresentation(image)
+    }
+    // END ios_thumbnail_icon
     
 }

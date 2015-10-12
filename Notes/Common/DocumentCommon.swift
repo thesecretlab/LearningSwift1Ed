@@ -33,11 +33,16 @@ enum NoteDocumentFileNames : String {
     /// The folder that all attachments will be kept in.
     case AttachmentsDirectory = "Attachments"
     
+// BEGIN document_file_names_quicklook
     /// The QuickLook folder.
     case QuickLookDirectory = "QuickLook"
-    
+
     /// The QuickLook text file, which goes in the QuickLook directory.
     case QuickLookTextFile = "Preview.rtf"
+    
+    /// The QuickLook thumbnail file, which goes in the QuickLook directory.
+    case QuickLookThumbnail = "Thumbnail.png"
+// END document_file_names_quicklook
 }
 // END document_file_names
 

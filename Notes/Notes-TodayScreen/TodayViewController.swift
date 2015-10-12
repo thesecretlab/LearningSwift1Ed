@@ -9,10 +9,16 @@
 import UIKit
 import NotificationCenter
 
-class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDelegate, UITableViewDataSource {
+// BEGIN ext_tableview_protocols
+class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDelegate, UITableViewDataSource
+// END ext_tableview_protocols
+{
     
+    // BEGIN ext_file_list
     var fileList : [NSURL] = []
+    // END ext_file_list
     
+    // BEGIN ext_load_available_files
     func loadAvailableFiles() -> [NSURL] {
         
         let fileManager = NSFileManager.defaultManager()
@@ -41,13 +47,15 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDeleg
         }
         
     }
-        
+    // END ext_load_available_files
+    
+    // BEGIN view_did_load
     override func viewDidLoad() {
         super.viewDidLoad()
         
         fileList = loadAvailableFiles()
         
-        // Nothing to show yet, so default to a very small size
+        // We have nothing to show until we attempt to list the , so default to a very small size
         self.preferredContentSize = CGSize(width: 0, height: 1)
         
         let containerURL = NSFileManager.defaultManager().URLForUbiquityContainerIdentifier(nil)
@@ -56,14 +64,11 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDeleg
         
         // Do any additional setup after loading the view from its nib.
     }
+    // END view_did_load
     
     @IBOutlet weak var tableView: UITableView!
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
+    // BEGIN ext_update
     func widgetPerformUpdateWithCompletionHandler(completionHandler: ((NCUpdateResult) -> Void)) {
         // Perform any setup necessary in order to update the view.
 
@@ -82,9 +87,10 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDeleg
             
             completionHandler(.NewData)
         }
-        
     }
+    // END ext_update
     
+    // BEGIN ext_tableview_datasource
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return fileList.count
@@ -98,7 +104,9 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDeleg
         
         return cell
     }
+    // END ext_tableview_datasource
     
+    // BEGIN ext_open_document
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
@@ -117,14 +125,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDeleg
         if let appURL = appURLComponents.URL {
             self.extensionContext?.openURL(appURL, completionHandler: nil)
         }
-
-        
-        
-        
-        
     }
+    // END ext_open_document
     
-    
-    
-        
 }
