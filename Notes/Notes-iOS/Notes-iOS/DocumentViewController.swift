@@ -500,9 +500,18 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
             
             // Get a thumbnail image for the attachment
             let attachment = self.document?.attachedFiles?[indexPath.row]
-            let image = attachment?.thumbnailImage()
+            var image = attachment?.thumbnailImage()
             
             // Give it to the cell
+            if image == nil {
+                // We don't know what it is, so use a generic image
+                image = UIImage(named: "File")
+                // Also set the label
+                attachmentCell.extensionLabel?.text = attachment?.fileExtension?.uppercaseString
+            } else {
+                // We know what it is, so ensure that the label is empty
+                attachmentCell.extensionLabel?.text = nil
+            }
             attachmentCell.imageView?.image = image
             
             // BEGIN document_vc_cellforitem_editsupport
@@ -749,6 +758,8 @@ extension DocumentViewController : UIPopoverPresentationControllerDelegate {
 class AttachmentCell : UICollectionViewCell {
     
     @IBOutlet weak var imageView : UIImageView?
+    
+    @IBOutlet weak var extensionLabel : UILabel?
     
     // BEGIN attachment_cell_edit_support
     @IBOutlet weak var deleteButton : UIButton?

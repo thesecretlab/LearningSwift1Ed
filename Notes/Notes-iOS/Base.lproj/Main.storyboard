@@ -147,6 +147,12 @@
                                                                         <action selector="delete" destination="h99-xK-Gyf" eventType="touchUpInside" id="Mdb-Fy-NJ5"/>
                                                                     </connections>
                                                                 </button>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wFf-Ku-NY6">
+                                                                    <rect key="frame" x="8" y="64" width="72" height="16"/>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
                                                             </subviews>
                                                             <animations/>
                                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -154,16 +160,20 @@
                                                         <animations/>
                                                         <gestureRecognizers/>
                                                         <constraints>
+                                                            <constraint firstItem="wFf-Ku-NY6" firstAttribute="trailing" secondItem="h99-xK-Gyf" secondAttribute="trailingMargin" id="1Zh-wF-7py"/>
                                                             <constraint firstItem="hjG-ba-Oxa" firstAttribute="width" secondItem="h99-xK-Gyf" secondAttribute="width" id="2NK-Ob-ch8"/>
                                                             <constraint firstItem="hjG-ba-Oxa" firstAttribute="centerX" secondItem="h99-xK-Gyf" secondAttribute="centerX" id="4AE-n3-aPe"/>
                                                             <constraint firstItem="hjG-ba-Oxa" firstAttribute="leading" secondItem="h99-xK-Gyf" secondAttribute="leadingMargin" constant="-8" id="C3L-wZ-IgD"/>
+                                                            <constraint firstItem="wFf-Ku-NY6" firstAttribute="leading" secondItem="h99-xK-Gyf" secondAttribute="leadingMargin" id="M2P-KU-QiX"/>
                                                             <constraint firstItem="hjG-ba-Oxa" firstAttribute="height" secondItem="h99-xK-Gyf" secondAttribute="height" id="MGk-le-OyY"/>
                                                             <constraint firstAttribute="trailingMargin" secondItem="RBk-eh-jo7" secondAttribute="trailing" id="RuF-sH-Dox"/>
+                                                            <constraint firstItem="wFf-Ku-NY6" firstAttribute="bottom" secondItem="h99-xK-Gyf" secondAttribute="bottomMargin" id="SBj-5p-cfG"/>
                                                             <constraint firstItem="RBk-eh-jo7" firstAttribute="top" secondItem="h99-xK-Gyf" secondAttribute="topMargin" id="WE8-Vq-OwD"/>
                                                             <constraint firstItem="hjG-ba-Oxa" firstAttribute="centerY" secondItem="h99-xK-Gyf" secondAttribute="centerY" id="hgP-y0-oPL"/>
                                                         </constraints>
                                                         <connections>
                                                             <outlet property="deleteButton" destination="RBk-eh-jo7" id="bFC-Az-Tf2"/>
+                                                            <outlet property="extensionLabel" destination="wFf-Ku-NY6" id="zWd-sv-zWr"/>
                                                             <outlet property="imageView" destination="hjG-ba-Oxa" id="xnx-3h-zdg"/>
                                                         </connections>
                                                     </collectionViewCell>
@@ -277,9 +287,6 @@
                                     <!--2015-09-30 08:18:56 +0000-->
                                 </date>
                             </datePicker>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="k2u-3K-ZNs">
-                                <rect key="frame" x="276" y="416" width="51" height="31"/>
-                            </switch>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>

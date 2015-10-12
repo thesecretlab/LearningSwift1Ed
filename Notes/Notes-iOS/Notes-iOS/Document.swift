@@ -18,11 +18,15 @@ import MobileCoreServices
 extension NSFileWrapper {
     
     // BEGIN conforms_to_type
+    var fileExtension : String? {
+        return self.preferredFilename?
+            .componentsSeparatedByString(".").last
+    }
+    
     func conformsToType(type: CFString) -> Bool {
         
         // Get the extension of this file
-        guard let fileExtension = self.preferredFilename?
-            .componentsSeparatedByString(".").last else {
+        guard let fileExtension = fileExtension else {
             // If we can't get a file extension, assume that it doesn't conform
             return false
         }
@@ -82,8 +86,8 @@ extension NSFileWrapper {
         }
         // END thumbnail_image_contact
         
-        // We don't know what type it is, so return a generic icon
-        return UIImage(named: "File")
+        // We don't know what type it is, so return nil
+        return nil
     }
     // END thumbnail_image
 
