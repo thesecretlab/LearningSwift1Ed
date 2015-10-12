@@ -32,6 +32,9 @@
 		686048001B97DDD500575481 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 686047FF1B97DDD500575481 /* TodayViewController.swift */; };
 		686048031B97DDD500575481 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 686048011B97DDD500575481 /* MainInterface.storyboard */; };
 		686048071B97DDD500575481 /* Notes-TodayScreen.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 686047FA1B97DDD500575481 /* Notes-TodayScreen.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		687A6FA51BCB4442001E1564 /* IndexRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687A6FA41BCB4442001E1564 /* IndexRequestHandler.swift */; };
+		687A6FA91BCB4442001E1564 /* Notes-SpotlightIndexer.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 687A6FA21BCB4442001E1564 /* Notes-SpotlightIndexer.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		687A6FAE1BCB4759001E1564 /* DocumentCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685196131B8D622100548D79 /* DocumentCommon.swift */; settings = {ASSET_TAGS = (); }; };
 		6889C1BB1BBB91BB0066454F /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 6889C1BA1BBB91BB0066454F /* Settings.bundle */; settings = {ASSET_TAGS = (); }; };
 		6889C1BD1BBBD1840066454F /* NotificationAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6889C1BC1BBBD1840066454F /* NotificationAttachmentViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		68D6178E1B8ED82A0049C16A /* ImageAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D6178D1B8ED82A0049C16A /* ImageAttachmentViewController.swift */; };
@@ -74,6 +77,13 @@
 			remoteGlobalIDString = 686047F91B97DDD500575481;
 			remoteInfo = "Notes-TodayScreen";
 		};
+		687A6FA71BCB4442001E1564 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 685C49F11B8AC9C000D34F19 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 687A6FA11BCB4442001E1564;
+			remoteInfo = "Notes-SpotlightIndexer";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -84,6 +94,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				686048071B97DDD500575481 /* Notes-TodayScreen.appex in Embed App Extensions */,
+				687A6FA91BCB4442001E1564 /* Notes-SpotlightIndexer.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -130,6 +141,10 @@
 		686047FF1B97DDD500575481 /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
 		686048021B97DDD500575481 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		686048041B97DDD500575481 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		687A6FA21BCB4442001E1564 /* Notes-SpotlightIndexer.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notes-SpotlightIndexer.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		687A6FA41BCB4442001E1564 /* IndexRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexRequestHandler.swift; sourceTree = "<group>"; };
+		687A6FA61BCB4442001E1564 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		687A6FAD1BCB445E001E1564 /* Notes-SpotlightIndexer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Notes-SpotlightIndexer.entitlements"; sourceTree = "<group>"; };
 		6889C1BA1BBB91BB0066454F /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		6889C1BC1BBBD1840066454F /* NotificationAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotificationAttachmentViewController.swift; path = "Notes-iOS/NotificationAttachmentViewController.swift"; sourceTree = "<group>"; };
 		68D6178D1B8ED82A0049C16A /* ImageAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageAttachmentViewController.swift; path = "Notes-iOS/ImageAttachmentViewController.swift"; sourceTree = "<group>"; };
@@ -185,6 +200,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				686047FD1B97DDD500575481 /* NotificationCenter.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		687A6F9F1BCB4442001E1564 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -249,6 +271,7 @@
 				685195F91B8D60A200548D79 /* Notes-iOSTests */,
 				685196041B8D60A200548D79 /* Notes-iOSUITests */,
 				686047FE1B97DDD500575481 /* Notes-TodayScreen */,
+				687A6FA31BCB4442001E1564 /* Notes-SpotlightIndexer */,
 				686047FB1B97DDD500575481 /* Frameworks */,
 				685C49FA1B8AC9C000D34F19 /* Products */,
 			);
@@ -264,6 +287,7 @@
 				685195F61B8D60A200548D79 /* Notes-iOSTests.xctest */,
 				685196011B8D60A200548D79 /* Notes-iOSUITests.xctest */,
 				686047FA1B97DDD500575481 /* Notes-TodayScreen.appex */,
+				687A6FA21BCB4442001E1564 /* Notes-SpotlightIndexer.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -321,6 +345,16 @@
 			path = "Notes-TodayScreen";
 			sourceTree = "<group>";
 		};
+		687A6FA31BCB4442001E1564 /* Notes-SpotlightIndexer */ = {
+			isa = PBXGroup;
+			children = (
+				687A6FAD1BCB445E001E1564 /* Notes-SpotlightIndexer.entitlements */,
+				687A6FA41BCB4442001E1564 /* IndexRequestHandler.swift */,
+				687A6FA61BCB4442001E1564 /* Info.plist */,
+			);
+			path = "Notes-SpotlightIndexer";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -337,6 +371,7 @@
 			);
 			dependencies = (
 				686048061B97DDD500575481 /* PBXTargetDependency */,
+				687A6FA81BCB4442001E1564 /* PBXTargetDependency */,
 			);
 			name = "Notes-iOS";
 			productName = "Notes-iOS";
@@ -449,6 +484,23 @@
 			productReference = 686047FA1B97DDD500575481 /* Notes-TodayScreen.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		687A6FA11BCB4442001E1564 /* Notes-SpotlightIndexer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 687A6FAA1BCB4442001E1564 /* Build configuration list for PBXNativeTarget "Notes-SpotlightIndexer" */;
+			buildPhases = (
+				687A6F9E1BCB4442001E1564 /* Sources */,
+				687A6F9F1BCB4442001E1564 /* Frameworks */,
+				687A6FA01BCB4442001E1564 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Notes-SpotlightIndexer";
+			productName = "Notes-SpotlightIndexer";
+			productReference = 687A6FA21BCB4442001E1564 /* Notes-SpotlightIndexer.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -508,6 +560,15 @@
 							};
 						};
 					};
+					687A6FA11BCB4442001E1564 = {
+						CreatedOnToolsVersion = 7.0;
+						DevelopmentTeam = 5V2A4389PA;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
+					};
 				};
 			};
 			buildConfigurationList = 685C49F41B8AC9C000D34F19 /* Build configuration list for PBXProject "Notes" */;
@@ -530,6 +591,7 @@
 				685195F51B8D60A200548D79 /* Notes-iOSTests */,
 				685196001B8D60A200548D79 /* Notes-iOSUITests */,
 				686047F91B97DDD500575481 /* Notes-TodayScreen */,
+				687A6FA11BCB4442001E1564 /* Notes-SpotlightIndexer */,
 			);
 		};
 /* End PBXProject section */
@@ -590,6 +652,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				686048031B97DDD500575481 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		687A6FA01BCB4442001E1564 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -663,6 +732,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		687A6F9E1BCB4442001E1564 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				687A6FA51BCB4442001E1564 /* IndexRequestHandler.swift in Sources */,
+				687A6FAE1BCB4759001E1564 /* DocumentCommon.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -690,6 +768,11 @@
 			isa = PBXTargetDependency;
 			target = 686047F91B97DDD500575481 /* Notes-TodayScreen */;
 			targetProxy = 686048051B97DDD500575481 /* PBXContainerItemProxy */;
+		};
+		687A6FA81BCB4442001E1564 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 687A6FA11BCB4442001E1564 /* Notes-SpotlightIndexer */;
+			targetProxy = 687A6FA71BCB4442001E1564 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1035,6 +1118,41 @@
 			};
 			name = Release;
 		};
+		687A6FAB1BCB4442001E1564 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Notes-SpotlightIndexer/Notes-SpotlightIndexer.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				INFOPLIST_FILE = "Notes-SpotlightIndexer/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "au.com.secretlab.Notes-iOS.Notes-SpotlightIndexer";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		687A6FAC1BCB4442001E1564 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Notes-SpotlightIndexer/Notes-SpotlightIndexer.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				INFOPLIST_FILE = "Notes-SpotlightIndexer/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "au.com.secretlab.Notes-iOS.Notes-SpotlightIndexer";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1109,6 +1227,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		687A6FAA1BCB4442001E1564 /* Build configuration list for PBXNativeTarget "Notes-SpotlightIndexer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				687A6FAB1BCB4442001E1564 /* Debug */,
+				687A6FAC1BCB4442001E1564 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

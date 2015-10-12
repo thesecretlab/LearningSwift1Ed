@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreSpotlight
 
 // BEGIN file_collection_view_cell
 class FileCollectionViewCell : UICollectionViewCell {
@@ -80,6 +81,15 @@ class DocumentListViewController: UICollectionViewController {
             // Open the document
             self.performSegueWithIdentifier("ShowDocument", sender: url)
         }
+        
+        // BEGIN restore_user_activity_state_search
+        // We're coming from a search result
+        if let searchableItemIdentifier = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String,
+            let url = NSURL(string: searchableItemIdentifier) {
+            // Open the document
+            self.performSegueWithIdentifier("ShowDocument", sender: url)
+        }
+        // END restore_user_activity_state_search
         
     }
     // END restore_user_activity_state
