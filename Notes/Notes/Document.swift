@@ -110,11 +110,13 @@ class Document: NSDocument {
         return true
     }
 
+    // BEGIN osx_window_nib_name
     override var windowNibName: String? {
-        // Returns the nib file name of the document
-        // If you need to use a subclass of NSWindowController or if your document supports multiple NSWindowControllers, you should remove this property and override -makeWindowControllers instead.
+        //- Returns the nib file name of the document
+        //- If you need to use a subclass of NSWindowController or if your document supports multiple NSWindowControllers, you should remove this property and override -makeWindowControllers instead.
         return "Document"
     }
+    // END osx_window_nib_name
     
     // BEGIN did_load_nib
     override func windowControllerDidLoadNib(windowController: NSWindowController) {
@@ -259,28 +261,23 @@ extension Document : AddAttachmentDelegate {
         panel.canChooseDirectories = false
         panel.canChooseFiles = true
         
-        
         panel.beginWithCompletionHandler { (result) -> Void in
-            if result == NSModalResponseOK {
-                
-                if let resultURL = panel.URLs.first {
-                    do {
-                        // We were given a URL - copy it in!
-                        try self.addAttachmentAtURL(resultURL)
-                    } catch let error as NSError {
-                        
-                        // There was an error - show the user
-                        NSApp.presentError(error,
-                            modalForWindow: self.windowForSheet!,
-                            delegate: nil,
-                            didPresentSelector: nil,
-                            contextInfo: nil)
-                        
-                    } catch {
-                        
-                    }
+            if result == NSModalResponseOK,
+                let resultURL = panel.URLs.first {
+            
+                do {
+                    // We were given a URL - copy it in!
+                    try self.addAttachmentAtURL(resultURL)
+                } catch let error as NSError {
+                    
+                    // There was an error - show the user
+                    NSApp.presentError(error,
+                        modalForWindow: self.windowForSheet!,
+                        delegate: nil,
+                        didPresentSelector: nil,
+                        contextInfo: nil)
+                    
                 }
-                
             }
         }
         
@@ -310,7 +307,8 @@ extension Document : NSCollectionViewDelegate {
     // This is called when the user drops an item onto the collection view.
     func collectionView(collectionView: NSCollectionView,
         acceptDrop draggingInfo: NSDraggingInfo,
-        index: Int, dropOperation: NSCollectionViewDropOperation) -> Bool {
+        index: Int,
+        dropOperation: NSCollectionViewDropOperation) -> Bool {
 
         // Get the pasteboard that contains the info the user dropped
         let pasteboard = draggingInfo.draggingPasteboard()
@@ -408,24 +406,29 @@ extension Document : AttachmentViewDelegate {
     }
 }
 // END attachment_view
-/*
-// Not included in the class because we're actually using readFromFileWrapper 
-// and fileWrapperOfType, and having implementations of readFromData and 
+
+// Note: Not actually used in the app, but included to give
+// an example of how you'd implement a flat-file document.
+
+// These methods are not included in the main Document class
+// because we're actually using readFromFileWrapper and
+// fileWrapperOfType, and having implementations of readFromData and
 // dataOfType in the class changes the behaviour of the NSDocument system
+class FlatFileDocumentExample : NSDocument {
 
-// BEGIN read_from_data
-override func readFromData(data: NSData, ofType typeName: String) throws {
-    // Load data from "data".
-}
-// END read_from_data
+    // BEGIN read_from_data
+    override func readFromData(data: NSData, ofType typeName: String) throws {
+        // Load data from "data".
+    }
+    // END read_from_data
 
-// BEGIN data_of_type
-override func dataOfType(typeName: String) throws -> NSData {
-    // Return an NSData object.
-    return "Hello".dataUsingEncoding(NSUTF8StringEncoding)!
+    // BEGIN data_of_type
+    override func dataOfType(typeName: String) throws -> NSData {
+        // Return an NSData object. Here's an example:
+        return "Hello".dataUsingEncoding(NSUTF8StringEncoding)!
+    }
+    // END data_of_type
 }
-// END data_of_type
-*/
 
 // Icons
 
