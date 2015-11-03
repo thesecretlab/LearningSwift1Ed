@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="9059" systemVersion="14F27" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="AgC-eL-Hgc">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="9019"/>
+    </dependencies>
+    <scenes>
+        <!--Notes-->
+        <scene sceneID="aou-V4-d1y">
+            <objects>
+                <controller title="Notes" id="AgC-eL-Hgc" customClass="NoteListInterfaceController" customModule="Watch_Extension">
+                    <items>
+                        <table alignment="left" id="NyO-ZR-ggb">
+                            <items>
+                                <tableRow identifier="NoteRow" id="xjy-r3-4cG" customClass="NoteRow" customModule="Watch_Extension">
+                                    <group key="rootItem" width="1" alignment="left" id="iCt-eZ-a95">
+                                        <items>
+                                            <label alignment="left" verticalAlignment="center" text="Note Name" id="5nt-my-Px3"/>
+                                        </items>
+                                    </group>
+                                    <connections>
+                                        <outlet property="nameLabel" destination="5nt-my-Px3" id="fiY-Xs-nFy"/>
+                                        <segue destination="X9i-LB-cDR" kind="push" identifier="ShowNote" id="pph-Kz-9D4"/>
+                                    </connections>
+                                </tableRow>
+                            </items>
+                        </table>
+                    </items>
+                    <menu key="menu" id="Opb-aE-V6b">
+                        <items>
+                            <menuItem title="Create Note" icon="add" id="BkS-BD-Eqo">
+                                <connections>
+                                    <action selector="createNote" destination="AgC-eL-Hgc" id="7Hz-ty-dbV"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                    <connections>
+                        <outlet property="noteListTable" destination="NyO-ZR-ggb" id="rE6-0i-ihg"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="191" y="329"/>
+        </scene>
+        <!--Note Interface Controller-->
+        <scene sceneID="y7x-Yg-t6p">
+            <objects>
+                <controller id="X9i-LB-cDR" customClass="NoteInterfaceController" customModule="Watch_Extension">
+                    <items>
+                        <label alignment="left" text="Note Content" numberOfLines="0" id="1gA-iI-44C"/>
+                    </items>
+                    <connections>
+                        <outlet property="noteContentLabel" destination="1gA-iI-44C" id="Ew0-i5-Vok"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="496" y="347"/>
+        </scene>
+        <!--Glance Interface Controller-->
+        <scene sceneID="BOz-TT-tkC">
+            <objects>
+                <glanceController spacing="0.0" topTemplateType="body1Group" id="0uZ-2p-rRc" customClass="GlanceController" customModule="Watch" customModuleProvider="target">
+                    <items>
+                        <label alignment="left" text="Notes" id="jYp-VD-Vtv"/>
+                        <group alignment="left" id="IX7-rm-JIK">
+                            <items>
+                                <imageView width="1" height="1" alignment="left" id="w6l-gn-7Nf"/>
+                            </items>
+                        </group>
+                        <group alignment="left" id="ZtW-7C-cQs">
+                            <items>
+                                <imageView width="1" height="1" alignment="left" image="Watch Glance Add" contentMode="center" id="7yl-Ql-ZTM"/>
+                            </items>
+                        </group>
+                    </items>
+                    <edgeInsets key="margins" left="0.0" right="0.0" top="0.0" bottom="14"/>
+                </glanceController>
+            </objects>
+            <point key="canvasLocation" x="235" y="672"/>
+        </scene>
+        <!--Static Notification Interface Controller-->
+        <scene sceneID="AEw-b0-oYE">
+            <objects>
+                <notificationController id="YCC-NB-fut">
+                    <items>
+                        <label alignment="left" text="Alert Label" id="XkS-y5-khE"/>
+                    </items>
+                    <notificationCategory key="notificationCategory" identifier="myCategory" id="JfB-70-Muf"/>
+                    <connections>
+                        <outlet property="notificationAlertLabel" destination="XkS-y5-khE" id="49B-RR-99y"/>
+                        <segue destination="gdX-wl-uQE" kind="relationship" relationship="dynamicNotificationInterface" id="fKh-qV-3T2"/>
+                    </connections>
+                </notificationController>
+            </objects>
+            <point key="canvasLocation" x="235" y="1001"/>
+        </scene>
+        <!--Notification Controller-->
+        <scene sceneID="KIl-fV-djm">
+            <objects>
+                <controller id="gdX-wl-uQE" customClass="NotificationController" customModule="Watch" customModuleProvider="target"/>
+            </objects>
+            <point key="canvasLocation" x="553" y="1001"/>
+        </scene>
+    </scenes>
+</document>

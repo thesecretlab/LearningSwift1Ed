@@ -82,6 +82,15 @@ class DocumentListViewController: UICollectionViewController {
             self.performSegueWithIdentifier("ShowDocument", sender: url)
         }
         
+        // This is coming from the watch
+        if let urlString = activity.userInfo?[WatchHandoffDocumentURL] as? String,
+            let url = NSURL(string: urlString) {
+                // Open the document
+                self.performSegueWithIdentifier("ShowDocument", sender: url)
+        }
+        
+        
+        
         // BEGIN restore_user_activity_state_search
         // We're coming from a search result
         if let searchableItemIdentifier = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String,
@@ -226,7 +235,7 @@ class DocumentListViewController: UICollectionViewController {
                 cell.fileNameLabel!.text = fileName
             }
         } catch {
-            cell.fileNameLabel!.text = "<<error>>"
+            cell.fileNameLabel!.text = "Loading..."
         }
             
         // Get the thumbnail image, if it exists

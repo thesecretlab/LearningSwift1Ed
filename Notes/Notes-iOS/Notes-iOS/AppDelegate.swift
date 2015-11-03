@@ -8,12 +8,177 @@
 
 import UIKit
 
+// BEGIN ios_watch_connectivity
+import WatchConnectivity
+// END ios_watch_connectivity
+
 // BEGIN settings_notification_name
 let NotesApplicationDidRegisterUserNotificationSettings = "NotesApplicationDidRegisterUserNotificationSettings"
 // END settings_notification_name
 
+
+// BEGIN ios_watch_wcsessiondelegate
+extension AppDelegate : WCSessionDelegate {
+    
+    
+    func session(session: WCSession, didReceiveMessage message: [String : AnyObject], replyHandler: ([String : AnyObject]) -> Void) {
+        
+        if let messageName = message[WatchMessageTypeKey] as? String {
+            
+            switch messageName {
+            case WatchMessageTypeListAllNotesKey:
+                handleListAllNotes(replyHandler)
+            case WatchMessageTypeLoadNoteKey:
+                if let urlString = message[WatchMessageContentURLKey] as? String,
+                    let url = NSURL(string: urlString) {
+                    handleLoadNote(url, replyHandler: replyHandler)
+                } else {
+                    // if there's no URL, then fall through to the error case
+                    fallthrough
+                }
+            case WatchMessageTypeCreateNoteKey:
+                if let textForNote = message[WatchMessageContentTextKey] as? String {
+                    handleCreateNote(textForNote, replyHandler: replyHandler)
+                } else {
+                    fallthrough
+                }
+                
+                
+            default:
+                // No idea what this message is, so reply with the empty dictionary
+                replyHandler([:])
+            }
+        }
+    }
+    
+    func handleCreateNote(text: String, replyHandler: ([String:AnyObject]) -> Void) {
+        
+        let documentName = "Document \(arc4random()) from Watch.note"
+        
+        guard let documentsFolder = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory,
+            inDomains: .UserDomainMask).first else {
+                self.handleListAllNotes(replyHandler)
+                return
+        }
+        
+        guard let ubiquitousDocumentsDirectoryURL = NSFileManager.defaultManager().URLForUbiquityContainerIdentifier(nil)?
+            .URLByAppendingPathComponent("Documents") else {
+                self.handleListAllNotes(replyHandler)
+                return
+        }
+        
+        let documentDestinationURL = documentsFolder
+            .URLByAppendingPathComponent(documentName)
+        
+        // Create the document and try to save it locally
+        let newDocument = Document(fileURL:documentDestinationURL)
+        
+        newDocument.text = NSAttributedString(string: text)
+        
+        newDocument.saveToURL(documentDestinationURL,
+            forSaveOperation: .ForCreating) { (success) -> Void in
+                
+                if success == false {
+                    self.handleListAllNotes(replyHandler)
+                    return
+                }
+                
+                // Move it to iCloud
+                let ubiquitousDestinationURL = ubiquitousDocumentsDirectoryURL
+                    .URLByAppendingPathComponent(documentName)
+                
+                // Perform the move to iCloud in the background
+                NSOperationQueue().addOperationWithBlock { () -> Void in
+                    do {
+                        try NSFileManager.defaultManager()
+                            .setUbiquitous(true, itemAtURL: documentDestinationURL,
+                                destinationURL: ubiquitousDestinationURL)
+                        
+                        
+                    } catch let error as NSError {
+                        NSLog("Error storing document in iCloud! \(error.localizedDescription)")
+                    }
+                    
+                    NSOperationQueue.mainQueue().addOperationWithBlock { () -> Void in
+                        // Pass back the list of everything currently in iCloud
+                        self.handleListAllNotes(replyHandler)
+                    }
+                }
+                
+        }
+    }
+
+    func handleListAllNotes(replyHandler: ([String:AnyObject]) -> Void) {
+        
+        let fileManager = NSFileManager.defaultManager()
+        
+        guard let documentsFolder = fileManager.URLForUbiquityContainerIdentifier(nil)?.URLByAppendingPathComponent("Documents", isDirectory: true) else {
+            
+            NSLog("Cannot access Documents!")
+            replyHandler([:])
+            return
+        }
+        
+        do {
+            
+            // Get the list of files
+            let allFiles = try fileManager.contentsOfDirectoryAtPath(documentsFolder.path!).map({ documentsFolder.URLByAppendingPathComponent($0, isDirectory: false) })
+            
+            // Filter these to only those that end in ".note",
+            // and return NSURLs of these
+            
+            let noteFiles = allFiles
+                .filter({ $0.lastPathComponent?.hasSuffix(".note") ?? false})
+            
+            let results = noteFiles.map({ url in
+                
+                return [ // dict
+                    WatchMessageContentNameKey: url.lastPathComponent!,
+                    WatchMessageContentURLKey: url.absoluteString
+                ]
+                
+            })
+            
+            let reply = [
+                WatchMessageContentListKey: results
+            ]
+            
+            replyHandler(reply)
+            
+        } catch  {
+            // Log an error and return the empty array
+            NSLog("Failed to get contents of Documents folder")
+            replyHandler([:])
+        }
+        
+    }
+    
+    func handleLoadNote(url: NSURL, replyHandler: ([String:AnyObject]) -> Void) {
+        let document = Document(fileURL:url)
+        document.openWithCompletionHandler { success in
+            
+            if success == false {
+                replyHandler([:])
+            }
+            
+            let reply = [
+                WatchMessageContentTextKey: document.text.string
+            ]
+            
+            // Close; don't provide a completion handler, because
+            // we've not making changes and therefore don't care
+            // if a save succeeds or not
+            document.closeWithCompletionHandler(nil)
+            
+            replyHandler(reply)
+        }
+        
+    }
+}
+// END ios_watch_wcsessiondelegate
+
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
@@ -31,6 +196,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             print("Ubiquity container URL: \(ubiquityContainerURL)")
         }
         // END access_to_icloud
+        
+        // BEGIN ios_watch_did_finish_launching
+        WCSession.defaultSession().delegate = self
+        WCSession.defaultSession().activateSession()
+        // END ios_watch_did_finish_launching
         
         return true
     }
@@ -124,8 +294,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             if let topViewController = navigationController.topViewController {
                 restorationHandler([topViewController])
             }
-            
-            
             
             return true
         }

@@ -70,3 +70,23 @@ enum ErrorCode : Int {
 }
 // END error_codes
 // END document_common
+
+// BEGIN watch_messages
+// These are constants because otherwise we have way too many ".rawValues"
+// in the same place, which is really hard to read
+
+let WatchMessageTypeKey = "msg"
+let WatchMessageTypeListAllNotesKey = "list"
+let WatchMessageTypeLoadNoteKey = "load"
+let WatchMessageTypeCreateNoteKey = "create"
+
+let WatchMessageContentNameKey = "name"
+let WatchMessageContentURLKey = "url"
+let WatchMessageContentTextKey = "text"
+let WatchMessageContentListKey = "list"
+// END watch_messages
+
+// BEGIN watch_handoff_key
+// Necessary because NSUserActivityDocumentURLKey doesn't exist on watchOS
+let WatchHandoffDocumentURL = "watch_document_url_key"
+// END watch_handoff_key

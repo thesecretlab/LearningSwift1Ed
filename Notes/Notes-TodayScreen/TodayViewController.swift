@@ -100,7 +100,12 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDeleg
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath)
         
         let url = fileList[indexPath.row]
-        cell.textLabel?.text = "\(url.lastPathComponent!)"
+        
+        var fileName : AnyObject?
+        _ = try? url.getResourceValue(&fileName, forKey: NSURLNameKey)
+        let name = fileName as? String ?? "Note"
+        
+        cell.textLabel?.text = name
         
         return cell
     }
