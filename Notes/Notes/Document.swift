@@ -140,11 +140,13 @@ class Document: NSDocument {
             throw err(.CannotLoadText)
         }
         
+        // BEGIN error_example
         // Load the text data as RTF
         guard let documentText = NSAttributedString(RTF: documentTextData,
             documentAttributes: nil) else {
             throw err(.CannotLoadText)
         }
+        // END error_example
         
         // Keep the text in memory
         self.documentFileWrapper = fileWrapper

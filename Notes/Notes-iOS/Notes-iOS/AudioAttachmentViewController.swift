@@ -55,24 +55,65 @@ class AudioAttachmentViewController: UIViewController, AttachmentViewer,
     
 	// BEGIN audio_begin_recording
     func beginRecording () {
-        // Try to use the same filename as before, if possible
         
-        let fileName = self.attachmentFile?.preferredFilename ??
-            "Recording \(Int(arc4random())).wav"
+        // Ensure that we have permission. If we don't,
+        // we can't record, but should display a dialog that prompts
+        // the user to change the settings.
         
-        let temporaryURL = NSURL(fileURLWithPath: NSTemporaryDirectory())
-            .URLByAppendingPathComponent(fileName)
-        
-        do {
-            self.audioRecorder = try AVAudioRecorder(URL: temporaryURL,
-                settings: [:])
+        AVAudioSession.sharedInstance().requestRecordPermission { (hasPermission) -> Void in
             
-            self.audioRecorder?.record()
-        } catch let error as NSError {
-            NSLog("Failed to start recording: \(error)")
+            guard hasPermission else {
+                
+                // We don't have permission. Let the user know.
+                let title = "Microphone access required"
+                let message = "We need access to the microphone to record audio."
+                let cancelButton = "Cancel"
+                let settingsButton = "Settings"
+
+                let alert = UIAlertController(title: title, message: message,
+                    preferredStyle: .Alert)
+                
+                // The Cancel button just closes the alert.
+                alert.addAction(UIAlertAction(title: cancelButton,
+                    style: .Cancel, handler: nil))
+                
+                // The Settings button opens this app's settings page,
+                // allowing the user to grant us permission.
+                alert.addAction(UIAlertAction(title: settingsButton,
+                    style: .Default, handler: { (action) in
+                    
+                        if let settingsURL = NSURL(string: UIApplicationOpenSettingsURLString) {
+                            UIApplication.sharedApplication().openURL(settingsURL)
+                        }
+                        
+                }))
+                
+                self.presentViewController(alert, animated: true, completion: nil)
+                return
+            }
+            
+            // We have permission!
+            
+            // Try to use the same filename as before, if possible
+            
+            let fileName = self.attachmentFile?.preferredFilename ??
+            "Recording \(Int(arc4random())).wav"
+            
+            let temporaryURL = NSURL(fileURLWithPath: NSTemporaryDirectory())
+                .URLByAppendingPathComponent(fileName)
+            
+            do {
+                self.audioRecorder = try AVAudioRecorder(URL: temporaryURL,
+                    settings: [:])
+                
+                self.audioRecorder?.record()
+            } catch let error as NSError {
+                NSLog("Failed to start recording: \(error)")
+            }
+            
+            self.updateButtonState()
         }
         
-        updateButtonState()
     }
 	// END audio_begin_recording
     
@@ -166,7 +207,8 @@ class AudioAttachmentViewController: UIViewController, AttachmentViewer,
             self.playButton.hidden = false
         } else {
 
-            // We have no recording
+            // We have no recording.
+            
             self.playButton.hidden = true
             self.stopButton.hidden = true
             

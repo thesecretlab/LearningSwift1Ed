@@ -560,30 +560,84 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
         let actionSheet = UIAlertController(title: "Add attachment", message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet);
 
         // BEGIN add_attachment_sheet_camera
-        actionSheet.addAction(UIAlertAction(title: "Camera", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
-            self.addPhoto()
-        }))
+        // If a camera is available to use...
+        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) {
+            // This variable contains a closure that either shows the image picker,
+            // or asks the user to grant permission.
+            var handler : (action:UIAlertAction) -> Void
+            
+            
+            switch AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo) {
+            case .Authorized:
+                fallthrough
+            case .NotDetermined:
+                // If we have permission, or we don't know if it's been denied yet,
+                // then the closure shows the image picker.
+                handler = { (action) in
+                    self.addPhoto()
+                }
+            default:
+                
+                // Otherwise, when the button is tapped, ask the user to grant permission.
+                handler = { (action) in
+                    
+                    let title = "Camera access required"
+                    let message = "Go to Settings to grant permission to access the camera."
+                    let cancelButton = "Cancel"
+                    let settingsButton = "Settings"
+                    
+                    let alert = UIAlertController(title: title, message: message,
+                        preferredStyle: .Alert)
+                    
+                    // The Cancel button just closes the alert.
+                    alert.addAction(UIAlertAction(title: cancelButton,
+                        style: .Cancel, handler: nil))
+                    
+                    // The Settings button opens this app's settings page,
+                    // allowing the user to grant us permission.
+                    alert.addAction(UIAlertAction(title: settingsButton,
+                        style: .Default, handler: { (action) in
+                            
+                            if let settingsURL = NSURL(string: UIApplicationOpenSettingsURLString) {
+                                UIApplication.sharedApplication().openURL(settingsURL)
+                            }
+                            
+                    }))
+                    
+                    self.presentViewController(alert, animated: true, completion: nil)
+                }
+            }
+            
+            // Either way, show the Camera item; when it's selected, the 
+            // appropriate code will run.
+            actionSheet.addAction(UIAlertAction(title: "Camera",
+                style: UIAlertActionStyle.Default, handler: handler))
+        }
         // END add_attachment_sheet_camera
         
         // BEGIN add_attachment_sheet_location
-        actionSheet.addAction(UIAlertAction(title: "Location", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+        actionSheet.addAction(UIAlertAction(title: "Location",
+            style: UIAlertActionStyle.Default, handler: { (action) -> Void in
             self.addLocation()
         }))
         // END add_attachment_sheet_location
         
         // BEGIN add_attachment_sheet_audio
-        actionSheet.addAction(UIAlertAction(title: "Audio", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+        actionSheet.addAction(UIAlertAction(title: "Audio",
+            style: UIAlertActionStyle.Default, handler: { (action) -> Void in
             self.addAudio()
         }))
         // END add_attachment_sheet_audio
         
         // BEGIN add_attachment_sheet_contact
-        actionSheet.addAction(UIAlertAction(title: "Contact", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+        actionSheet.addAction(UIAlertAction(title: "Contact",
+            style: UIAlertActionStyle.Default, handler: { (action) -> Void in
             self.addContact()
         }))
         // END add_attachment_sheet_contact
         
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
+        actionSheet.addAction(UIAlertAction(title: "Cancel",
+            style: UIAlertActionStyle.Cancel, handler: nil))
         
         // If this is on an iPad, present it in a popover connected
         // to the source view
@@ -842,13 +896,12 @@ extension DocumentViewController  {
         let picker = UIImagePickerController()
         picker.delegate = self
         
+        
+        picker.sourceType = .Camera
         // BEGIN document_add_photo_video_support
         picker.mediaTypes = UIImagePickerController.availableMediaTypesForSourceType(UIImagePickerControllerSourceType.Camera)!
         // END document_add_photo_video_support
-        
-        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) {
-            picker.sourceType = .Camera
-        }
+    
         
         // BEGIN document_add_attachment_delegate_implementation_photo_impl_close_on_disappear
         self.shouldCloseOnDisappear = false
