@@ -18,11 +18,13 @@ class GlanceController: WKInterfaceController {
         // Configure interface objects here.
     }
 
+    // BEGIN glance_will_activate
     override func willActivate() {
         // This method is called when watch view controller is about to be visible to user
         updateUserActivity("au.com.secretlab.Notes.creating", userInfo: ["editing":true], webpageURL: nil)
         super.willActivate()
     }
+    // END glance_will_activate
 
     override func didDeactivate() {
         // This method is called when watch view controller is no longer visible

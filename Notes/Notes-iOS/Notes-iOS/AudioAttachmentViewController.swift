@@ -99,8 +99,10 @@ class AudioAttachmentViewController: UIViewController, AttachmentViewer,
 	// END audio_begin_playing
 
     // BEGIN audio_stop_playing
+    
     func stopPlaying() {
         audioPlayer?.stop()
+        
         updateButtonState()
     }
 	// END audio_stop_playing

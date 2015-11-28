@@ -10,6 +10,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Use iCloud</string>
+			<key>Key</key>
+			<string>use_icloud</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Documents are editable when opened</string>
 			<key>Key</key>
 			<string>document_edit_on_open</string>

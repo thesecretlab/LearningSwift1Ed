@@ -6,11 +6,15 @@
 //  Copyright © 2015 Jonathon Manning. All rights reserved.
 //
 
+// BEGIN watch_imports
 import WatchKit
 import WatchConnectivity
+// END watch_imports
 
+// BEGIN watch_session_manager
 class SessionManager : NSObject, WCSessionDelegate {
     
+    // BEGIN watch_session_manager_noteinfo
     struct NoteInfo {
         var name : String
         var URL : NSURL?
@@ -26,20 +30,28 @@ class SessionManager : NSObject, WCSessionDelegate {
             
         }
     }
+    // END watch_session_manager_noteinfo
     
-    static let sharedSession = SessionManager()
-    
-    var session : WCSession { return WCSession.defaultSession() }
-    
+    // BEGIN watch_session_manager_noteinfo_list
     var notes : [NoteInfo] = []
+    // END watch_session_manager_noteinfo_list
+    
+    
+    // BEGIN watch_session_manager_singleton
+    static let sharedSession = SessionManager()
+    // END watch_session_manager_singleton
+    
+    // BEGIN watch_session_manager_singleton_init
+    var session : WCSession { return WCSession.defaultSession() }
     
     override init() {
         super.init()
         session.delegate = self
         session.activateSession()
-        
     }
+    // END watch_session_manager_singleton_init
     
+    // BEGIN watch_session_manager_create_note
     func createNote(text:String, completionHandler: ([NoteInfo], NSError?)->Void) {
         let message = [
             WatchMessageTypeKey : WatchMessageTypeCreateNoteKey,
@@ -49,7 +61,7 @@ class SessionManager : NSObject, WCSessionDelegate {
         session.sendMessage(message, replyHandler: {
             reply in
             
-            self.updateNoteListWithReply(reply)
+            self.updateLocalNoteListWithReply(reply)
             
             completionHandler(self.notes, nil)
             
@@ -59,8 +71,10 @@ class SessionManager : NSObject, WCSessionDelegate {
             completionHandler([], error)
         })
     }
+    // END watch_session_manager_create_note
     
-    func updateNoteListWithReply(reply:[String:AnyObject]) {
+    // BEGIN watch_session_manager_update_local_note_list
+    func updateLocalNoteListWithReply(reply:[String:AnyObject]) {
         
         if let noteList = reply[WatchMessageContentListKey] as? [[String:AnyObject]] {
             
@@ -73,7 +87,9 @@ class SessionManager : NSObject, WCSessionDelegate {
         }
         print("Loaded \(self.notes.count) notes")
     }
+    // END watch_session_manager_update_local_note_list
     
+    // BEGIN watch_session_manager_update_list
     func updateList(completionHandler: ([NoteInfo], NSError?)->Void) {
         
         let message = [
@@ -83,7 +99,7 @@ class SessionManager : NSObject, WCSessionDelegate {
         session.sendMessage(message, replyHandler: {
             reply in
             
-            self.updateNoteListWithReply(reply)
+            self.updateLocalNoteListWithReply(reply)
             
             completionHandler(self.notes, nil)
             
@@ -93,7 +109,9 @@ class SessionManager : NSObject, WCSessionDelegate {
                 
         })
     }
+    // END watch_session_manager_update_list
     
+    // BEGIN watch_session_manager_load_note
     func loadNote(noteURL: NSURL, completionHandler: (String?, NSError?) -> Void) {
         
         let message = [
@@ -112,9 +130,11 @@ class SessionManager : NSObject, WCSessionDelegate {
             completionHandler(nil, error)
         })
     }
+    // END watch_session_manager_load_note
     
     
 }
+// END watch_session_manager
 
 class ExtensionDelegate: NSObject, WKExtensionDelegate {
 

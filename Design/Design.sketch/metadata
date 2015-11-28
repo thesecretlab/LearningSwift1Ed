@@ -12,9 +12,10 @@
 	<array>
 		<string>ArialMT</string>
 		<string>Palatino-Roman</string>
+		<string>ArialMT</string>
 	</array>
 	<key>length</key>
-	<integer>231788</integer>
+	<integer>233029</integer>
 	<key>version</key>
 	<integer>18</integer>
 </dict>

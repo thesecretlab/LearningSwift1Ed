@@ -12,9 +12,7 @@
 		682507F71BE83DCA0080EFC7 /* Watch Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 682507F61BE83DCA0080EFC7 /* Watch Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		682507FE1BE83DCA0080EFC7 /* NoteListInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682507FD1BE83DCA0080EFC7 /* NoteListInterfaceController.swift */; };
 		682508001BE83DCA0080EFC7 /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682507FF1BE83DCA0080EFC7 /* ExtensionDelegate.swift */; };
-		682508021BE83DCA0080EFC7 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682508011BE83DCA0080EFC7 /* NotificationController.swift */; };
 		682508041BE83DCA0080EFC7 /* GlanceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682508031BE83DCA0080EFC7 /* GlanceController.swift */; };
-		682508061BE83DCA0080EFC7 /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682508051BE83DCA0080EFC7 /* ComplicationController.swift */; };
 		682508081BE83DCA0080EFC7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 682508071BE83DCA0080EFC7 /* Assets.xcassets */; };
 		6825080C1BE83DCA0080EFC7 /* Watch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 682507EA1BE83DCA0080EFC7 /* Watch.app */; };
 		682508161BE841B10080EFC7 /* NoteInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682508151BE841B10080EFC7 /* NoteInterfaceController.swift */; };
@@ -158,12 +156,12 @@
 		682507FC1BE83DCA0080EFC7 /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
 		682507FD1BE83DCA0080EFC7 /* NoteListInterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteListInterfaceController.swift; sourceTree = "<group>"; };
 		682507FF1BE83DCA0080EFC7 /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
-		682508011BE83DCA0080EFC7 /* NotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
 		682508031BE83DCA0080EFC7 /* GlanceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlanceController.swift; sourceTree = "<group>"; };
-		682508051BE83DCA0080EFC7 /* ComplicationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationController.swift; sourceTree = "<group>"; };
 		682508071BE83DCA0080EFC7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		682508091BE83DCA0080EFC7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		682508151BE841B10080EFC7 /* NoteInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteInterfaceController.swift; sourceTree = "<group>"; };
+		683DAE5C1C09587D0016EE33 /* Watch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Watch.entitlements; sourceTree = "<group>"; };
+		683DAE5D1C09588E0016EE33 /* Watch Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Watch Extension.entitlements"; sourceTree = "<group>"; };
 		6848C6321B8FD9D2000B3B00 /* AudioAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AudioAttachmentViewController.swift; path = "Notes-iOS/AudioAttachmentViewController.swift"; sourceTree = "<group>"; };
 		685195E11B8D60A200548D79 /* Notes-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Notes-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		685195E31B8D60A200548D79 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = "Notes-iOS/AppDelegate.swift"; sourceTree = "<group>"; };
@@ -285,6 +283,7 @@
 		682507EB1BE83DCA0080EFC7 /* Watch */ = {
 			isa = PBXGroup;
 			children = (
+				683DAE5C1C09587D0016EE33 /* Watch.entitlements */,
 				682507EC1BE83DCA0080EFC7 /* Interface.storyboard */,
 				682507EF1BE83DCA0080EFC7 /* Assets.xcassets */,
 				682507F11BE83DCA0080EFC7 /* Info.plist */,
@@ -295,12 +294,11 @@
 		682507FA1BE83DCA0080EFC7 /* Watch Extension */ = {
 			isa = PBXGroup;
 			children = (
+				683DAE5D1C09588E0016EE33 /* Watch Extension.entitlements */,
 				682507FD1BE83DCA0080EFC7 /* NoteListInterfaceController.swift */,
 				682508151BE841B10080EFC7 /* NoteInterfaceController.swift */,
 				682507FF1BE83DCA0080EFC7 /* ExtensionDelegate.swift */,
-				682508011BE83DCA0080EFC7 /* NotificationController.swift */,
 				682508031BE83DCA0080EFC7 /* GlanceController.swift */,
-				682508051BE83DCA0080EFC7 /* ComplicationController.swift */,
 				682508071BE83DCA0080EFC7 /* Assets.xcassets */,
 				682508091BE83DCA0080EFC7 /* Info.plist */,
 				682507FB1BE83DCA0080EFC7 /* Supporting Files */,
@@ -657,9 +655,20 @@
 					682507E91BE83DCA0080EFC7 = {
 						CreatedOnToolsVersion = 7.1;
 						DevelopmentTeam = 5V2A4389PA;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					682507F51BE83DCA0080EFC7 = {
 						CreatedOnToolsVersion = 7.1;
+						DevelopmentTeam = 5V2A4389PA;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					685195E01B8D60A200548D79 = {
 						CreatedOnToolsVersion = 7.0;
@@ -838,9 +847,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				682508021BE83DCA0080EFC7 /* NotificationController.swift in Sources */,
 				682508001BE83DCA0080EFC7 /* ExtensionDelegate.swift in Sources */,
-				682508061BE83DCA0080EFC7 /* ComplicationController.swift in Sources */,
 				682507FE1BE83DCA0080EFC7 /* NoteListInterfaceController.swift in Sources */,
 				682508171BE848B60080EFC7 /* DocumentCommon.swift in Sources */,
 				682508041BE83DCA0080EFC7 /* GlanceController.swift in Sources */,
@@ -1025,13 +1032,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_ENTITLEMENTS = Watch/Watch.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				IBSC_MODULE = Watch_Extension;
 				INFOPLIST_FILE = Watch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = "au.com.secretlab.Notes-iOS.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "b66284c8-9130-4aa5-a4d7-3f04f35747f9";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1043,13 +1053,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_ENTITLEMENTS = Watch/Watch.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				IBSC_MODULE = Watch_Extension;
 				INFOPLIST_FILE = Watch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = "au.com.secretlab.Notes-iOS.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "b66284c8-9130-4aa5-a4d7-3f04f35747f9";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1062,11 +1075,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_ENTITLEMENTS = "Watch Extension/Watch Extension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
 				INFOPLIST_FILE = "Watch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "au.com.secretlab.Notes-iOS.watchkitapp.watchkitextension";
 				PRODUCT_NAME = "${TARGET_NAME}";
+				PROVISIONING_PROFILE = "02ecf359-48e9-4de8-b0fc-09e59e7cbfd5";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1078,11 +1094,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_ENTITLEMENTS = "Watch Extension/Watch Extension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
 				INFOPLIST_FILE = "Watch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "au.com.secretlab.Notes-iOS.watchkitapp.watchkitextension";
 				PRODUCT_NAME = "${TARGET_NAME}";
+				PROVISIONING_PROFILE = "02ecf359-48e9-4de8-b0fc-09e59e7cbfd5";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1097,14 +1116,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Notes-iOS/Notes-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = "Notes-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "au.com.secretlab.Notes-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "7d9af881-e37d-49b4-b20b-44c7bb3f60ce";
 				SDKROOT = iphoneos;
 				STRIP_BITCODE_FROM_COPIED_FILES = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1117,14 +1136,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Notes-iOS/Notes-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = "Notes-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "au.com.secretlab.Notes-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "7d9af881-e37d-49b4-b20b-44c7bb3f60ce";
 				SDKROOT = iphoneos;
 				STRIP_BITCODE_FROM_COPIED_FILES = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1434,6 +1453,7 @@
 				682508101BE83DCB0080EFC7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		682508131BE83DCB0080EFC7 /* Build configuration list for PBXNativeTarget "Watch" */ = {
 			isa = XCConfigurationList;
@@ -1442,6 +1462,7 @@
 				6825080E1BE83DCB0080EFC7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		6851960E1B8D60A200548D79 /* Build configuration list for PBXNativeTarget "Notes-iOS" */ = {
 			isa = XCConfigurationList;

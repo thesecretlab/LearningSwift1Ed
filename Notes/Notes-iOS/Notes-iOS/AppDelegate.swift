@@ -6,9 +6,8 @@
 //  Copyright © 2015 Jonathon Manning. All rights reserved.
 //
 
-import UIKit
-
 // BEGIN ios_watch_connectivity
+import UIKit
 import WatchConnectivity
 // END ios_watch_connectivity
 
@@ -20,8 +19,10 @@ let NotesApplicationDidRegisterUserNotificationSettings = "NotesApplicationDidRe
 // BEGIN ios_watch_wcsessiondelegate
 extension AppDelegate : WCSessionDelegate {
     
-    
-    func session(session: WCSession, didReceiveMessage message: [String : AnyObject], replyHandler: ([String : AnyObject]) -> Void) {
+    // BEGIN ios_watch_wcsessiondelegate_didrececivemessage
+    func session(session: WCSession,
+        didReceiveMessage message: [String : AnyObject],
+        replyHandler: ([String : AnyObject]) -> Void) {
         
         if let messageName = message[WatchMessageTypeKey] as? String {
             
@@ -50,19 +51,18 @@ extension AppDelegate : WCSessionDelegate {
             }
         }
     }
+    // END ios_watch_wcsessiondelegate_didrececivemessage
     
+    // BEGIN ios_watch_wcsessiondelegate_handlecreatenote
     func handleCreateNote(text: String, replyHandler: ([String:AnyObject]) -> Void) {
         
         let documentName = "Document \(arc4random()) from Watch.note"
         
-        guard let documentsFolder = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory,
+        // Determine where the file should be saved locally 
+        // (before moving to iCloud)
+        guard let documentsFolder = NSFileManager.defaultManager()
+            .URLsForDirectory(.DocumentDirectory,
             inDomains: .UserDomainMask).first else {
-                self.handleListAllNotes(replyHandler)
-                return
-        }
-        
-        guard let ubiquitousDocumentsDirectoryURL = NSFileManager.defaultManager().URLForUbiquityContainerIdentifier(nil)?
-            .URLByAppendingPathComponent("Documents") else {
                 self.handleListAllNotes(replyHandler)
                 return
         }
@@ -70,18 +70,30 @@ extension AppDelegate : WCSessionDelegate {
         let documentDestinationURL = documentsFolder
             .URLByAppendingPathComponent(documentName)
         
-        // Create the document and try to save it locally
-        let newDocument = Document(fileURL:documentDestinationURL)
         
+        guard let ubiquitousDocumentsDirectoryURL = NSFileManager
+            .defaultManager().URLForUbiquityContainerIdentifier(nil)?
+            .URLByAppendingPathComponent("Documents") else {
+                self.handleListAllNotes(replyHandler)
+                return
+        }
+        
+        // Prepare the document and try to save it locally
+        let newDocument = Document(fileURL:documentDestinationURL)
         newDocument.text = NSAttributedString(string: text)
         
+        // Try to save it locally
         newDocument.saveToURL(documentDestinationURL,
             forSaveOperation: .ForCreating) { (success) -> Void in
                 
-                if success == false {
+                // Did the save succeed? If not, just reply with the 
+                // list of notes.
+                guard success == true else {
                     self.handleListAllNotes(replyHandler)
                     return
                 }
+                
+                // Ok, it succeeded!
                 
                 // Move it to iCloud
                 let ubiquitousDestinationURL = ubiquitousDocumentsDirectoryURL
@@ -96,7 +108,8 @@ extension AppDelegate : WCSessionDelegate {
                         
                         
                     } catch let error as NSError {
-                        NSLog("Error storing document in iCloud! \(error.localizedDescription)")
+                        NSLog("Error storing document in iCloud! " +
+                            "\(error.localizedDescription)")
                     }
                     
                     NSOperationQueue.mainQueue().addOperationWithBlock { () -> Void in
@@ -107,12 +120,16 @@ extension AppDelegate : WCSessionDelegate {
                 
         }
     }
+    // END ios_watch_wcsessiondelegate_handlecreatenote
 
+    // BEGIN ios_watch_wcsessiondelegate_handlelistallnotes
     func handleListAllNotes(replyHandler: ([String:AnyObject]) -> Void) {
         
         let fileManager = NSFileManager.defaultManager()
         
-        guard let documentsFolder = fileManager.URLForUbiquityContainerIdentifier(nil)?.URLByAppendingPathComponent("Documents", isDirectory: true) else {
+        guard let documentsFolder = fileManager
+            .URLForUbiquityContainerIdentifier(nil)?
+            .URLByAppendingPathComponent("Documents", isDirectory: true) else {
             
             NSLog("Cannot access Documents!")
             replyHandler([:])
@@ -122,23 +139,32 @@ extension AppDelegate : WCSessionDelegate {
         do {
             
             // Get the list of files
-            let allFiles = try fileManager.contentsOfDirectoryAtPath(documentsFolder.path!).map({ documentsFolder.URLByAppendingPathComponent($0, isDirectory: false) })
+            let allFiles = try fileManager
+                .contentsOfDirectoryAtPath(documentsFolder.path!)
+                .map({
+                    documentsFolder.URLByAppendingPathComponent($0,
+                        isDirectory: false)
+                })
             
             // Filter these to only those that end in ".note",
-            // and return NSURLs of these
             
             let noteFiles = allFiles
-                .filter({ $0.lastPathComponent?.hasSuffix(".note") ?? false})
+                .filter({
+                    $0.lastPathComponent?.hasSuffix(".note") ?? false
+                })
             
+            // Convert this list into an array of dictionaries, each 
+            // containing the note's name and URL
             let results = noteFiles.map({ url in
                 
-                return [ // dict
-                    WatchMessageContentNameKey: url.lastPathComponent!,
+                [
+                    WatchMessageContentNameKey: url.lastPathComponent ?? "Note",
                     WatchMessageContentURLKey: url.absoluteString
                 ]
                 
             })
             
+            // Bundle up this into our reply dictionary
             let reply = [
                 WatchMessageContentListKey: results
             ]
@@ -152,8 +178,11 @@ extension AppDelegate : WCSessionDelegate {
         }
         
     }
+    // END ios_watch_wcsessiondelegate_handlelistallnotes
     
-    func handleLoadNote(url: NSURL, replyHandler: ([String:AnyObject]) -> Void) {
+    // BEGIN ios_watch_wcsessiondelegate_handleloadnote
+    func handleLoadNote(url: NSURL,
+        replyHandler: ([String:AnyObject]) -> Void) {
         let document = Document(fileURL:url)
         document.openWithCompletionHandler { success in
             
@@ -174,6 +203,7 @@ extension AppDelegate : WCSessionDelegate {
         }
         
     }
+    // END ios_watch_wcsessiondelegate_handleloadnote
 }
 // END ios_watch_wcsessiondelegate
 

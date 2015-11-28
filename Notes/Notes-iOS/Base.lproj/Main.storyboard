@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9059" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vC3-pB-5Vb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vC3-pB-5Vb">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -28,9 +28,13 @@
                                     <rect key="frame" x="0.0" y="0.0" width="180" height="180"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ULf-Tg-6LZ">
+                                        <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ULf-Tg-6LZ">
                                             <rect key="frame" x="8" y="151" width="164" height="20.5"/>
                                             <animations/>
+                                            <gestureRecognizers/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="20.5" id="f7X-Zd-6no"/>
+                                            </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
@@ -38,16 +42,18 @@
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4PB-Uz-1V2">
                                             <rect key="frame" x="8" y="8" width="164" height="135"/>
                                             <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="9FS-0b-zXc">
+                                                    <rect key="frame" x="0.0" y="0.0" width="164" height="135"/>
+                                                    <animations/>
+                                                </imageView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tt6-jk-Pjl">
                                                     <rect key="frame" x="138" y="4" width="22" height="24"/>
+                                                    <animations/>
                                                     <state key="normal" image="Delete"/>
                                                     <connections>
                                                         <action selector="deleteTapped" destination="usJ-Ka-hUt" eventType="touchUpInside" id="d65-Hb-Qko"/>
                                                     </connections>
                                                 </button>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="9FS-0b-zXc">
-                                                    <rect key="frame" x="0.0" y="0.0" width="164" height="135"/>
-                                                </imageView>
                                             </subviews>
                                             <animations/>
                                             <color key="backgroundColor" red="1" green="0.90909864036449439" blue="0.76549001302654185" alpha="1" colorSpace="calibratedRGB"/>
@@ -65,6 +71,7 @@
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <animations/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="bottomMargin" secondItem="ULf-Tg-6LZ" secondAttribute="bottom" id="I1M-U1-5Fc"/>
                                     <constraint firstAttribute="trailingMargin" secondItem="ULf-Tg-6LZ" secondAttribute="trailing" id="IpA-J4-1Uy"/>
@@ -142,6 +149,10 @@
                                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RBk-eh-jo7">
                                                                     <rect key="frame" x="58" y="8" width="22" height="24"/>
                                                                     <animations/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="height" constant="24" id="CnG-kK-PGF"/>
+                                                                        <constraint firstAttribute="width" constant="22" id="Uvf-QM-6JS"/>
+                                                                    </constraints>
                                                                     <state key="normal" image="Delete"/>
                                                                     <connections>
                                                                         <action selector="delete" destination="h99-xK-Gyf" eventType="touchUpInside" id="Mdb-Fy-NJ5"/>
@@ -149,6 +160,7 @@
                                                                 </button>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wFf-Ku-NY6">
                                                                     <rect key="frame" x="8" y="64" width="72" height="16"/>
+                                                                    <animations/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                                     <nil key="highlightedColor"/>
@@ -283,11 +295,13 @@
                         <subviews>
                             <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="qvY-Mg-4ya">
                                 <rect key="frame" x="140" y="192" width="320" height="216"/>
+                                <animations/>
                                 <date key="date" timeIntervalSinceReferenceDate="465293936.27265698">
                                     <!--2015-09-30 08:18:56 +0000-->
                                 </date>
                             </datePicker>
                         </subviews>
+                        <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="qvY-Mg-4ya" firstAttribute="centerX" secondItem="LnK-0b-Gda" secondAttribute="centerX" id="CIO-v2-riF"/>
@@ -386,6 +400,7 @@
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QBm-PG-Wk6">
                                         <rect key="frame" x="492" y="0.0" width="88" height="75"/>
+                                        <animations/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="88" id="1Ve-hj-kf0"/>
                                         </constraints>
@@ -396,6 +411,7 @@
                                     </button>
                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jcm-st-cwW">
                                         <rect key="frame" x="256" y="0.0" width="88" height="75"/>
+                                        <animations/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="88" id="7JU-E3-rld"/>
                                         </constraints>
@@ -406,6 +422,7 @@
                                     </button>
                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bH9-vF-kw2">
                                         <rect key="frame" x="20" y="0.0" width="88" height="75"/>
+                                        <animations/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="88" id="Zbe-uX-bjO"/>
                                         </constraints>
@@ -415,6 +432,7 @@
                                         </connections>
                                     </button>
                                 </subviews>
+                                <animations/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.5" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstItem="QBm-PG-Wk6" firstAttribute="centerY" secondItem="uMR-6r-Dn5" secondAttribute="centerY" id="CUt-5V-1j0"/>
@@ -474,6 +492,7 @@
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wn8-GA-Acp">
                                         <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
+                                        <animations/>
                                         <state key="normal" image="Record"/>
                                         <connections>
                                             <action selector="recordTapped:" destination="FAy-If-e8Q" eventType="touchUpInside" id="4HR-Gd-KWJ"/>
@@ -481,6 +500,7 @@
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FEM-2Y-khh">
                                         <rect key="frame" x="0.0" y="44" width="44" height="44"/>
+                                        <animations/>
                                         <state key="normal" image="Play"/>
                                         <connections>
                                             <action selector="playTapped:" destination="FAy-If-e8Q" eventType="touchUpInside" id="weI-iu-sbL"/>
@@ -488,14 +508,17 @@
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rde-UY-R8L">
                                         <rect key="frame" x="0.0" y="88" width="44" height="31"/>
+                                        <animations/>
                                         <state key="normal" image="Stop"/>
                                         <connections>
                                             <action selector="stopTapped:" destination="FAy-If-e8Q" eventType="touchUpInside" id="Atm-Y5-Cam"/>
                                         </connections>
                                     </button>
                                 </subviews>
+                                <animations/>
                             </stackView>
                         </subviews>
+                        <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="RTa-9R-jfm" firstAttribute="centerX" secondItem="Tmt-0o-raL" secondAttribute="centerX" id="8RA-58-izl"/>

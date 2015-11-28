@@ -46,6 +46,12 @@ enum NoteDocumentFileNames : String {
 }
 // END document_file_names
 
+// BEGIN preferences_keys
+let NotesUseiCloudKey = "use_icloud"
+let NotesHasPromptedForiCloudKey = "has_prompted_for_icloud"
+
+// END preferences_keys
+
 /// Things that can go wrong.
 // BEGIN error_codes
 enum ErrorCode : Int {
@@ -86,7 +92,7 @@ let WatchMessageContentTextKey = "text"
 let WatchMessageContentListKey = "list"
 // END watch_messages
 
-// BEGIN watch_handoff_key
 // Necessary because NSUserActivityDocumentURLKey doesn't exist on watchOS
+// BEGIN watch_handoff_key
 let WatchHandoffDocumentURL = "watch_document_url_key"
 // END watch_handoff_key

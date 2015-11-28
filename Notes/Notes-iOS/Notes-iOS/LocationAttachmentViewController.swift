@@ -99,13 +99,17 @@ class LocationAttachmentViewController: UIViewController,
             
         }
     }
+    // END view_will_appear_location
     
+    // BEGIN location_view_did_load
     override func viewDidLoad() {
         super.viewDidLoad()
         
         locationManager.requestWhenInUseAuthorization()
     }
+    // END location_view_did_load
     
+    // BEGIN location_mapview_didupdatelocation
     func mapView(mapView: MKMapView,
         didUpdateUserLocation userLocation: MKUserLocation) {
         
@@ -125,7 +129,9 @@ class LocationAttachmentViewController: UIViewController,
                 animated: true)
         }
     }
+    // END location_mapview_didupdatelocation
     
+    // BEGIN location_mapview_didfailtolocate
     func mapView(mapView: MKMapView, didFailToLocateUserWithError error: NSError) {
         
         // We can't show the current location
@@ -137,7 +143,9 @@ class LocationAttachmentViewController: UIViewController,
             self.mapView?.addAnnotation(locationPinAnnotation)
         }
     }
+    // END location_mapview_didfailtolocate
     
+    // BEGIN location_mapview_viewforannotation
     func mapView(mapView: MKMapView,
         viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         
@@ -168,13 +176,17 @@ class LocationAttachmentViewController: UIViewController,
         }
         
     }
+    // END location_mapview_viewforannotation
     
+    // BEGIN location_mapview_pinisvisible
     var pinIsVisible : Bool {
         return self.mapView!.annotations.contains({ (annotation) -> Bool in
             return annotation is MKPointAnnotation
         })
     }
+    // END location_mapview_pinisvisible
     
+    // BEGIN location_add_attachment_and_close
     func addAttachmentAndClose() {
         
         if self.pinIsVisible {
@@ -216,14 +228,15 @@ class LocationAttachmentViewController: UIViewController,
         self.presentingViewController?.dismissViewControllerAnimated(true,
             completion: nil)
     }
+    // END location_add_attachment_and_close
     
+    
+    // BEGIN location_close_attachment
     func closeAttachmentWithoutSaving() {
         self.presentingViewController?.dismissViewControllerAnimated(true,
             completion: nil)
     }
-    // END view_will_appear_location
-
-
+    // END location_close_attachment
     
 
     // BEGIN show_current_location

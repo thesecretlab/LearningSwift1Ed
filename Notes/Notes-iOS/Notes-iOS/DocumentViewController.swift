@@ -12,8 +12,14 @@ import MobileCoreServices
 // BEGIN core_spotlight
 import CoreSpotlight
 // END core_spotlight
+
+
+// BEGIN import_avkit
 import AVKit
+// END import_avkit
+
 import AVFoundation
+
 // BEGIN safari_services
 import SafariServices
 // END safari_services
@@ -207,9 +213,14 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
                     
                     // BEGIN view_will_appear_state_change_support
                     // Register for state change notifications
-                    self.stateChangedObserver = NSNotificationCenter.defaultCenter().addObserverForName(UIDocumentStateChangedNotification, object: document, queue: nil, usingBlock: { (notification) -> Void in
-                        self.documentStateChanged()
-                    })
+                    self.stateChangedObserver = NSNotificationCenter
+                        .defaultCenter().addObserverForName(
+                            UIDocumentStateChangedNotification,
+                            object: document,
+                            queue: nil,
+                            usingBlock: { (notification) -> Void in
+                            self.documentStateChanged()
+                        })
                     
                     self.documentStateChanged()
                     // END view_will_appear_state_change_support
@@ -246,9 +257,11 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
         // Regardless, clear that flag.
         self.shouldCloseOnDisappear = true
         
+        // BEGIN view_will_appear_dont_close_on_opening_attachments_list
         // And re-load our list of attachments, in case it changed 
         // while we were away
         self.attachmentsCollectionView?.reloadData()
+        // END view_will_appear_dont_close_on_opening_attachments_list
         // END view_will_appear_dont_close_on_opening_attachments
         
         // BEGIN view_will_appear_update_bar_items_2

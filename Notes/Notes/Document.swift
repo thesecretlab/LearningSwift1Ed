@@ -59,8 +59,8 @@ class Document: NSDocument {
     var text : NSAttributedString = NSAttributedString()
     // END text_property
     
-    // BEGIN document_file_wrapper
     // Directory file wrapper
+    // BEGIN document_file_wrapper
     var documentFileWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
     // END document_file_wrapper
     
