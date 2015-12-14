@@ -19,12 +19,13 @@ class NotificationAttachmentViewController: UIViewController, AttachmentViewer {
 
     // BEGIN notification_vc_impl
     
+    // BEGIN notification_observer
     var notificationSettingsWereRegisteredObserver : AnyObject?
+    // END notification_observer
     
     
+    /// BEGIN notification_view_will_appear
     override func viewWillAppear(animated:Bool) {
-        
-        
         
         if let notification = self.document?.localNotification {
             let cancelButton = UIBarButtonItem(barButtonSystemItem: .Trash,
@@ -63,6 +64,7 @@ class NotificationAttachmentViewController: UIViewController, AttachmentViewer {
                     }
             })
         
+        // If the app doesn't already have access, register for access
         if let settings = UIApplication.sharedApplication().currentUserNotificationSettings() where
             settings.types.contains(.Alert) != true {
                 
@@ -85,7 +87,9 @@ class NotificationAttachmentViewController: UIViewController, AttachmentViewer {
                 doneButton.enabled = false
         }
     }
+    // END notification_view_will_appear
     
+    // BEGIN notification_save_and_close
     func setNotificationAndClose() {
         
         // Prepare and add the notification if the date picker is not set in the future
@@ -110,12 +114,15 @@ class NotificationAttachmentViewController: UIViewController, AttachmentViewer {
         self.presentingViewController?.dismissViewControllerAnimated(true,
             completion: nil)
     }
+    // END notification_save_and_close
     
+    // BEGIN notification_clear_and_close
     func clearNotificationAndClose() {
         self.document?.localNotification = nil
         self.presentingViewController?.dismissViewControllerAnimated(true,
             completion: nil)
     }
+    // END notification_clear_and_close
     // END notification_vc_impl
 
 }

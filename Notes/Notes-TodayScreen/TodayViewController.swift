@@ -23,29 +23,50 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDeleg
         
         let fileManager = NSFileManager.defaultManager()
         
-        guard let documentsFolder = fileManager.URLForUbiquityContainerIdentifier(nil)?.URLByAppendingPathComponent("Documents", isDirectory: true) else {
-            
-            NSLog("Notes Today extension cannot access Documents!")
-            return []
+        var allFiles : [NSURL] = []
+        
+        // Get the list of all local files
+        if let localDocumentsFolder
+            = fileManager.URLsForDirectory(.DocumentDirectory,
+                inDomains: .UserDomainMask).first {
+                    do {
+                        
+                        let localFiles = try fileManager
+                            .contentsOfDirectoryAtPath(localDocumentsFolder.path!)
+                            .map({ localDocumentsFolder.URLByAppendingPathComponent($0, isDirectory: false) })
+                        
+                        allFiles.appendContentsOf(localFiles)
+                    } catch {
+                        NSLog("Failed to get contents of iCloud container");
+                    }
         }
         
-        do {
-            
-            // Get the list of files
-            let allFiles = try fileManager.contentsOfDirectoryAtPath(documentsFolder.path!).map({ documentsFolder.URLByAppendingPathComponent($0, isDirectory: false) })
-            
-            // Filter these to only those that end in ".note",
-            // and return NSURLs of these
-            return allFiles
-                .filter({ $0.lastPathComponent?.hasSuffix(".note") ?? false})
-            
-
-        } catch  {
-            // Log an error and return the empty array
-            NSLog("Failed to get contents of Documents folder")
-            return []
+        // Get the list of documents in iCloud
+        if let documentsFolder = fileManager.URLForUbiquityContainerIdentifier(nil)?
+            .URLByAppendingPathComponent("Documents", isDirectory: true) {
+                do {
+                    
+                    // Get the list of files
+                    let iCloudFiles = try fileManager
+                        .contentsOfDirectoryAtPath(documentsFolder.path!)
+                        .map({ documentsFolder.URLByAppendingPathComponent($0, isDirectory: false) })
+                    
+                    allFiles.appendContentsOf(iCloudFiles)
+                    
+                    
+                } catch  {
+                    // Log an error and return the empty array
+                    NSLog("Failed to get contents of iCloud container")
+                    return []
+                }
+                
         }
         
+        // Filter these to only those that end in ".note",
+        // and return NSURLs of these
+        
+        return allFiles
+            .filter({ $0.lastPathComponent?.hasSuffix(".note") ?? false})
     }
     // END ext_load_available_files
     
@@ -55,14 +76,12 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDeleg
         
         fileList = loadAvailableFiles()
         
-        // We have nothing to show until we attempt to list the , so default to a very small size
+        // We have nothing to show until we attempt to list the files, so default to a very small size
         self.preferredContentSize = CGSize(width: 0, height: 1)
         
         let containerURL = NSFileManager.defaultManager().URLForUbiquityContainerIdentifier(nil)
         
         NSLog("Extension's container: \(containerURL)")
-        
-        // Do any additional setup after loading the view from its nib.
     }
     // END view_did_load
     

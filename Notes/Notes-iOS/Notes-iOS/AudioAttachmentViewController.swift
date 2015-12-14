@@ -168,22 +168,19 @@ class AudioAttachmentViewController: UIViewController, AttachmentViewer,
 	
 	// BEGIN audio_prepare_audio_player
     func prepareAudioPlayer()  {
-        if let attachment = self.attachmentFile {
-            
-            self.document?.URLForAttachment(attachment, completion: { (url) -> Void in
-                
-                if let url = url {
-                    do {
-                        self.audioPlayer = try AVAudioPlayer(contentsOfURL: url)
-
-                    } catch let error as NSError {
-                        NSLog("Failed to prepare audio player: \(error)")
-                    }
-                }
-                
-                self.updateButtonState()
-            })
+        
+        guard let data = self.attachmentFile?.regularFileContents else {
+            return
         }
+        
+        do {
+            self.audioPlayer = try AVAudioPlayer(data: data)
+        } catch let error as NSError {
+            NSLog("Failed to prepare audio player: \(error)")
+        }
+        
+        self.updateButtonState()
+        
     }
 	// END audio_prepare_audio_player
 	

@@ -662,109 +662,117 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
             return
         }
         // END document_vc_didselectitem_edit_support
+            
+        // Get the cell that the user interacted with; bail if we can't get it
+        guard let selectedCell = collectionView
+            .cellForItemAtIndexPath(indexPath) else {
+            return
+        }
 
         // Work out how many cells we have
         let totalNumberOfCells = collectionView
             .numberOfItemsInSection(indexPath.section)
         
-        let selectedCell = collectionView.cellForItemAtIndexPath(indexPath)
-        
         // If we have selected the last cell, show the Add screen
         if indexPath.row == totalNumberOfCells-1 {
-            addAttachment(selectedCell!)
+            addAttachment(selectedCell)
         }
         // BEGIN document_vc_didselectitem_attachments
         else {
             // Otherwise, show a different view controller based on the type
             // of the attachment
-            if let attachment = self.document?.attachedFiles?[indexPath.row] {
-                
-                let segueName : String?
-                
-                if attachment.conformsToType(kUTTypeImage) {
-                    segueName = "ShowImageAttachment"
-                    
-                // BEGIN document_vc_didselectitem_attachments_location
-                } else if attachment.conformsToType(kUTTypeJSON) {
-                    segueName = "ShowLocationAttachment"
-                // END document_vc_didselectitem_attachments_location
-                // BEGIN document_vc_didselectitem_attachments_audio
-                } else if attachment.conformsToType(kUTTypeAudio) {
-                    segueName = "ShowAudioAttachment"
-                // END document_vc_didselectitem_attachments_audio
-                // BEGIN document_vc_didselectitem_attachments_movie
-                } else if attachment.conformsToType(kUTTypeMovie) {
-                    
-                    self.document?.URLForAttachment(attachment,
-                        completion: { (url) -> Void in
-                            
-                            if let url = url {
-                                let media = AVPlayerViewController()
-                                media.player = AVPlayer(URL: url)
-                                
-                                // BEGIN document_vc_didselectitem_attachments_movie_pip_support
-                                let _ = try? AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-                                // END document_vc_didselectitem_attachments_movie_pip_support
-                                
-                                self.presentViewController(media, animated: true, completion: nil)
-                            }
-                    })
-                    
-                    segueName = nil
-                // END document_vc_didselectitem_attachments_movie
-                // BEGIN document_vc_didselectitem_attachments_contact
-                } else if attachment.conformsToType(kUTTypeContact) {
-                    
-                    self.document?.URLForAttachment(attachment, completion: { (url) -> Void in
-                        
-                        do {
-                            if let contactData = NSData(contentsOfURL: url!),
-                                let contact =  try CNContactVCardSerialization
-                                    .contactsWithData(contactData).first as? CNContact {
-                                
-                                let contactViewController =
-                                        CNContactViewController(forContact: contact)
-                                self.presentViewController(contactViewController,
-                                    animated: true, completion: nil)
-                                
-                            }
-                        } catch let error as NSError {
-                            NSLog("Error displaying contact: \(error)")
-                        }
-                        
-                    })
-                    segueName = nil
-                // END document_vc_didselectitem_attachments_contact
-                } else {
-                    
-                    // We have no view controller for this. 
-                    // BEGIN document_vc_didselectitem_attachments_documentcontroller
-                    // Instead, show a UIDocumentInteractionController
-                    
-                    self.document?.URLForAttachment(attachment,
-                        completion: { (url) -> Void in
-                        
-                        if let url = url, cell = selectedCell {
-                            let documentInteraction
-                                = UIDocumentInteractionController(URL: url)
-                            
-                            documentInteraction
-                                .presentOptionsMenuFromRect(cell.bounds,
-                                    inView: cell, animated: true)
-                        }
-                        
-                    })
-                    // END document_vc_didselectitem_attachments_documentcontroller
-                    
-                    segueName = nil
-                }
-                
-                // If we have a segue, run it now
-                if let theSegue = segueName {
-                    self.performSegueWithIdentifier(theSegue,
-                        sender: selectedCell)
-                }
+            guard let attachment = self.document?.attachedFiles?[indexPath.row] else {
+                NSLog("No attachment for this cell!")
+                return
             }
+            
+            let segueName : String?
+            
+            if attachment.conformsToType(kUTTypeImage) {
+                segueName = "ShowImageAttachment"
+                
+            // BEGIN document_vc_didselectitem_attachments_location
+            } else if attachment.conformsToType(kUTTypeJSON) {
+                segueName = "ShowLocationAttachment"
+            // END document_vc_didselectitem_attachments_location
+            // BEGIN document_vc_didselectitem_attachments_audio
+            } else if attachment.conformsToType(kUTTypeAudio) {
+                segueName = "ShowAudioAttachment"
+            // END document_vc_didselectitem_attachments_audio
+            // BEGIN document_vc_didselectitem_attachments_movie
+            } else if attachment.conformsToType(kUTTypeMovie) {
+                
+                self.document?.URLForAttachment(attachment,
+                    completion: { (url) -> Void in
+                        
+                        if let url = url {
+                            let media = AVPlayerViewController()
+                            media.player = AVPlayer(URL: url)
+                            
+                            // BEGIN document_vc_didselectitem_attachments_movie_pip_support
+                            let _ = try? AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+                            // END document_vc_didselectitem_attachments_movie_pip_support
+                            
+                            self.presentViewController(media, animated: true, completion: nil)
+                        }
+                })
+                
+                segueName = nil
+            // END document_vc_didselectitem_attachments_movie
+            // BEGIN document_vc_didselectitem_attachments_contact
+            } else if attachment.conformsToType(kUTTypeContact) {
+                
+                do {
+                    if let data = attachment.regularFileContents,
+                        let contact = try CNContactVCardSerialization
+                        .contactsWithData(data).first as? CNContact {
+                        
+                        let contactViewController =
+                            CNContactViewController(forContact: contact)
+                            
+                        let navigationController = UINavigationController(rootViewController: contactViewController)
+                        
+                        contactViewController.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "dismissModalView")
+                            
+                        self.presentViewController(navigationController,
+                            animated: true, completion: nil)
+                    }
+                } catch let error as NSError {
+                        NSLog("Error displaying contact: \(error)")
+                }
+                
+                segueName = nil
+            // END document_vc_didselectitem_attachments_contact
+            } else {
+                
+                // BEGIN document_vc_didselectitem_attachments_documentcontroller
+                // We have no view controller for this.
+                // Instead, show a UIDocumentInteractionController
+                
+                self.document?.URLForAttachment(attachment,
+                    completion: { (url) -> Void in
+                    
+                    if let url = url {
+                        let documentInteraction
+                            = UIDocumentInteractionController(URL: url)
+                        
+                        documentInteraction
+                            .presentOptionsMenuFromRect(selectedCell.bounds,
+                                inView: selectedCell, animated: true)
+                    }
+                    
+                })
+                // END document_vc_didselectitem_attachments_documentcontroller
+                
+                segueName = nil
+            }
+            
+            // If we have a segue, run it now
+            if let theSegue = segueName {
+                self.performSegueWithIdentifier(theSegue,
+                    sender: selectedCell)
+            }
+            
         }
         // END document_vc_didselectitem_attachments
     }
@@ -894,14 +902,13 @@ extension DocumentViewController  {
     func addPhoto() {
         // BEGIN document_add_attachment_delegate_implementation_photo_impl
         let picker = UIImagePickerController()
-        picker.delegate = self
-        
         
         picker.sourceType = .Camera
         // BEGIN document_add_photo_video_support
         picker.mediaTypes = UIImagePickerController.availableMediaTypesForSourceType(UIImagePickerControllerSourceType.Camera)!
         // END document_add_photo_video_support
     
+        picker.delegate = self
         
         // BEGIN document_add_attachment_delegate_implementation_photo_impl_close_on_disappear
         self.shouldCloseOnDisappear = false
@@ -930,6 +937,7 @@ extension DocumentViewController  {
 
 // BEGIN contacts_attachment
 extension DocumentViewController : CNContactPickerDelegate {
+    
     func addContact() {
         let contactPicker = CNContactPickerViewController()
         contactPicker.delegate = self
@@ -939,12 +947,11 @@ extension DocumentViewController : CNContactPickerDelegate {
     
     func contactPicker(picker: CNContactPickerViewController, didSelectContact contact: CNContact) {
         
-        
-        //let name = "\(contact.identifier)-\(contact.givenName)\(contact.familyName).vcf"
-        let name = "\(contact.identifier)-\(contact.givenName)\(contact.familyName).vcf"
-        
         do {
             if let data = try? CNContactVCardSerialization.dataWithContacts([contact]) {
+                
+                let name = "\(contact.identifier)-\(contact.givenName)\(contact.familyName).vcf"
+                
                 try self.document?.addAttachmentWithData(data, name: name)
                 self.attachmentsCollectionView?.reloadData()                
             }

@@ -27,11 +27,11 @@ class AddAttachmentViewController: NSViewController {
         // Do view setup here.
     }
     
-    // BEGIN add_file
+    // BEGIN add_attachment_add_file
     @IBAction func addFile(sender: AnyObject) {
         self.delegate?.addFile()
     }
-    // END add_file
+    // END add_attachment_add_file
     
     
 }

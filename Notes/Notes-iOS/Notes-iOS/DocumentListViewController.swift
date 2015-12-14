@@ -155,19 +155,30 @@ class DocumentListViewController: UICollectionViewController {
         // END doc_list_view_did_load_edit_support
         
         // BEGIN prompt_for_icloud
-        let hasPromptedForiCloud = NSUserDefaults.standardUserDefaults().boolForKey(NotesHasPromptedForiCloudKey)
+        let hasPromptedForiCloud = NSUserDefaults.standardUserDefaults()
+            .boolForKey(NotesHasPromptedForiCloudKey)
+        
         if hasPromptedForiCloud == false {
-            let alert = UIAlertController(title: "Use iCloud?", message: "Do you want to store your documents in iCloud, or store them locally?", preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = UIAlertController(title: "Use iCloud?",
+                message: "Do you want to store your documents in iCloud, or store them locally?",
+                preferredStyle: UIAlertControllerStyle.Alert)
             
-            alert.addAction(UIAlertAction(title: "iCloud", style: .Default, handler: { (action) in
-                NSUserDefaults.standardUserDefaults().setBool(true, forKey: NotesUseiCloudKey)
+            alert.addAction(UIAlertAction(title: "iCloud",
+                style: .Default,
+                handler: { (action) in
+                    
+                NSUserDefaults.standardUserDefaults()
+                    .setBool(true, forKey: NotesUseiCloudKey)
                 
                 self.metadataQuery.startQuery()
             }))
             
             
             alert.addAction(UIAlertAction(title: "Local Only", style: .Default, handler: { (action) in
-                NSUserDefaults.standardUserDefaults().setBool(false, forKey: NotesUseiCloudKey)
+                
+                NSUserDefaults.standardUserDefaults()
+                    .setBool(false, forKey: NotesUseiCloudKey)
+                
                 self.refreshLocalFileList()
             }))
             
@@ -236,16 +247,14 @@ class DocumentListViewController: UICollectionViewController {
     func queryUpdated() {
         self.collectionView?.reloadData()
         
-        // BEGIN query_updated_download
-        
-        // Bail out if, for some reason, the metadata query's results
+        // Ensure that the metadata query's results
         // can't be accessed
         guard let items = self.metadataQuery.results as? [NSMetadataItem]  else {
             return
         }
         
-        // Ensure that iCloud is available - we don't need to download
-        // files if there's no iCloud.
+        // Ensure that iCloud is available - if it's unavailable,
+        // we shouldn't bother looking for files.
         guard DocumentListViewController.iCloudAvailable else {
             return;
         }
@@ -261,19 +270,20 @@ class DocumentListViewController: UICollectionViewController {
             // Ensure that we can get the file URL for this item
             guard let url =
                 item.valueForAttribute(NSMetadataItemURLKey) as? NSURL else {
-                // We need to have the URL to download it, so bail out
+                // We need to have the URL to access it, so move on
+                // to the next file
                 continue
             }
             
             // Add it to the list of available files
             availableFiles.append(url)
             
+            // BEGIN query_updated_download
             // Check to see if we already have the latest version downloaded
             if itemIsOpenable(url) == true {
                 // We only need to download if it isn't already openable
                 continue
             }
-            
             
             // Ask the system to try to download it
             do {
@@ -285,10 +295,11 @@ class DocumentListViewController: UICollectionViewController {
                 print("Error downloading item! \(error)")
                 
             }
+            // END query_updated_download
+
         }
         
-        // END query_updated_download
-
+        
     }
     // END query_updated
     
@@ -318,12 +329,8 @@ class DocumentListViewController: UICollectionViewController {
             .dequeueReusableCellWithReuseIdentifier("FileCell",
                 forIndexPath: indexPath) as! FileCollectionViewCell
         
-        // BEGIN cellforitematindexpath_openable
-        // We'll use this to store whether or not this is an accessible cell
-        let openable : Bool
-        // END cellforitematindexpath_openable
         
-        // Get this object from the metadata query
+        // Get this object from the list of known files
         let url = availableFiles[indexPath.row]
             
         // Get the display name
@@ -349,11 +356,6 @@ class DocumentListViewController: UICollectionViewController {
         }
         // END cellforitematindexpath_quicklook
         
-        
-        // BEGIN cellforitematindexpath_openable
-        openable = itemIsOpenable(url)
-        // END cellforitematindexpath_openable
-        
         // BEGIN cellforitematindexpath_editing
         cell.setEditing(self.editing, animated: false)
         cell.deletionHander = {
@@ -362,70 +364,20 @@ class DocumentListViewController: UICollectionViewController {
         // END cellforitematindexpath_editing
             
         // BEGIN cellforitematindexpath_renaming
+        
+        cell.fileNameLabel?.gestureRecognizers = []
+        let labelTapRecognizer = UITapGestureRecognizer(target: cell, action: "renameTapped")
+        cell.fileNameLabel?.addGestureRecognizer(labelTapRecognizer)
             
-            cell.fileNameLabel?.gestureRecognizers = []
-            let labelTapRecogznier = UITapGestureRecognizer(target: cell, action: "renameTapped")
-            cell.fileNameLabel?.addGestureRecognizer(labelTapRecogznier)
-            cell.renameHander = {
-                
-                // Create an alert box
-                let renameBox = UIAlertController(title: "Rename Document", message: nil, preferredStyle: .Alert)
-                
-                // Add a text field to it that contains its current name
-                renameBox.addTextFieldWithConfigurationHandler({ (textField) -> Void in
-                    textField.text = cell.fileNameLabel!.text?.stringByReplacingOccurrencesOfString(".note", withString: "")
-                })
-
-                // Add the cancel button, which does nothing
-                renameBox.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
-                
-                // Add the rename button, which actually does the renaming
-                renameBox.addAction(UIAlertAction(title: "Rename", style: .Default) { (action) in
-                    
-                    // Attempt to construct a destination URL from the name the user provided
-                    if let newName = renameBox.textFields?.first?.text,
-                        let destinationURL = url.URLByDeletingLastPathComponent?
-                            .URLByAppendingPathComponent(newName + ".note") {
-                        
-                        let fileCoordinator = NSFileCoordinator(filePresenter: nil)
-                        
-                        // Indicate that we intend to do writing
-                        fileCoordinator.coordinateWritingItemAtURL(url, options: NSFileCoordinatorWritingOptions(), writingItemAtURL: destinationURL, options: NSFileCoordinatorWritingOptions(), error: nil, byAccessor: { (origin, destination) -> Void in
-                            
-                            do {
-                                // Perform the actual move
-                                try NSFileManager.defaultManager().moveItemAtURL(origin, toURL: destination)
-                                
-                                // Remove the original URL from the file list by filtering
-                                // the array to only include urls that are NOT the original url
-                                self.availableFiles = self.availableFiles.filter({
-                                    $0 != url
-                                })
-                                
-                                // Add the new URL to the file list
-                                self.availableFiles.append(destination)
-                                
-                                // Refresh our collection of files
-                                self.collectionView?.reloadData()
-                            } catch let error as NSError {
-                                NSLog("Failed to move \(origin) to \(destination): \(error)")
-                            }
-                            
-                        })
-                        
-                    }
-                })
-                
-                // Finally, present the box.
-                
-                self.presentViewController(renameBox, animated: true, completion: nil)
-            }
+        cell.renameHander = {
+            self.renameDocumentAtURL(url)
+        }
         // END cellforitematindexpath_renaming
         
         // BEGIN cellforitematindexpath_openable
         // If this cell is openable, make it fully visible, and
         // make the cell able to be touched
-        if openable {
+        if itemIsOpenable(url) {
             cell.alpha = 1.0
             cell.userInteractionEnabled = true
         } else {
@@ -443,6 +395,70 @@ class DocumentListViewController: UICollectionViewController {
     // END cellforitematindexpath
     // END collection_view_datasource
     
+    // BEGIN rename_document_func
+    func renameDocumentAtURL(url: NSURL) {
+        
+        // Create an alert box
+        let renameBox = UIAlertController(title: "Rename Document", message: nil, preferredStyle: .Alert)
+        
+        // Add a text field to it that contains its current name, sans ".note"
+        renameBox.addTextFieldWithConfigurationHandler({ (textField) -> Void in
+            let filename = url.lastPathComponent?.stringByReplacingOccurrencesOfString(".note", withString: "")
+            textField.text = filename
+        })
+        
+        // Add the cancel button, which does nothing
+        renameBox.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
+        
+        // Add the rename button, which actually does the renaming
+        renameBox.addAction(UIAlertAction(title: "Rename", style: .Default) { (action) in
+            
+            // Attempt to construct a destination URL from the name the user provided
+            if let newName = renameBox.textFields?.first?.text,
+                let destinationURL = url.URLByDeletingLastPathComponent?
+                    .URLByAppendingPathComponent(newName + ".note") {
+                        
+                        let fileCoordinator = NSFileCoordinator(filePresenter: nil)
+                        
+                        // Indicate that we intend to do writing
+                        fileCoordinator.coordinateWritingItemAtURL(url,
+                            options: [],
+                            writingItemAtURL: destinationURL,
+                            options: [],
+                            error: nil,
+                            byAccessor: { (origin, destination) -> Void in
+                                
+                                do {
+                                    // Perform the actual move
+                                    try NSFileManager.defaultManager()
+                                        .moveItemAtURL(origin, toURL: destination)
+                                    
+                                    // Remove the original URL from the file
+                                    // list by filtering it out
+                                    self.availableFiles = self.availableFiles.filter {
+                                        $0 != url
+                                    }
+                                    
+                                    // Add the new URL to the file list
+                                    self.availableFiles.append(destination)
+                                    
+                                    // Refresh our collection of files
+                                    self.collectionView?.reloadData()
+                                } catch let error as NSError {
+                                    NSLog("Failed to move \(origin) to \(destination): \(error)")
+                                }
+                                
+                        })
+                        
+            }
+            })
+        
+        // Finally, present the box.
+        
+        self.presentViewController(renameBox, animated: true, completion: nil)
+    }
+    // END rename_document_func
+    
     // BEGIN delete_document
     func deleteDocumentAtURL(url: NSURL) {
         
@@ -453,9 +469,11 @@ class DocumentListViewController: UICollectionViewController {
                 try NSFileManager.defaultManager().removeItemAtURL(urlForModifying)
                 
                 // Remove the URL from the list
-                if let index = self.availableFiles.indexOf(url) {
-                    self.availableFiles.removeAtIndex(index)
+                
+                self.availableFiles = self.availableFiles.filter {
+                    $0 != url
                 }
+                
                 // Update the collection
                 self.collectionView?.reloadData()
                 

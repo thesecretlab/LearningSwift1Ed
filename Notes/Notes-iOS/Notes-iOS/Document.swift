@@ -255,7 +255,7 @@ class Document: UIDocument {
     // END document_add_attachments
     
     
-    
+    // BEGIN document_url_for_attachment
     // Given an attachment, eventually returns its URL, if possible.
     // It might be nil if 1. this isn't one of our attachments or
     // 2. we failed to save, in which case the attachment may not exist
@@ -294,10 +294,11 @@ class Document: UIDocument {
         }
         
     }
+    // END document_url_for_attachment
     
     
     
-    
+    // BEGIN document_add_attachment_with_data
     func addAttachmentWithData(data: NSData, name: String) throws {
         
         guard attachmentsDirectoryWrapper != nil else {
@@ -313,6 +314,7 @@ class Document: UIDocument {
         self.updateChangeCount(.Done)
         
     }
+    // END document_add_attachment_with_data
     
     // BEGIN delete_attachment
     func deleteAttachment(attachment:NSFileWrapper) throws {

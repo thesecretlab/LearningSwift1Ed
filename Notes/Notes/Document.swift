@@ -159,7 +159,14 @@ class Document: NSDocument {
     // BEGIN file_wrapper_of_type
     override func fileWrapperOfType(typeName: String) throws -> NSFileWrapper {
         
-        let textRTFData = try self.text.dataFromRange(NSRange(0..<self.text.length), documentAttributes: [NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType])
+        // BEGIN file_wrapper_of_type_rtf_load
+        let textRTFData = try self.text.dataFromRange(
+            NSRange(0..<self.text.length),
+            documentAttributes: [
+                NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType
+            ]
+        )
+        // END file_wrapper_of_type_rtf_load
         
         // If the current document file wrapper already contains a
         // text file, remove it - we'll replace it with a new one
