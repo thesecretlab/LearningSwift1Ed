@@ -1,0 +1,15 @@
+
+/* Class = "WKInterfaceLabel"; text = "Note Content"; ObjectID = "1gA-iI-44C"; */
+"1gA-iI-44C.text" = "Note Content";
+
+/* Class = "WKInterfaceLabel"; text = "Note Name"; ObjectID = "5nt-my-Px3"; */
+"5nt-my-Px3.text" = "Note Name";
+
+/* Class = "WKInterfaceController"; title = "Notes"; ObjectID = "AgC-eL-Hgc"; */
+"AgC-eL-Hgc.title" = "Notes";
+
+/* Class = "WKInterfaceMenuItem"; title = "Create Note"; ObjectID = "BkS-BD-Eqo"; */
+"BkS-BD-Eqo.title" = "Create Note";
+
+/* Class = "WKInterfaceLabel"; text = "Notes"; ObjectID = "jYp-VD-Vtv"; */
+"jYp-VD-Vtv.text" = "Notes";

@@ -127,24 +127,35 @@ extension AppDelegate : WCSessionDelegate {
         
         let fileManager = NSFileManager.defaultManager()
         
-        guard let documentsFolder = fileManager
-            .URLForUbiquityContainerIdentifier(nil)?
-            .URLByAppendingPathComponent("Documents", isDirectory: true) else {
-            
-            NSLog("Cannot access Documents!")
-            replyHandler([:])
-            return
-        }
+        var allFiles : [NSURL] = []
         
         do {
             
-            // Get the list of files
-            let allFiles = try fileManager
-                .contentsOfDirectoryAtPath(documentsFolder.path!)
-                .map({
-                    documentsFolder.URLByAppendingPathComponent($0,
-                        isDirectory: false)
-                })
+            // Add the list of cloud documents
+            if let documentsFolder = fileManager
+                .URLForUbiquityContainerIdentifier(nil)?
+                .URLByAppendingPathComponent("Documents", isDirectory: true)  {
+                let cloudFiles = try fileManager
+                    .contentsOfDirectoryAtPath(documentsFolder.path!)
+                    .map({
+                        documentsFolder.URLByAppendingPathComponent($0,
+                            isDirectory: false)
+                    })
+                allFiles.appendContentsOf(cloudFiles)
+            }
+            
+            // Add the list of all local documents
+            
+            if let localDocumentsFolder
+                = fileManager.URLsForDirectory(.DocumentDirectory,
+                    inDomains: .UserDomainMask).first {
+                let localFiles = try fileManager.contentsOfDirectoryAtPath(localDocumentsFolder.path!)
+                    .map({
+                        localDocumentsFolder.URLByAppendingPathComponent($0,
+                            isDirectory: false)
+                    })
+                allFiles.appendContentsOf(localFiles)
+            }
             
             // Filter these to only those that end in ".note",
             
@@ -171,9 +182,9 @@ extension AppDelegate : WCSessionDelegate {
             
             replyHandler(reply)
             
-        } catch  {
+        } catch let error as NSError {
             // Log an error and return the empty array
-            NSLog("Failed to get contents of Documents folder")
+            NSLog("Failed to get contents of Documents folder: \(error)")
             replyHandler([:])
         }
         

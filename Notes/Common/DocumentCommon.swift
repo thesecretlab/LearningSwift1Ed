@@ -77,10 +77,9 @@ enum ErrorCode : Int {
 // END error_codes
 // END document_common
 
-// BEGIN watch_messages
 // These are constants because otherwise we have way too many ".rawValues"
 // in the same place, which is really hard to read
-
+// BEGIN watch_messages
 let WatchMessageTypeKey = "msg"
 let WatchMessageTypeListAllNotesKey = "list"
 let WatchMessageTypeLoadNoteKey = "load"

@@ -49,6 +49,7 @@
 		6889C1BD1BBBD1840066454F /* NotificationAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6889C1BC1BBBD1840066454F /* NotificationAttachmentViewController.swift */; };
 		68D6178E1B8ED82A0049C16A /* ImageAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D6178D1B8ED82A0049C16A /* ImageAttachmentViewController.swift */; };
 		68D617901B8F263B0049C16A /* LocationAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D6178F1B8F263B0049C16A /* LocationAttachmentViewController.swift */; };
+		68F9633C1C27CB88009EE886 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 68F9633E1C27CB88009EE886 /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -210,6 +211,14 @@
 		68D6178D1B8ED82A0049C16A /* ImageAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageAttachmentViewController.swift; path = "Notes-iOS/ImageAttachmentViewController.swift"; sourceTree = "<group>"; };
 		68D6178F1B8F263B0049C16A /* LocationAttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocationAttachmentViewController.swift; path = "Notes-iOS/LocationAttachmentViewController.swift"; sourceTree = "<group>"; };
 		68EFED591B97FB9200399E16 /* Notes-TodayScreen.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Notes-TodayScreen.entitlements"; sourceTree = "<group>"; };
+		68F9633D1C27CB88009EE886 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		68F9633F1C27CD0E009EE886 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Document.strings; sourceTree = "<group>"; };
+		68F963401C27CD0E009EE886 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/MainMenu.strings; sourceTree = "<group>"; };
+		68F963411C27CD0E009EE886 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
+		68F963421C27CD0E009EE886 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		68F963431C27CD0F009EE886 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/MainInterface.strings; sourceTree = "<group>"; };
+		68F963441C27CD0F009EE886 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Interface.strings; sourceTree = "<group>"; };
+		68F963451C27CD0F009EE886 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -318,6 +327,7 @@
 			isa = PBXGroup;
 			children = (
 				685196111B8D60C000548D79 /* Notes-iOS.entitlements */,
+				685195EC1B8D60A200548D79 /* Assets.xcassets */,
 				685195E31B8D60A200548D79 /* AppDelegate.swift */,
 				685195E51B8D60A200548D79 /* DocumentListViewController.swift */,
 				685196181B8D7F5B00548D79 /* DocumentViewController.swift */,
@@ -327,8 +337,8 @@
 				68D6178F1B8F263B0049C16A /* LocationAttachmentViewController.swift */,
 				6889C1BC1BBBD1840066454F /* NotificationAttachmentViewController.swift */,
 				685195E91B8D60A200548D79 /* Main.storyboard */,
-				685195EC1B8D60A200548D79 /* Assets.xcassets */,
 				685195EE1B8D60A200548D79 /* LaunchScreen.storyboard */,
+				68F9633E1C27CB88009EE886 /* Localizable.strings */,
 				685195F11B8D60A200548D79 /* Info.plist */,
 				6889C1BA1BBB91BB0066454F /* Settings.bundle */,
 			);
@@ -737,6 +747,7 @@
 			knownRegions = (
 				en,
 				Base,
+				fr,
 			);
 			mainGroup = 685C49F01B8AC9C000D34F19;
 			productRefGroup = 685C49FA1B8AC9C000D34F19 /* Products */;
@@ -782,6 +793,7 @@
 				6889C1BB1BBB91BB0066454F /* Settings.bundle in Resources */,
 				685195F01B8D60A200548D79 /* LaunchScreen.storyboard in Resources */,
 				685195ED1B8D60A200548D79 /* Assets.xcassets in Resources */,
+				68F9633C1C27CB88009EE886 /* Localizable.strings in Resources */,
 				685195EB1B8D60A200548D79 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -981,6 +993,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				682507ED1BE83DCA0080EFC7 /* Base */,
+				68F963441C27CD0F009EE886 /* fr */,
 			);
 			name = Interface.storyboard;
 			sourceTree = "<group>";
@@ -989,6 +1002,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				685195EA1B8D60A200548D79 /* Base */,
+				68F963411C27CD0E009EE886 /* fr */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -997,6 +1011,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				685195EF1B8D60A200548D79 /* Base */,
+				68F963421C27CD0E009EE886 /* fr */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -1005,6 +1020,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				685C4A011B8AC9C000D34F19 /* Base */,
+				68F9633F1C27CD0E009EE886 /* fr */,
 			);
 			name = Document.xib;
 			sourceTree = "<group>";
@@ -1013,6 +1029,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				685C4A061B8AC9C000D34F19 /* Base */,
+				68F963401C27CD0E009EE886 /* fr */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
@@ -1021,8 +1038,18 @@
 			isa = PBXVariantGroup;
 			children = (
 				686048021B97DDD500575481 /* Base */,
+				68F963431C27CD0F009EE886 /* fr */,
 			);
 			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
+		68F9633E1C27CB88009EE886 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				68F9633D1C27CB88009EE886 /* Base */,
+				68F963451C27CD0F009EE886 /* fr */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -1033,15 +1060,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Watch/Watch.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				IBSC_MODULE = Watch_Extension;
 				INFOPLIST_FILE = Watch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = "au.com.secretlab.Notes-iOS.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "b66284c8-9130-4aa5-a4d7-3f04f35747f9";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1054,15 +1081,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Watch/Watch.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				IBSC_MODULE = Watch_Extension;
 				INFOPLIST_FILE = Watch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = "au.com.secretlab.Notes-iOS.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "b66284c8-9130-4aa5-a4d7-3f04f35747f9";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1076,7 +1103,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
 				CODE_SIGN_ENTITLEMENTS = "Watch Extension/Watch Extension.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
 				INFOPLIST_FILE = "Watch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -1095,7 +1122,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
 				CODE_SIGN_ENTITLEMENTS = "Watch Extension/Watch Extension.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
 				INFOPLIST_FILE = "Watch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -1116,14 +1143,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Notes-iOS/Notes-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = "Notes-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "au.com.secretlab.Notes-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "7d9af881-e37d-49b4-b20b-44c7bb3f60ce";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				STRIP_BITCODE_FROM_COPIED_FILES = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1136,14 +1163,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Notes-iOS/Notes-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jonathon Manning (XH2VGY8F9D)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = "Notes-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "au.com.secretlab.Notes-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "7d9af881-e37d-49b4-b20b-44c7bb3f60ce";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				STRIP_BITCODE_FROM_COPIED_FILES = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";

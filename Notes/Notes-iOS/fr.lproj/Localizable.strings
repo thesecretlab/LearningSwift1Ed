@@ -1,0 +1,11 @@
+/* 
+  Strings.strings
+  Notes
+
+  Created by Jon Manning on 21/12/2015.
+  Copyright © 2015 Jonathon Manning. All rights reserved.
+*/
+
+// BEGIN strings_french
+"Speak" = "Parler";
+// END strings_french

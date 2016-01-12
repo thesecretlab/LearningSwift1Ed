@@ -9,17 +9,36 @@
 import XCTest
 @testable import Notes
 
+
 class NotesTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        // Setup code goes here
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        
+        // Teardown code goes here
         super.tearDown()
     }
+    
+    // BEGIN unit_test
+    func testDocumentTypeDetection() {
+
+        // Create an NSFileWrapper using some empty data
+        let data = NSData()
+        let document = NSFileWrapper(regularFileWithContents: data)
+        
+        // Give it a name
+        document.preferredFilename = "Hello.jpg"
+        
+        // It should now think that it's an image
+        XCTAssertTrue(document.conformsToType(kUTTypeImage))
+
+    }
+    // END unit_test
+
     
     func testExample() {
         // This is an example of a functional test case.

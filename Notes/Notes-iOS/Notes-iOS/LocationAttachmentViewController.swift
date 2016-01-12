@@ -134,6 +134,8 @@ class LocationAttachmentViewController: UIViewController,
     // BEGIN location_mapview_didfailtolocate
     func mapView(mapView: MKMapView, didFailToLocateUserWithError error: NSError) {
         
+        NSLog("Failed to get user location: \(error)")
+        
         // We can't show the current location
         self.showCurrentLocationButton?.enabled = false
         

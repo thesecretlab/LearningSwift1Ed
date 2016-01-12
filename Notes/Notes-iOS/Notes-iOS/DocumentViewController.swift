@@ -97,7 +97,16 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
     override func viewDidLoad() {
         
         let menuController = UIMenuController.sharedMenuController()
+        
+        /*-
+        // BEGIN localization_unlocalized
         let speakItem = UIMenuItem(title: "Speak", action: "speakSelection:")
+        // END localization_unlocalized
+        -*/
+        
+        // BEGIN localization
+        let speakItem = UIMenuItem(title:  NSLocalizedString("Speak", comment: "speak action"), action: "speakSelection:")
+        // END localization
         menuController.menuItems = [speakItem]
         
         // BEGIN document_vc_view_did_load_edit_support
@@ -142,9 +151,15 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
     // END document_vc_set_editing
     
     
+    /*
     // BEGIN speech_synthesizer
     let speechSynthesizer = AVSpeechSynthesizer()
     // END speech_synthesizer
+    */
+    
+    // BEGIN speech_synthesizer_lazy
+    lazy var speechSynthesizer = AVSpeechSynthesizer()
+    // END speech_synthesizer_lazy
     
     // BEGIN speak_selection
     func speakSelection(sender:AnyObject) {

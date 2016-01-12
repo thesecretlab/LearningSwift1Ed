@@ -8,6 +8,7 @@
 
 import XCTest
 
+@available(OSX 10.11, *)
 class NotesUITests: XCTestCase {
         
     override func setUp() {
@@ -19,16 +20,45 @@ class NotesUITests: XCTestCase {
         continueAfterFailure = false
         // UI tests must launch the application that they test. Doing this in setup will make sure it happens for each test method.
         XCUIApplication().launch()
+        
     }
     
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+        
+        
         super.tearDown()
     }
     
-    func testExample() {
-        // Use recording to get started writing UI tests.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    // BEGIN ui_test
+    func testCreatingSavingAndClosingDocument() {
+        
+        // Get the app
+        let app = XCUIApplication()
+        
+        // Choose File->New
+        let menuBarsQuery = XCUIApplication().menuBars
+        menuBarsQuery.menuBarItems["File"].click()
+        menuBarsQuery.menuItems["New"].click()
+        
+        // Get the new 'Untitled' window
+        let untitledWindow = app.windows["Untitled"]
+        
+        // Get the main text view
+        let textView = untitledWindow.childrenMatchingType(.ScrollView).elementBoundByIndex(0).childrenMatchingType(.TextView).element
+        
+        // Type some text
+        textView.typeText("This is a useful document that I'm testing.")
+        
+        // Save it by pressing Command-S
+        textView.typeKey("s", modifierFlags:.Command)
+        
+        // The save sheet has appeared; type "Test" in it and press return
+        untitledWindow.sheets["save"].childrenMatchingType(.TextField).elementBoundByIndex(0).typeText("Test\r")
+        
+        // Close the document
+        app.windows["Test"].typeKey("w", modifierFlags:.Command)
     }
+    // END ui_test
     
 }

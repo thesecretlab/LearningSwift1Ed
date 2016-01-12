@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9060"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="Document" customModule="Notes" customModuleProvider="target">
@@ -33,7 +33,6 @@
                                 <textView importsGraphics="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" linkDetection="YES" dataDetection="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="mM8-tM-reW">
                                     <rect key="frame" x="0.0" y="0.0" width="465" height="263"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <animations/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <size key="minSize" width="465" height="263"/>
                                     <size key="maxSize" width="467" height="10000000"/>
@@ -45,19 +44,15 @@
                                     </connections>
                                 </textView>
                             </subviews>
-                            <animations/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </clipView>
-                        <animations/>
                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="QeU-Ih-Fjb">
                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                             <autoresizingMask key="autoresizingMask"/>
-                            <animations/>
                         </scroller>
                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="6LW-82-j8k">
                             <rect key="frame" x="450" y="1" width="16" height="263"/>
                             <autoresizingMask key="autoresizingMask"/>
-                            <animations/>
                         </scroller>
                     </scrollView>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UwK-tT-pey">
@@ -69,7 +64,6 @@
                                 <collectionView selectable="YES" id="8DL-U4-yfP">
                                     <rect key="frame" x="0.0" y="0.0" width="425" height="98"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <animations/>
                                     <color key="primaryBackgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <connections>
                                         <binding destination="e5H-wE-sRu" name="content" keyPath="arrangedObjects" id="udq-r0-xRv"/>
@@ -79,21 +73,17 @@
                                     </connections>
                                 </collectionView>
                             </subviews>
-                            <animations/>
                         </clipView>
                         <constraints>
                             <constraint firstAttribute="height" constant="100" id="cP5-jh-FPP"/>
                         </constraints>
-                        <animations/>
                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="csn-Xy-E7P">
                             <rect key="frame" x="1" y="144" width="233" height="15"/>
                             <autoresizingMask key="autoresizingMask"/>
-                            <animations/>
                         </scroller>
                         <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="N51-pK-p0H">
                             <rect key="frame" x="234" y="1" width="15" height="143"/>
                             <autoresizingMask key="autoresizingMask"/>
-                            <animations/>
                         </scroller>
                     </scrollView>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Kxz-di-0U5">
@@ -102,7 +92,6 @@
                             <constraint firstAttribute="height" constant="31" id="uc6-aI-gLA"/>
                             <constraint firstAttribute="width" constant="32" id="uv7-s0-NAZ"/>
                         </constraints>
-                        <animations/>
                         <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSAddTemplate" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="eBK-av-4df">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -123,7 +112,6 @@
                     <constraint firstAttribute="trailing" secondItem="Kxz-di-0U5" secondAttribute="trailing" constant="20" id="yxG-w2-oSe"/>
                     <constraint firstAttribute="bottom" secondItem="UwK-tT-pey" secondAttribute="bottom" constant="20" symbolic="YES" id="zdH-Ku-1O4"/>
                 </constraints>
-                <animations/>
             </view>
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-x8E"/>
@@ -141,7 +129,6 @@
             <subviews>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MAu-io-Tcx">
                     <rect key="frame" x="31" y="20" width="38" height="17"/>
-                    <animations/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="OLI-8m-KtR">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -153,7 +140,6 @@
                 </textField>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jPs-q3-OKp">
                     <rect key="frame" x="20" y="45" width="60" height="35"/>
-                    <animations/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="Vqh-Iv-9dz"/>
                     <connections>
                         <binding destination="I5F-Wu-pAG" name="value" keyPath="self.representedObject.thumbnailImage" id="QDK-Cn-uYz"/>
@@ -168,7 +154,6 @@
                 <constraint firstItem="MAu-io-Tcx" firstAttribute="top" secondItem="jPs-q3-OKp" secondAttribute="bottom" constant="8" symbolic="YES" id="ult-gv-uPW"/>
                 <constraint firstAttribute="bottom" secondItem="MAu-io-Tcx" secondAttribute="bottom" constant="20" symbolic="YES" id="xbt-1d-T0X"/>
             </constraints>
-            <animations/>
             <connections>
                 <outlet property="delegate" destination="-2" id="AfD-nz-ggZ"/>
             </connections>

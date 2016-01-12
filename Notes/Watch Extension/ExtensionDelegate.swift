@@ -118,7 +118,7 @@ class SessionManager : NSObject, WCSessionDelegate {
             WatchMessageTypeKey: WatchMessageTypeLoadNoteKey,
             WatchMessageContentURLKey: noteURL.absoluteString
         ]
-
+        
         session.sendMessage(message, replyHandler: {
             reply in
             
@@ -129,6 +129,7 @@ class SessionManager : NSObject, WCSessionDelegate {
         errorHandler: { error in
             completionHandler(nil, error)
         })
+        
     }
     // END watch_session_manager_load_note
     
