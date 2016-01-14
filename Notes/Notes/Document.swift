@@ -170,7 +170,8 @@ class Document: NSDocument {
         
         // If the current document file wrapper already contains a
         // text file, remove it - we'll replace it with a new one
-        if let oldTextFileWrapper = self.documentFileWrapper.fileWrappers?[NoteDocumentFileNames.TextFile.rawValue] {
+        if let oldTextFileWrapper = self.documentFileWrapper
+            .fileWrappers?[NoteDocumentFileNames.TextFile.rawValue] {
             self.documentFileWrapper.removeFileWrapper(oldTextFileWrapper)
         }
         
@@ -185,7 +186,9 @@ class Document: NSDocument {
             NoteDocumentFileNames.QuickLookTextFile.rawValue: quicklookPreview,
             NoteDocumentFileNames.QuickLookThumbnail.rawValue: thumbnailWrapper
             ])
-        quickLookFolderFileWrapper.preferredFilename = NoteDocumentFileNames.QuickLookDirectory.rawValue
+        
+        quickLookFolderFileWrapper.preferredFilename
+            = NoteDocumentFileNames.QuickLookDirectory.rawValue
         
         // Remove the old QuickLook folder if it existed
         if let oldQuickLookFolder = self.documentFileWrapper
@@ -198,7 +201,10 @@ class Document: NSDocument {
         // END file_wrapper_of_type_quicklook
         
         // Save the text data into the file
-        self.documentFileWrapper.addRegularFileWithContents(textRTFData, preferredFilename: NoteDocumentFileNames.TextFile.rawValue)
+        self.documentFileWrapper.addRegularFileWithContents(
+            textRTFData,
+            preferredFilename: NoteDocumentFileNames.TextFile.rawValue
+        )
         
         // Return the main document's file wrapper - this is what will
         // be saved on disk
@@ -214,7 +220,9 @@ class Document: NSDocument {
     // BEGIN add_attachment_method
     @IBAction func addAttachment(sender: NSButton) {
         
-        if let viewController = AddAttachmentViewController(nibName:"AddAttachmentViewController", bundle:NSBundle.mainBundle()) {
+        if let viewController = AddAttachmentViewController(
+            nibName:"AddAttachmentViewController", bundle:NSBundle.mainBundle()
+            ) {
             
             // BEGIN add_attachment_method_delegate
             viewController.delegate = self
@@ -226,7 +234,8 @@ class Document: NSDocument {
             
             self.popover?.contentViewController = viewController
             
-            self.popover?.showRelativeToRect(sender.bounds, ofView: sender, preferredEdge: NSRectEdge.MaxY)
+            self.popover?.showRelativeToRect(sender.bounds,
+                ofView: sender, preferredEdge: NSRectEdge.MaxY)
         }
         
     }
@@ -243,7 +252,8 @@ class Document: NSDocument {
         
         self.willChangeValueForKey("attachedFiles")
         
-        let newAttachment = try NSFileWrapper(URL: url, options: NSFileWrapperReadingOptions.Immediate)
+        let newAttachment = try NSFileWrapper(URL: url,
+            options: NSFileWrapperReadingOptions.Immediate)
         
         attachmentsDirectoryWrapper?.addFileWrapper(newAttachment)
         
@@ -251,9 +261,6 @@ class Document: NSDocument {
         self.didChangeValueForKey("attachedFiles")
     }
     // END add_attachment_at_url
-    
-    @IBOutlet weak var attachmentsArrayController : NSArrayController?
-    
     
 }
 
@@ -300,25 +307,25 @@ extension Document : AddAttachmentDelegate {
 // BEGIN collectionview_dragndrop
 extension Document : NSCollectionViewDelegate {
     
-    // This is called when the user drags an item over the collection view.
     func collectionView(collectionView: NSCollectionView,
         validateDrop draggingInfo: NSDraggingInfo,
-        proposedIndex proposedDropIndex: UnsafeMutablePointer<Int>,
+        proposedIndexPath proposedDropIndexPath:
+            AutoreleasingUnsafeMutablePointer<NSIndexPath?>,
         dropOperation proposedDropOperation:
             UnsafeMutablePointer<NSCollectionViewDropOperation>)
         -> NSDragOperation {
-        
+            
         // Indicate to the user that if they release the mouse button,
         // it will "copy" whatever they're dragging.
         return NSDragOperation.Copy
     }
     
-    // This is called when the user drops an item onto the collection view.
+    
     func collectionView(collectionView: NSCollectionView,
         acceptDrop draggingInfo: NSDraggingInfo,
-        index: Int,
+        indexPath: NSIndexPath,
         dropOperation: NSCollectionViewDropOperation) -> Bool {
-
+            
         // Get the pasteboard that contains the info the user dropped
         let pasteboard = draggingInfo.draggingPasteboard()
         
@@ -326,95 +333,138 @@ extension Document : NSCollectionViewDelegate {
         if pasteboard.types?.contains(NSURLPboardType) == true,
             let url = NSURL(fromPasteboard: pasteboard)
         {
-            // Attempt to add that as an attachment!
+            // Then attempt to add that as an attachment!
             NSLog("Dropped \(url.path)")
             do {
+                // Add it to the document
                 try self.addAttachmentAtURL(url)
+                
+                // Reload the attachments list to display it
+                attachmentsList.reloadData()
+                
+                // It succeeded
+                return true
             } catch let error as NSError {
+                
+                // Uhoh. Present the error in a dialog box.
                 self.presentError(error)
+                
+                // It failed, so tell the system to animate the
+                // dropped item back to where it came from
                 return false
             }
-            return true
+            
         }
         
         return false
     }
+    
 }
 // END collectionview_dragndrop
 
-// BEGIN document_open_selected_attachment
-extension Document : AttachmentViewDelegate {
-    func openSelectedAttachment() {
-        if let selection = self.attachedFiles?[self.attachmentsArrayController?.selectionIndex ?? 0] {
+// BEGIN collectionview_datasource
+extension Document : NSCollectionViewDataSource {
+    
+    // BEGIN collectionview_datasource_numberofitems
+    func collectionView(collectionView: NSCollectionView,
+        numberOfItemsInSection section: Int) -> Int {
+        return self.attachedFiles?.count ?? 0
+    }
+    // END collectionview_datasource_numberofitems
+    
+    // BEGIN collectionview_datasource_item
+    func collectionView(collectionView: NSCollectionView,
+        itemForRepresentedObjectAtIndexPath indexPath: NSIndexPath)
+        -> NSCollectionViewItem {
             
-            // Ensure that the document is saved
-            self.autosaveWithImplicitCancellability(false, completionHandler: { (error) -> Void in
-                
-                // BEGIN document_open_selected_attachment_location
-                if selection.conformsToType(kUTTypeJSON),
-                    let data = selection.regularFileContents,
-                    let json = try? NSJSONSerialization
-                        .JSONObjectWithData(data, options: NSJSONReadingOptions())
-                        as? NSDictionary  {
-                            
-                            if let lat = json?["lat"] as? CLLocationDegrees,
-                                let lon = json?["long"] as? CLLocationDegrees {
-                                    
-                                    let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-                                    
-                                    let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: nil)
-                                    
-                                    let mapItem = MKMapItem(placemark: placemark)
-                                    
-                                    mapItem.openInMapsWithLaunchOptions(nil);
-                                    
-                            }
-                } else {
-                    // END document_open_selected_attachment_location
-                    
-                    var url = self.fileURL
-                    url = url?.URLByAppendingPathComponent(NoteDocumentFileNames.AttachmentsDirectory.rawValue, isDirectory: true)
-                    url = url?.URLByAppendingPathComponent(selection.preferredFilename!)
-                    
-                    NSWorkspace.sharedWorkspace().openURL(url!)
-                    // BEGIN document_open_selected_attachment_location
-                }
+        let attachment = self.attachedFiles![indexPath.item]
+        
+        let item = collectionView
+            .makeItemWithIdentifier("AttachmentCell", forIndexPath: indexPath)
+            as! AttachmentCell
+        
+        item.imageView?.image = attachment.thumbnailImage
+        
+        item.textField?.stringValue = attachment.fileExtension ?? ""
+        
+        // BEGIN collectionview_datasource_item_delegate
+        item.delegate = self
+        // END collectionview_datasource_item_delegate
+        
+        return item
+    }
+    // END collectionview_datasource_item
+    
+}
+// END collectionview_datasource
+
+// BEGIN document_open_selected_attachment
+extension Document : AttachmentCellDelegate {
+    func openSelectedAttachment(collectionItem: NSCollectionViewItem) {
+        
+        // Get the index of this item
+        guard let selectedIndex = self.attachmentsList
+            .indexPathForItem(collectionItem)?.item else {
+            return
+        }
+        
+        // Get the attachment in question
+        guard let attachment = self.attachedFiles?[selectedIndex] else {
+            return
+        }
+    
+        // First, ensure that the document is saved
+        self.autosaveWithImplicitCancellability(false, completionHandler: { (error) -> Void in
+            
+            // BEGIN document_open_selected_attachment_location
+            if attachment.conformsToType(kUTTypeJSON),
+                let data = attachment.regularFileContents,
+                let json = try? NSJSONSerialization
+                    .JSONObjectWithData(data, options: NSJSONReadingOptions())
+                    as? NSDictionary  {
+                        
+                        if let lat = json?["lat"] as? CLLocationDegrees,
+                            let lon = json?["long"] as? CLLocationDegrees {
+                                
+                                let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                                
+                                let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: nil)
+                                
+                                let mapItem = MKMapItem(placemark: placemark)
+                                
+                                mapItem.openInMapsWithLaunchOptions(nil);
+                                
+                        }
+            } else {
                 // END document_open_selected_attachment_location
                 
+                var url = self.fileURL
+                url = url?.URLByAppendingPathComponent(
+                    NoteDocumentFileNames.AttachmentsDirectory.rawValue, isDirectory: true)
+                url = url?.URLByAppendingPathComponent(attachment.preferredFilename!)
+                
+                if let path = url?.path {
+                    NSWorkspace.sharedWorkspace().openFile(
+                        path, withApplication: nil, andDeactivate: true)
+                }
                 
                 
-            })
-            
-        }
+                // BEGIN document_open_selected_attachment_location
+            }
+            // END document_open_selected_attachment_location
+        })
+        
     }
+
 }
 // END document_open_selected_attachment
 
 
 // BEGIN attachment_view_delegate_protocol
-@objc protocol AttachmentViewDelegate : NSObjectProtocol {
-    func openSelectedAttachment()
+@objc protocol AttachmentCellDelegate : NSObjectProtocol {
+    func openSelectedAttachment(collectionViewItem : NSCollectionViewItem)
 }
 // END attachment_view_delegate_protocol
-
-// BEGIN attachment_view
-@objc class AttachmentView : NSView {
-    
-    // BEGIN attachment_view_delegate
-    @IBOutlet weak var delegate : AnyObject!
-    // END attachment_view_delegate
-    
-    override func mouseDown(theEvent: NSEvent) {
-        if theEvent.clickCount > 1 {
-            // We've been double-clicked!
-            // BEGIN attachment_view_delegate
-            (self.delegate as? AttachmentViewDelegate)?.openSelectedAttachment()
-            // END attachment_view_delegate
-        }
-        super.mouseDown(theEvent)
-    }
-}
-// END attachment_view
 
 // Note: Not actually used in the app, but included to give
 // an example of how you'd implement a flat-file document.
@@ -450,7 +500,7 @@ extension Document {
         
         image.lockFocus()
         
-        let entireImageRect = CGRect(origin: CGPointZero, size: size)
+        let entireImageRect = CGRect(origin: CGPoint.zero, size: size)
         
         // Fill the background with white
         let backgroundRect = NSBezierPath(rect: entireImageRect)

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6805A51E1C44DE660057C646 /* AttachmentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6805A51C1C44DE660057C646 /* AttachmentCell.swift */; };
+		6805A51F1C44DE660057C646 /* AttachmentCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6805A51D1C44DE660057C646 /* AttachmentCell.xib */; };
 		682507EE1BE83DCA0080EFC7 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 682507EC1BE83DCA0080EFC7 /* Interface.storyboard */; };
 		682507F01BE83DCA0080EFC7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 682507EF1BE83DCA0080EFC7 /* Assets.xcassets */; };
 		682507F71BE83DCA0080EFC7 /* Watch Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 682507F61BE83DCA0080EFC7 /* Watch Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -149,6 +151,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6805A51C1C44DE660057C646 /* AttachmentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentCell.swift; sourceTree = "<group>"; };
+		6805A51D1C44DE660057C646 /* AttachmentCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AttachmentCell.xib; sourceTree = "<group>"; };
 		682507EA1BE83DCA0080EFC7 /* Watch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Watch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		682507ED1BE83DCA0080EFC7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
 		682507EF1BE83DCA0080EFC7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -410,6 +414,8 @@
 		685C49FB1B8AC9C000D34F19 /* Notes */ = {
 			isa = PBXGroup;
 			children = (
+				6805A51C1C44DE660057C646 /* AttachmentCell.swift */,
+				6805A51D1C44DE660057C646 /* AttachmentCell.xib */,
 				685C4A2E1B8C306300D34F19 /* Notes.entitlements */,
 				685C49FC1B8AC9C000D34F19 /* AppDelegate.swift */,
 				685C49FE1B8AC9C000D34F19 /* Document.swift */,
@@ -818,6 +824,7 @@
 			files = (
 				685C4A041B8AC9C000D34F19 /* Assets.xcassets in Resources */,
 				685C4A2D1B8C15EB00D34F19 /* AddAttachmentViewController.xib in Resources */,
+				6805A51F1C44DE660057C646 /* AttachmentCell.xib in Resources */,
 				685C4A021B8AC9C000D34F19 /* Document.xib in Resources */,
 				685C4A071B8AC9C000D34F19 /* MainMenu.xib in Resources */,
 			);
@@ -905,6 +912,7 @@
 			files = (
 				685C4A2C1B8C15EB00D34F19 /* AddAttachmentViewController.swift in Sources */,
 				685C49FF1B8AC9C000D34F19 /* Document.swift in Sources */,
+				6805A51E1C44DE660057C646 /* AttachmentCell.swift in Sources */,
 				685C49FD1B8AC9C000D34F19 /* AppDelegate.swift in Sources */,
 				685196141B8D622100548D79 /* DocumentCommon.swift in Sources */,
 			);
@@ -1326,6 +1334,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Notes/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = au.com.secretlab.Notes;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -1342,6 +1351,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Notes/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = au.com.secretlab.Notes;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

@@ -382,7 +382,7 @@ class Document: UIDocument {
             UIGraphicsEndImageContext()
         }
         
-        let entireImageRect = CGRect(origin: CGPointZero, size: size)
+        let entireImageRect = CGRect(origin: CGPoint.zero, size: size)
         
         // Fill the background with white
         let backgroundRect = UIBezierPath(rect: entireImageRect)

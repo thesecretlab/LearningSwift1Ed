@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="Document" customModule="Notes" customModuleProvider="target">
             <connections>
-                <outlet property="attachmentsArrayController" destination="e5H-wE-sRu" id="rnJ-hW-Oj3"/>
                 <outlet property="attachmentsList" destination="8DL-U4-yfP" id="up8-0e-z3T"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
             </connections>
@@ -64,12 +64,13 @@
                                 <collectionView selectable="YES" id="8DL-U4-yfP">
                                     <rect key="frame" x="0.0" y="0.0" width="425" height="98"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="10" minimumLineSpacing="10" id="Dzz-IP-m79">
+                                        <size key="itemSize" width="100" height="100"/>
+                                    </collectionViewFlowLayout>
                                     <color key="primaryBackgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <connections>
-                                        <binding destination="e5H-wE-sRu" name="content" keyPath="arrangedObjects" id="udq-r0-xRv"/>
-                                        <binding destination="e5H-wE-sRu" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="udq-r0-xRv" id="N7a-mE-Rcv"/>
+                                        <outlet property="dataSource" destination="-2" id="C9g-GM-Nr1"/>
                                         <outlet property="delegate" destination="-2" id="4ne-ZD-Fcb"/>
-                                        <outlet property="itemPrototype" destination="I5F-Wu-pAG" id="fAX-7p-Wzn"/>
                                     </connections>
                                 </collectionView>
                             </subviews>
@@ -118,52 +119,6 @@
             </connections>
             <point key="canvasLocation" x="277.5" y="318.5"/>
         </window>
-        <collectionViewItem id="I5F-Wu-pAG">
-            <connections>
-                <outlet property="view" destination="tZs-6P-eQh" id="mjE-SN-ikS"/>
-            </connections>
-        </collectionViewItem>
-        <view id="tZs-6P-eQh" customClass="AttachmentView" customModule="Notes" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
-            <autoresizingMask key="autoresizingMask"/>
-            <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MAu-io-Tcx">
-                    <rect key="frame" x="31" y="20" width="38" height="17"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="OLI-8m-KtR">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                    <connections>
-                        <binding destination="I5F-Wu-pAG" name="value" keyPath="self.representedObject.fileExtension" id="9Oo-Vg-BWx"/>
-                    </connections>
-                </textField>
-                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jPs-q3-OKp">
-                    <rect key="frame" x="20" y="45" width="60" height="35"/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="Vqh-Iv-9dz"/>
-                    <connections>
-                        <binding destination="I5F-Wu-pAG" name="value" keyPath="self.representedObject.thumbnailImage" id="QDK-Cn-uYz"/>
-                    </connections>
-                </imageView>
-            </subviews>
-            <constraints>
-                <constraint firstItem="jPs-q3-OKp" firstAttribute="centerX" secondItem="MAu-io-Tcx" secondAttribute="centerX" id="8Ek-uP-MYM"/>
-                <constraint firstItem="jPs-q3-OKp" firstAttribute="leading" secondItem="tZs-6P-eQh" secondAttribute="leading" constant="20" symbolic="YES" id="9A8-PN-3fV"/>
-                <constraint firstAttribute="trailing" secondItem="jPs-q3-OKp" secondAttribute="trailing" constant="20" symbolic="YES" id="ECy-28-1c3"/>
-                <constraint firstItem="jPs-q3-OKp" firstAttribute="top" secondItem="tZs-6P-eQh" secondAttribute="top" constant="20" symbolic="YES" id="tJc-vU-jsM"/>
-                <constraint firstItem="MAu-io-Tcx" firstAttribute="top" secondItem="jPs-q3-OKp" secondAttribute="bottom" constant="8" symbolic="YES" id="ult-gv-uPW"/>
-                <constraint firstAttribute="bottom" secondItem="MAu-io-Tcx" secondAttribute="bottom" constant="20" symbolic="YES" id="xbt-1d-T0X"/>
-            </constraints>
-            <connections>
-                <outlet property="delegate" destination="-2" id="AfD-nz-ggZ"/>
-            </connections>
-            <point key="canvasLocation" x="352" y="654"/>
-        </view>
-        <arrayController id="e5H-wE-sRu" userLabel="Attached Files">
-            <connections>
-                <binding destination="-2" name="contentArray" keyPath="self.attachedFiles" id="kGm-65-T4A"/>
-            </connections>
-        </arrayController>
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>

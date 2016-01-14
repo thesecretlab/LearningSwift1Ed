@@ -73,7 +73,7 @@ class ImageAttachmentViewController: UIViewController, AttachmentViewer {
                     
                     // Render the result into a CGImage
                 let image = context.createCGImage(processedCIImage,
-                    fromRect: CGRect(origin: CGPointZero, size: image.size))
+                    fromRect: CGRect(origin: CGPoint.zero, size: image.size))
                     
                 button.setImage(UIImage(CGImage: image), forState: UIControlState.Normal)
             }
