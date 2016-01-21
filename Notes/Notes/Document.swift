@@ -284,15 +284,30 @@ extension Document : AddAttachmentDelegate {
                 do {
                     // We were given a URL - copy it in!
                     try self.addAttachmentAtURL(resultURL)
+                    
+                    // Refresh the attachments list
+                    self.attachmentsList?.reloadData()
+                    
                 } catch let error as NSError {
                     
-                    // There was an error - show the user
-                    NSApp.presentError(error,
-                        modalForWindow: self.windowForSheet!,
-                        delegate: nil,
-                        didPresentSelector: nil,
-                        contextInfo: nil)
+                    // There was an error adding the attachment.
+                    // Show the user!
                     
+                    // Try to get a window to present a sheet in
+                    if let window = self.windowForSheet {
+                        
+                        // Present the error in a sheet
+                        NSApp.presentError(error,
+                            modalForWindow: window,
+                            delegate: nil,
+                            didPresentSelector: nil,
+                            contextInfo: nil)
+                        
+                        
+                    } else {
+                        // No window, so present it in a dialog box
+                        NSApp.presentError(error)
+                    }
                 }
             }
         }
@@ -342,7 +357,7 @@ extension Document : NSCollectionViewDelegate {
                 // Reload the attachments list to display it
                 attachmentsList.reloadData()
                 
-                // It succeeded
+                // It succeeded!
                 return true
             } catch let error as NSError {
                 
@@ -368,6 +383,10 @@ extension Document : NSCollectionViewDataSource {
     // BEGIN collectionview_datasource_numberofitems
     func collectionView(collectionView: NSCollectionView,
         numberOfItemsInSection section: Int) -> Int {
+            
+        // The number of items is equal to the number of
+        // attachments we have. If for some reason we can't
+        // access attachedFiles, we have zero items.
         return self.attachedFiles?.count ?? 0
     }
     // END collectionview_datasource_numberofitems
@@ -377,17 +396,20 @@ extension Document : NSCollectionViewDataSource {
         itemForRepresentedObjectAtIndexPath indexPath: NSIndexPath)
         -> NSCollectionViewItem {
             
+        // Get the attachment that this cell should represent
         let attachment = self.attachedFiles![indexPath.item]
         
+        // Get the cell itself
         let item = collectionView
             .makeItemWithIdentifier("AttachmentCell", forIndexPath: indexPath)
             as! AttachmentCell
         
+        // Display the image and file extension in the ecell
         item.imageView?.image = attachment.thumbnailImage
-        
         item.textField?.stringValue = attachment.fileExtension ?? ""
         
         // BEGIN collectionview_datasource_item_delegate
+        // Make this cell use us as its delegate
         item.delegate = self
         // END collectionview_datasource_item_delegate
         
@@ -402,13 +424,13 @@ extension Document : NSCollectionViewDataSource {
 extension Document : AttachmentCellDelegate {
     func openSelectedAttachment(collectionItem: NSCollectionViewItem) {
         
-        // Get the index of this item
+        // Get the index of this item, or bail out
         guard let selectedIndex = self.attachmentsList
             .indexPathForItem(collectionItem)?.item else {
             return
         }
         
-        // Get the attachment in question
+        // Get the attachment in question, or bail out
         guard let attachment = self.attachedFiles?[selectedIndex] else {
             return
         }
@@ -472,7 +494,13 @@ extension Document : AttachmentCellDelegate {
 // These methods are not included in the main Document class
 // because we're actually using readFromFileWrapper and
 // fileWrapperOfType, and having implementations of readFromData and
-// dataOfType in the class changes the behaviour of the NSDocument system
+// dataOfType in the class changes the behaviour of the NSDocument system.
+
+// PS: These comments aren't in the book, which means that if you're
+// in here and reading this, you're pretty dedicated. Hi there! Hope 
+// you're doing well today! Ping us on Twitter at @thesecretlab if you liked
+// the book! :)
+
 class FlatFileDocumentExample : NSDocument {
 
     // BEGIN read_from_data
