@@ -13,8 +13,10 @@ import MapKit
 import CoreLocation
 // END mapkit_frameworks
 
+// BEGIN map_default_coordinate
 let defaultCoordinate =
     CLLocationCoordinate2D(latitude: -42.882743, longitude: 147.330234)
+// END map_default_coordinate
 
 // BEGIN map_protocols
 class LocationAttachmentViewController: UIViewController,
@@ -63,7 +65,8 @@ class LocationAttachmentViewController: UIViewController,
                     let longitude = loadedData["long"] {
                     
                     
-                    let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                    let coordinate = CLLocationCoordinate2D(latitude: latitude,
+                                                            longitude: longitude)
                     
                     locationPinAnnotation.coordinate = coordinate
                     
@@ -81,7 +84,8 @@ class LocationAttachmentViewController: UIViewController,
             
             
         } else {
-            // Set up for editing - create a 'cancel' button that dismisses the view
+            // Set up for editing: create a 'cancel' button that 
+            // dismisses the view
             
             let cancelButton = UIBarButtonItem(barButtonSystemItem: .Cancel,
                 target: self, action: "closeAttachmentWithoutSaving")
@@ -132,7 +136,8 @@ class LocationAttachmentViewController: UIViewController,
     // END location_mapview_didupdatelocation
     
     // BEGIN location_mapview_didfailtolocate
-    func mapView(mapView: MKMapView, didFailToLocateUserWithError error: NSError) {
+    func mapView(mapView: MKMapView,
+         didFailToLocateUserWithError error: NSError) {
         
         NSLog("Failed to get user location: \(error)")
         
@@ -212,7 +217,10 @@ class LocationAttachmentViewController: UIViewController,
                 let newFileName = "\(arc4random()).json"
                 
                 if attachmentFile != nil {
-                    locationName = attachmentFile!.preferredFilename ?? newFileName
+                    
+                    locationName
+                        = attachmentFile!.preferredFilename ?? newFileName
+                    
                     try self.document?.deleteAttachment(self.attachmentFile!)
                 } else {
                     locationName = newFileName

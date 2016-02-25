@@ -664,7 +664,7 @@
 		685C49F11B8AC9C000D34F19 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0710;
+				LastSwiftUpdateCheck = 0730;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Jonathon Manning";
 				TargetAttributes = {
@@ -762,7 +762,6 @@
 			targets = (
 				685C49F81B8AC9C000D34F19 /* Notes */,
 				685C4A0C1B8AC9C000D34F19 /* NotesTests */,
-				685C4A171B8AC9C000D34F19 /* NotesUITests */,
 				685195E01B8D60A200548D79 /* Notes-iOS */,
 				685195F51B8D60A200548D79 /* Notes-iOSTests */,
 				685196001B8D60A200548D79 /* Notes-iOSUITests */,
@@ -770,6 +769,7 @@
 				687A6FA11BCB4442001E1564 /* Notes-SpotlightIndexer */,
 				682507E91BE83DCA0080EFC7 /* Watch */,
 				682507F51BE83DCA0080EFC7 /* Watch Extension */,
+				685C4A171B8AC9C000D34F19 /* NotesUITests */,
 			);
 		};
 /* End PBXProject section */

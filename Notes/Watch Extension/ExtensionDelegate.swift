@@ -6,8 +6,8 @@
 //  Copyright © 2015 Jonathon Manning. All rights reserved.
 //
 
-// BEGIN watch_imports
 import WatchKit
+// BEGIN watch_imports
 import WatchConnectivity
 // END watch_imports
 
@@ -21,7 +21,10 @@ class SessionManager : NSObject, WCSessionDelegate {
         
         init(dictionary:[String:AnyObject]) {
             
-            let name = dictionary[WatchMessageContentNameKey] as? String ?? "(no name)"
+            let name
+                = dictionary[WatchMessageContentNameKey] as? String
+                    ?? "(no name)"
+            
             self.name = name
             
             if let URLString = dictionary[WatchMessageContentURLKey] as? String {
@@ -52,7 +55,9 @@ class SessionManager : NSObject, WCSessionDelegate {
     // END watch_session_manager_singleton_init
     
     // BEGIN watch_session_manager_create_note
-    func createNote(text:String, completionHandler: ([NoteInfo], NSError?)->Void) {
+    func createNote(text:String,
+         completionHandler: ([NoteInfo], NSError?)->Void) {
+        
         let message = [
             WatchMessageTypeKey : WatchMessageTypeCreateNoteKey,
             WatchMessageContentTextKey : text
@@ -76,8 +81,8 @@ class SessionManager : NSObject, WCSessionDelegate {
     // BEGIN watch_session_manager_update_local_note_list
     func updateLocalNoteListWithReply(reply:[String:AnyObject]) {
         
-        if let noteList = reply[WatchMessageContentListKey] as? [[String:AnyObject]] {
-            
+        if let noteList = reply[WatchMessageContentListKey]
+            as? [[String:AnyObject]] {
             
             // Convert all dictionaries to notes
             self.notes = noteList.map({ (dict) -> NoteInfo in

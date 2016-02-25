@@ -43,9 +43,10 @@ class NoteInterfaceController: WKInterfaceController {
                     // that closes this screen when tapped.
                     
                     let closeAction = WKAlertAction(title: "Close",
-                        style: WKAlertActionStyle.Default, handler: { () -> Void in
-                        self.popController()
-                    })
+                        style: WKAlertActionStyle.Default,
+                        handler: { () -> Void in
+                            self.popController()
+                        })
                     
                     self.presentAlertControllerWithTitle("Error loading note",
                         message: theError.localizedDescription,

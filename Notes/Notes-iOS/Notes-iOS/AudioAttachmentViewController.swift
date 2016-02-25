@@ -60,7 +60,8 @@ class AudioAttachmentViewController: UIViewController, AttachmentViewer,
         // we can't record, but should display a dialog that prompts
         // the user to change the settings.
         
-        AVAudioSession.sharedInstance().requestRecordPermission { (hasPermission) -> Void in
+        AVAudioSession.sharedInstance().requestRecordPermission {
+            (hasPermission) -> Void in
             
             guard hasPermission else {
                 
@@ -82,13 +83,17 @@ class AudioAttachmentViewController: UIViewController, AttachmentViewer,
                 alert.addAction(UIAlertAction(title: settingsButton,
                     style: .Default, handler: { (action) in
                     
-                        if let settingsURL = NSURL(string: UIApplicationOpenSettingsURLString) {
-                            UIApplication.sharedApplication().openURL(settingsURL)
+                        if let settingsURL
+                            = NSURL(string: UIApplicationOpenSettingsURLString) {
+                            UIApplication.sharedApplication()
+                                .openURL(settingsURL)
                         }
                         
                 }))
                 
-                self.presentViewController(alert, animated: true, completion: nil)
+                self.presentViewController(alert,
+                    animated: true,
+                    completion: nil)
                 return
             }
             
@@ -124,7 +129,7 @@ class AudioAttachmentViewController: UIViewController, AttachmentViewer,
         }
         recorder.stop()
         
-        self.audioPlayer = try? AVAudioPlayer(contentsOfURL: recorder.url);
+        self.audioPlayer = try? AVAudioPlayer(contentsOfURL: recorder.url)
         
         updateButtonState()
     }
@@ -235,7 +240,8 @@ class AudioAttachmentViewController: UIViewController, AttachmentViewer,
 	// END audio_stop_tapped
     
 	// BEGIN audio_player_did_finish_playing
-    func audioPlayerDidFinishPlaying(player: AVAudioPlayer, successfully flag: Bool) {
+    func audioPlayerDidFinishPlaying(player: AVAudioPlayer,
+         successfully flag: Bool) {
         updateButtonState()
     }
     // END audio_player_did_finish_playing

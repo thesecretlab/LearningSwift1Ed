@@ -75,7 +75,8 @@ class ImageAttachmentViewController: UIViewController, AttachmentViewer {
                 let image = context.createCGImage(processedCIImage,
                     fromRect: CGRect(origin: CGPoint.zero, size: image.size))
                     
-                button.setImage(UIImage(CGImage: image), forState: UIControlState.Normal)
+                button.setImage(UIImage(CGImage: image),
+                                forState: UIControlState.Normal)
             }
         }
     }
@@ -116,15 +117,5 @@ class ImageAttachmentViewController: UIViewController, AttachmentViewer {
         
     }
     // END image_attachment_share_image
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

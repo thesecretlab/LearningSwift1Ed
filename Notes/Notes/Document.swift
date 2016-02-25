@@ -31,9 +31,9 @@ extension NSFileWrapper {
     func conformsToType(type: CFString) -> Bool {
         
         // Get the extension of this file
-        guard let fileExtension = self.preferredFilename?
-            .componentsSeparatedByString(".").last else {
-                // If we can't get a file extension, assume that it doesn't conform
+        guard let fileExtension = self.fileExtension else {
+                // If we can't get a file extension,
+                // assume that it doesn't conform
                 return false
         }
         
@@ -41,8 +41,8 @@ extension NSFileWrapper {
         guard let fileType = UTTypeCreatePreferredIdentifierForTag(
             kUTTagClassFilenameExtension, fileExtension, nil)?
             .takeRetainedValue() else {
-                // If we can't figure out the file type from the extension,
-                // it also doesn't conform
+                // If we can't figure out the file type
+                // from the extension, it also doesn't conform
                 return false
         }
         
@@ -69,9 +69,8 @@ class Document: NSDocument {
     // Attachments
     // BEGIN attached_files_property
     dynamic var attachedFiles : [NSFileWrapper]? {
-        if let attachmentsDirectory = self.documentFileWrapper
-            .fileWrappers?[NoteDocumentFileNames.AttachmentsDirectory.rawValue],
-            let attachmentsFileWrappers = attachmentsDirectory.fileWrappers {
+        if let attachmentsFileWrappers =
+            self.attachmentsDirectoryWrapper?.fileWrappers {
                 
             let attachments = Array(attachmentsFileWrappers.values)
             
@@ -91,13 +90,16 @@ class Document: NSDocument {
             return nil
         }
         
-        var attachmentsDirectoryWrapper = fileWrappers[NoteDocumentFileNames.AttachmentsDirectory.rawValue]
+        var attachmentsDirectoryWrapper =
+            fileWrappers[NoteDocumentFileNames.AttachmentsDirectory.rawValue]
         
         if attachmentsDirectoryWrapper == nil {
             
-            attachmentsDirectoryWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
+            attachmentsDirectoryWrapper =
+                NSFileWrapper(directoryWithFileWrappers: [:])
             
-            attachmentsDirectoryWrapper?.preferredFilename = NoteDocumentFileNames.AttachmentsDirectory.rawValue
+            attachmentsDirectoryWrapper?.preferredFilename =
+                NoteDocumentFileNames.AttachmentsDirectory.rawValue
             
             self.documentFileWrapper.addFileWrapper(attachmentsDirectoryWrapper!)
         }
@@ -113,13 +115,17 @@ class Document: NSDocument {
     // BEGIN osx_window_nib_name
     override var windowNibName: String? {
         //- Returns the nib file name of the document
-        //- If you need to use a subclass of NSWindowController or if your document supports multiple NSWindowControllers, you should remove this property and override -makeWindowControllers instead.
+        //- If you need to use a subclass of NSWindowController or if your 
+        // document supports multiple NSWindowControllers, you should remove 
+        // this property and override -makeWindowControllers instead.
         return "Document"
     }
     // END osx_window_nib_name
     
     // BEGIN did_load_nib
-    override func windowControllerDidLoadNib(windowController: NSWindowController) {
+    override func windowControllerDidLoadNib(windowController:
+        NSWindowController) {
+        
         self.attachmentsList.registerForDraggedTypes([NSURLPboardType])
     }
     // END did_load_nib
@@ -163,7 +169,7 @@ class Document: NSDocument {
         let textRTFData = try self.text.dataFromRange(
             NSRange(0..<self.text.length),
             documentAttributes: [
-                NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType
+                NSDocumentTypeDocumentAttribute: NSRTFTextDocumentType
             ]
         )
         // END file_wrapper_of_type_rtf_load
@@ -178,11 +184,16 @@ class Document: NSDocument {
         // BEGIN file_wrapper_of_type_quicklook
         // Create the QuickLook folder
         
-        let thumbnailImageData = self.iconImageDataWithSize(CGSize(width: 512, height: 512))!
-        let thumbnailWrapper = NSFileWrapper(regularFileWithContents: thumbnailImageData)
+        let thumbnailImageData =
+            self.iconImageDataWithSize(CGSize(width: 512, height: 512))!
+        let thumbnailWrapper =
+            NSFileWrapper(regularFileWithContents: thumbnailImageData)
         
-        let quicklookPreview = NSFileWrapper(regularFileWithContents: textRTFData)
-        let quickLookFolderFileWrapper = NSFileWrapper(directoryWithFileWrappers: [
+        let quicklookPreview =
+            NSFileWrapper(regularFileWithContents: textRTFData)
+        
+        let quickLookFolderFileWrapper =
+            NSFileWrapper(directoryWithFileWrappers: [
             NoteDocumentFileNames.QuickLookTextFile.rawValue: quicklookPreview,
             NoteDocumentFileNames.QuickLookThumbnail.rawValue: thumbnailWrapper
             ])
@@ -349,7 +360,6 @@ extension Document : NSCollectionViewDelegate {
             let url = NSURL(fromPasteboard: pasteboard)
         {
             // Then attempt to add that as an attachment!
-            NSLog("Dropped \(url.path)")
             do {
                 // Add it to the document
                 try self.addAttachmentAtURL(url)
@@ -436,34 +446,50 @@ extension Document : AttachmentCellDelegate {
         }
     
         // First, ensure that the document is saved
-        self.autosaveWithImplicitCancellability(false, completionHandler: { (error) -> Void in
+        self.autosaveWithImplicitCancellability(false,
+                                        completionHandler: { (error) -> Void in
             
             // BEGIN document_open_selected_attachment_location
+            // If this attachment indicates that it's JSON, and we're able
+            // to get JSON data out of it...
             if attachment.conformsToType(kUTTypeJSON),
                 let data = attachment.regularFileContents,
                 let json = try? NSJSONSerialization
                     .JSONObjectWithData(data, options: NSJSONReadingOptions())
                     as? NSDictionary  {
-                        
+                
+                        // And if that JSON data includes lat and long entries...
+                
                         if let lat = json?["lat"] as? CLLocationDegrees,
                             let lon = json?["long"] as? CLLocationDegrees {
-                                
-                                let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-                                
-                                let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: nil)
-                                
-                                let mapItem = MKMapItem(placemark: placemark)
-                                
-                                mapItem.openInMapsWithLaunchOptions(nil);
-                                
+                            
+                            // Build a coordinate from them
+                            let coordinate =
+                                CLLocationCoordinate2D(latitude: lat,
+                                    longitude: lon)
+                            
+                            // Build a placemark with that coordinate
+                            let placemark =
+                                MKPlacemark(coordinate: coordinate,
+                                    addressDictionary: nil)
+                            
+                            // Build a map item from that placemark...
+                            let mapItem = MKMapItem(placemark: placemark)
+                            
+                            // And open the map item in the Maps app!
+                            mapItem.openInMapsWithLaunchOptions(nil)
+                            
                         }
             } else {
                 // END document_open_selected_attachment_location
                 
                 var url = self.fileURL
                 url = url?.URLByAppendingPathComponent(
-                    NoteDocumentFileNames.AttachmentsDirectory.rawValue, isDirectory: true)
-                url = url?.URLByAppendingPathComponent(attachment.preferredFilename!)
+                    NoteDocumentFileNames.AttachmentsDirectory.rawValue,
+                        isDirectory: true)
+                
+                url = url?
+                    .URLByAppendingPathComponent(attachment.preferredFilename!)
                 
                 if let path = url?.path {
                     NSWorkspace.sharedWorkspace().openFile(
@@ -542,7 +568,10 @@ extension Document {
             var firstHalf : CGRect = CGRectZero
             var secondHalf : CGRect = CGRectZero
             
-            CGRectDivide(entireImageRect, &firstHalf, &secondHalf, entireImageRect.size.height / 2.0, CGRectEdge.MinYEdge)
+            CGRectDivide(entireImageRect,
+                         &firstHalf,
+                         &secondHalf,
+                         entireImageRect.size.height / 2.0, CGRectEdge.MinYEdge)
             
             self.text.drawInRect(firstHalf)
             attachmentImage?.drawInRect(secondHalf)
@@ -551,12 +580,14 @@ extension Document {
             self.text.drawInRect(entireImageRect)
         }
         
-        let bitmapRepresentation = NSBitmapImageRep(focusedViewRect: entireImageRect)
+        let bitmapRepresentation =
+            NSBitmapImageRep(focusedViewRect: entireImageRect)
         
         image.unlockFocus()
         
         // Convert it to a PNG
-        return bitmapRepresentation?.representationUsingType(.NSPNGFileType, properties: [:])
+        return bitmapRepresentation?
+            .representationUsingType(.NSPNGFileType, properties: [:])
         
     }
     // END document_icon_data

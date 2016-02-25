@@ -6,13 +6,14 @@
 //  Copyright © 2015 Jonathon Manning. All rights reserved.
 //
 
-// BEGIN ios_watch_connectivity
 import UIKit
+// BEGIN ios_watch_connectivity
 import WatchConnectivity
 // END ios_watch_connectivity
 
 // BEGIN settings_notification_name
-let NotesApplicationDidRegisterUserNotificationSettings = "NotesApplicationDidRegisterUserNotificationSettings"
+let NotesApplicationDidRegisterUserNotificationSettings
+    = "NotesApplicationDidRegisterUserNotificationSettings"
 // END settings_notification_name
 
 
@@ -34,19 +35,22 @@ extension AppDelegate : WCSessionDelegate {
                     let url = NSURL(string: urlString) {
                     handleLoadNote(url, replyHandler: replyHandler)
                 } else {
-                    // if there's no URL, then fall through to the error case
+                    // If there's no URL, then fall through to the default case
                     fallthrough
                 }
             case WatchMessageTypeCreateNoteKey:
-                if let textForNote = message[WatchMessageContentTextKey] as? String {
+                if let textForNote = message[WatchMessageContentTextKey]
+                    as? String {
+                    
                     handleCreateNote(textForNote, replyHandler: replyHandler)
                 } else {
+                    // No text provided? Fall through to the default case
                     fallthrough
                 }
                 
                 
             default:
-                // No idea what this message is, so reply with the empty dictionary
+                // Don't know what this is, so reply with the empty dictionary
                 replyHandler([:])
             }
         }
@@ -54,7 +58,8 @@ extension AppDelegate : WCSessionDelegate {
     // END ios_watch_wcsessiondelegate_didrececivemessage
     
     // BEGIN ios_watch_wcsessiondelegate_handlecreatenote
-    func handleCreateNote(text: String, replyHandler: ([String:AnyObject]) -> Void) {
+    func handleCreateNote(text: String,
+         replyHandler: ([String:AnyObject]) -> Void) {
         
         let documentName = "Document \(arc4random()) from Watch.note"
         
@@ -103,7 +108,8 @@ extension AppDelegate : WCSessionDelegate {
                 NSOperationQueue().addOperationWithBlock { () -> Void in
                     do {
                         try NSFileManager.defaultManager()
-                            .setUbiquitous(true, itemAtURL: documentDestinationURL,
+                            .setUbiquitous(true,
+                                itemAtURL: documentDestinationURL,
                                 destinationURL: ubiquitousDestinationURL)
                         
                         
@@ -112,7 +118,8 @@ extension AppDelegate : WCSessionDelegate {
                             "\(error.localizedDescription)")
                     }
                     
-                    NSOperationQueue.mainQueue().addOperationWithBlock { () -> Void in
+                    NSOperationQueue.mainQueue()
+                        .addOperationWithBlock { () -> Void in
                         // Pass back the list of everything currently in iCloud
                         self.handleListAllNotes(replyHandler)
                     }
@@ -149,7 +156,10 @@ extension AppDelegate : WCSessionDelegate {
             if let localDocumentsFolder
                 = fileManager.URLsForDirectory(.DocumentDirectory,
                     inDomains: .UserDomainMask).first {
-                let localFiles = try fileManager.contentsOfDirectoryAtPath(localDocumentsFolder.path!)
+                
+                let localFiles =
+                    try fileManager
+                    .contentsOfDirectoryAtPath(localDocumentsFolder.path!)
                     .map({
                         localDocumentsFolder.URLByAppendingPathComponent($0,
                             isDirectory: false)
@@ -197,8 +207,11 @@ extension AppDelegate : WCSessionDelegate {
         let document = Document(fileURL:url)
         document.openWithCompletionHandler { success in
             
-            if success == false {
+            // Ensure that we successfully opened the document
+            guard success == true else {
+                // If we didn't, reply with an empty dictionary and bail out
                 replyHandler([:])
+                return
             }
             
             let reply = [
@@ -224,7 +237,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(application: UIApplication,
+         didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?)
+        -> Bool {
         
         // BEGIN access_to_icloud
         // Ensure we've got access to iCloud
@@ -247,37 +262,56 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationWillResignActive(application: UIApplication) {
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+        // Sent when the application is about to move from active to inactive 
+        // state. This can occur for certain types of temporary interruptions 
+        // (such as an incoming phone call or SMS message) or when the user 
+        // quits the application and it begins the transition to the background
+        // state.
+        // Use this method to pause ongoing tasks, disable timers, and throttle 
+        // down OpenGL ES frame rates. Games should use this method to pause the 
+        // game.
     }
     
     func applicationDidEnterBackground(application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        // Use this method to release shared resources, save user data, 
+        // invalidate timers, and store enough application state information to 
+        // restore your application to its current state in case it is terminated 
+        // later.
+        // If your application supports background execution, this method is 
+        // called instead of applicationWillTerminate: when the user quits.
     }
     
     func applicationWillEnterForeground(application: UIApplication) {
-        // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+        // Called as part of the transition from the background to the inactive 
+        // state; here you can undo many of the changes made on entering the
+        // background.
     }
     
     func applicationDidBecomeActive(application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        // Restart any tasks that were paused (or not yet started) while the 
+        // application was inactive. If the application was previously in the 
+        // background, optionally refresh the user interface.
     }
     
     func applicationWillTerminate(application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        // Called when the application is about to terminate. Save data if 
+        // appropriate. See also applicationDidEnterBackground:.
     }
     
     // BEGIN open_url
-    func application(app: UIApplication, openURL url: NSURL, options: [String : AnyObject]) -> Bool {
+    func application(app: UIApplication, openURL url: NSURL,
+         options: [String : AnyObject]) -> Bool {
+        
         if url.scheme == "notes", let path = url.path {
             
             // Return to the list of documents
-            if let navigationController = self.window?.rootViewController as? UINavigationController {
+            if let navigationController =
+                self.window?.rootViewController as? UINavigationController {
                 
                 navigationController.popToRootViewControllerAnimated(false)
                 
-                 (navigationController.topViewController as? DocumentListViewController)?.openDocumentWithPath(path)
+                 (navigationController.topViewController
+                    as? DocumentListViewController)?.openDocumentWithPath(path)
             }
             
             return true
@@ -289,23 +323,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // END open_url
     
     // BEGIN local_notification_received
-    func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
+    func application(application: UIApplication,
+         didReceiveLocalNotification notification: UILocalNotification) {
         
         // Extract the document and open it
         if notification.category == Document.alertCategory,
             let url = notification.userInfo?["owner"] as? String,
-            let navigationController = self.window?.rootViewController as? UINavigationController
+            let navigationController =
+                self.window?.rootViewController as? UINavigationController
             {
             if let path = NSURL(string: url)?.path {
                 navigationController.popToRootViewControllerAnimated(false)
                 
-                (navigationController.topViewController as? DocumentListViewController)?.openDocumentWithPath(path)
+                (navigationController.topViewController as?
+                    DocumentListViewController)?.openDocumentWithPath(path)
             }
         }
         
     }
     
-    func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
+    func application(application: UIApplication,
+         handleActionWithIdentifier identifier: String?,
+            forLocalNotification notification: UILocalNotification,
+                                 completionHandler: () -> Void) {
         
         if identifier == Document.alertSnoozeAction {
             // Reschedule the notification
@@ -313,7 +353,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             application.scheduleLocalNotification(notification)
         }
         
-        completionHandler();
+        completionHandler()
     }
     // END local_notification_received
 
@@ -326,7 +366,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         restorationHandler: ([AnyObject]?) -> Void) -> Bool {
         
         // Return to the list of documents
-        if let navigationController = self.window?.rootViewController as? UINavigationController {
+        if let navigationController =
+            self.window?.rootViewController as? UINavigationController {
+            
             navigationController.popToRootViewControllerAnimated(false)
             
             // We're now at the list of documents; tell the restoration 
@@ -343,9 +385,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // END application_continue_activity
     
     // BEGIN application_did_register
-    func application(application: UIApplication, didRegisterUserNotificationSettings notificationSettings: UIUserNotificationSettings) {
+    func application(application: UIApplication,
+         didRegisterUserNotificationSettings notificationSettings:
+            UIUserNotificationSettings) {
         
-        NSNotificationCenter.defaultCenter().postNotificationName(NotesApplicationDidRegisterUserNotificationSettings, object: self)
+        NSNotificationCenter.defaultCenter().postNotificationName(
+                NotesApplicationDidRegisterUserNotificationSettings,
+                object: self)
     }
     // END application_did_register
     

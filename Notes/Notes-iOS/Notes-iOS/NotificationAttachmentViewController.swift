@@ -65,22 +65,31 @@ class NotificationAttachmentViewController: UIViewController, AttachmentViewer {
             })
         
         // If the app doesn't already have access, register for access
-        if let settings = UIApplication.sharedApplication().currentUserNotificationSettings() where
-            settings.types.contains(.Alert) != true {
+        if let settings = UIApplication.sharedApplication()
+            .currentUserNotificationSettings()
+            where settings.types.contains(.Alert) != true {
                 
                 let action = UIMutableUserNotificationAction()
-                action.identifier = Document.alertSnoozeAction;
+                action.identifier = Document.alertSnoozeAction
                 action.activationMode = .Background
                 action.title = "Snooze"
                 
                 let category = UIMutableUserNotificationCategory()
                 category.identifier = Document.alertCategory
-                category.setActions([action], forContext: UIUserNotificationActionContext.Default)
-                category.setActions([action], forContext: UIUserNotificationActionContext.Minimal)
+            
+                category.setActions(
+                    [action],
+                    forContext: UIUserNotificationActionContext.Default)
+            
+                category.setActions(
+                    [action],
+                    forContext: UIUserNotificationActionContext.Minimal)
                 
-                let settings = UIUserNotificationSettings(forTypes: .Alert, categories: [category])
+                let settings = UIUserNotificationSettings(forTypes: .Alert,
+                                                          categories: [category])
                 
-                UIApplication.sharedApplication().registerUserNotificationSettings(settings)
+                UIApplication.sharedApplication()
+                    .registerUserNotificationSettings(settings)
                 
                 self.datePicker.enabled = false
                 self.datePicker.userInteractionEnabled = false
@@ -92,7 +101,8 @@ class NotificationAttachmentViewController: UIViewController, AttachmentViewer {
     // BEGIN notification_save_and_close
     func setNotificationAndClose() {
         
-        // Prepare and add the notification if the date picker is not set in the future
+        // Prepare and add the notification if the date picker
+        // isn't set in the future
         let date : NSDate
         
         if self.datePicker.date.timeIntervalSinceNow < 5 {

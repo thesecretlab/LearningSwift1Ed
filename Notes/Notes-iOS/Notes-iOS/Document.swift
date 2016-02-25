@@ -116,7 +116,7 @@ class Document: UIDocument {
         let textRTFData = try self.text.dataFromRange(
             NSRange(0..<self.text.length),
             documentAttributes:
-                [NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType])
+                [NSDocumentTypeDocumentAttribute: NSRTFTextDocumentType])
         
         if let oldTextFileWrapper = self.documentFileWrapper
             .fileWrappers?[NoteDocumentFileNames.TextFile.rawValue] {
@@ -126,15 +126,22 @@ class Document: UIDocument {
         // BEGIN document_base_quicklook
         // Create the QuickLook folder
         
-        let thumbnailImageData = self.iconImageDataWithSize(CGSize(width: 512, height: 512))!
-        let thumbnailWrapper = NSFileWrapper(regularFileWithContents: thumbnailImageData)
+        let thumbnailImageData =
+            self.iconImageDataWithSize(CGSize(width: 512, height: 512))!
         
-        let quicklookPreview = NSFileWrapper(regularFileWithContents: textRTFData)
-        let quickLookFolderFileWrapper = NSFileWrapper(directoryWithFileWrappers: [
+        let thumbnailWrapper =
+            NSFileWrapper(regularFileWithContents: thumbnailImageData)
+        
+        let quicklookPreview =
+            NSFileWrapper(regularFileWithContents: textRTFData)
+        
+        let quickLookFolderFileWrapper =
+            NSFileWrapper(directoryWithFileWrappers: [
             NoteDocumentFileNames.QuickLookTextFile.rawValue: quicklookPreview,
             NoteDocumentFileNames.QuickLookThumbnail.rawValue: thumbnailWrapper
             ])
-        quickLookFolderFileWrapper.preferredFilename = NoteDocumentFileNames.QuickLookDirectory.rawValue
+        quickLookFolderFileWrapper.preferredFilename =
+            NoteDocumentFileNames.QuickLookDirectory.rawValue
         
         // Remove the old QuickLook folder if it existed
         if let oldQuickLookFolder = self.documentFileWrapper
@@ -171,7 +178,7 @@ class Document: UIDocument {
         
         // Read in the RTF
         self.text = try NSAttributedString(data: textFileData,
-            options: [NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType],
+            options: [NSDocumentTypeDocumentAttribute: NSRTFTextDocumentType],
             documentAttributes: nil)
         
         // Keep a reference to the file wrapper
@@ -197,7 +204,8 @@ class Document: UIDocument {
         if attachmentsDirectoryWrapper == nil {
             
             // Create it
-            attachmentsDirectoryWrapper = NSFileWrapper(directoryWithFileWrappers: [:])
+            attachmentsDirectoryWrapper =
+                NSFileWrapper(directoryWithFileWrappers: [:])
             attachmentsDirectoryWrapper?.preferredFilename =
                 NoteDocumentFileNames.AttachmentsDirectory.rawValue
             
@@ -260,7 +268,8 @@ class Document: UIDocument {
     // It might be nil if 1. this isn't one of our attachments or
     // 2. we failed to save, in which case the attachment may not exist
     // on disk
-    func URLForAttachment(attachment: NSFileWrapper, completion: NSURL? -> Void) {
+    func URLForAttachment(attachment: NSFileWrapper,
+         completion: NSURL? -> Void) {
         
         // Ensure that this is an attachment we have
         guard let attachments = self.attachedFiles
@@ -279,7 +288,7 @@ class Document: UIDocument {
             if success {
                 
                 // We're now certain that attachments actually
-                // exit on disk, so we can get their URL
+                // exist on disk, so we can get their URL
                 let attachmentURL = self.fileURL
                     .URLByAppendingPathComponent(
                         NoteDocumentFileNames.AttachmentsDirectory.rawValue,
@@ -339,10 +348,11 @@ class Document: UIDocument {
             if let allNotifications = UIApplication.sharedApplication()
                 .scheduledLocalNotifications {
                 
-                return allNotifications.filter({ (item:UILocalNotification) -> Bool in
+                return allNotifications.filter({
+                    (item:UILocalNotification) -> Bool in
                     
                     
-                    // If it has an "owner", and is scheduled to appear in the future..
+                    // If it has an "owner", and will appear in the future..
                     if let owner = item.userInfo?["owner"] as? String where
                         item.fireDate?.timeIntervalSinceNow > 0
                         {
@@ -361,7 +371,8 @@ class Document: UIDocument {
         
         set {
             if let currentNotification = self.localNotification {
-                UIApplication.sharedApplication().cancelLocalNotification(currentNotification)
+                UIApplication.sharedApplication()
+                    .cancelLocalNotification(currentNotification)
             }
             
             if let theNotification = newValue {
@@ -369,7 +380,8 @@ class Document: UIDocument {
                 userInfo["owner"] = self.fileURL.absoluteString
                 theNotification.userInfo = userInfo
                 
-                UIApplication.sharedApplication().scheduleLocalNotification(theNotification)
+                UIApplication.sharedApplication()
+                    .scheduleLocalNotification(theNotification)
             }
         }
     }

@@ -8,7 +8,10 @@
 
 // BEGIN index_handler
 import CoreSpotlight
+
+// BEGIN index_handler_uikit
 import UIKit
+// END index_handler_uikit
 
 class IndexRequestHandler: CSIndexExtensionRequestHandler {
     
@@ -27,23 +30,30 @@ class IndexRequestHandler: CSIndexExtensionRequestHandler {
                 
                 let localFiles = try fileManager
                     .contentsOfDirectoryAtPath(localDocumentsFolder.path!)
-                    .map({ localDocumentsFolder.URLByAppendingPathComponent($0, isDirectory: false) })
+                    .map({
+                        localDocumentsFolder.URLByAppendingPathComponent($0,
+                            isDirectory: false)
+                    })
                 
                 allFiles.appendContentsOf(localFiles)
             } catch {
-                NSLog("Failed to get contents of iCloud container");
+                NSLog("Failed to get list of local files!")
             }
         }
         
         // Get the list of documents in iCloud
-        if let documentsFolder = fileManager.URLForUbiquityContainerIdentifier(nil)?
+        if let documentsFolder = fileManager
+            .URLForUbiquityContainerIdentifier(nil)?
             .URLByAppendingPathComponent("Documents", isDirectory: true) {
             do {
                 
                 // Get the list of files
                 let iCloudFiles = try fileManager
                     .contentsOfDirectoryAtPath(documentsFolder.path!)
-                    .map({ documentsFolder.URLByAppendingPathComponent($0, isDirectory: false) })
+                    .map({
+                        documentsFolder.URLByAppendingPathComponent($0,
+                            isDirectory: false)
+                    })
                 
                 allFiles.appendContentsOf(iCloudFiles)
                 
@@ -84,9 +94,9 @@ class IndexRequestHandler: CSIndexExtensionRequestHandler {
             NoteDocumentFileNames.TextFile.rawValue)
         
         if let textData = NSData(contentsOfURL: textFileURL),
-            let text = try? NSAttributedString(data: textData,
-                options: [NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType],
-                documentAttributes: nil) {
+           let text = try? NSAttributedString(data: textData,
+               options: [NSDocumentTypeDocumentAttribute: NSRTFTextDocumentType],
+               documentAttributes: nil) {
                     
                     attributeSet.contentDescription = text.string
                     
@@ -94,8 +104,10 @@ class IndexRequestHandler: CSIndexExtensionRequestHandler {
             attributeSet.contentDescription = ""
         }
         
-        let item = CSSearchableItem(uniqueIdentifier: url.absoluteString,
-            domainIdentifier: "au.com.secretlab.Notes", attributeSet: attributeSet)
+        let item =
+            CSSearchableItem(uniqueIdentifier: url.absoluteString,
+            domainIdentifier: "au.com.secretlab.Notes",
+            attributeSet: attributeSet)
         
         return item
     }
@@ -104,7 +116,9 @@ class IndexRequestHandler: CSIndexExtensionRequestHandler {
     
     // BEGIN index_reindex_all
     override func searchableIndex(searchableIndex: CSSearchableIndex,
-        reindexAllSearchableItemsWithAcknowledgementHandler acknowledgementHandler: () -> Void) {
+        reindexAllSearchableItemsWithAcknowledgementHandler
+            acknowledgementHandler: () -> Void) {
+        
         // Reindex all data with the provided index
         
         let files = availableFiles
@@ -126,7 +140,10 @@ class IndexRequestHandler: CSIndexExtensionRequestHandler {
     // END index_reindex_all
 
     // BEGIN index_reindex
-    override func searchableIndex(searchableIndex: CSSearchableIndex, reindexSearchableItemsWithIdentifiers identifiers: [String], acknowledgementHandler: () -> Void) {
+    override func searchableIndex(searchableIndex: CSSearchableIndex,
+                  reindexSearchableItemsWithIdentifiers identifiers: [String],
+                                      acknowledgementHandler: () -> Void) {
+        
         // Reindex any items with the given identifiers and the provided index
         
         var itemsToIndex : [CSSearchableItem] = []
@@ -134,8 +151,7 @@ class IndexRequestHandler: CSIndexExtensionRequestHandler {
         
         for identifier in identifiers {
             
-            if let url = NSURL(string: identifier),
-                let item = itemForURL(url) {
+            if let url = NSURL(string: identifier), let item = itemForURL(url) {
                 itemsToIndex.append(item)
             } else {
                 itemsToRemove.append(identifier)
@@ -143,9 +159,11 @@ class IndexRequestHandler: CSIndexExtensionRequestHandler {
         }
         
         searchableIndex.indexSearchableItems(itemsToIndex) { (error) -> Void in
-            searchableIndex.deleteSearchableItemsWithIdentifiers(itemsToRemove) { (error) -> Void in
-                acknowledgementHandler()
-            }
+            searchableIndex
+                .deleteSearchableItemsWithIdentifiers(itemsToRemove) {
+                    (error) -> Void in
+                    acknowledgementHandler()
+                }
         }
         
         

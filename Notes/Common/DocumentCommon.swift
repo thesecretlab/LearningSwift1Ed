@@ -16,7 +16,7 @@ import Foundation
 // BEGIN error_func
 let ErrorDomain = "NotesErrorDomain"
 
-func err(code: ErrorCode, _ userInfo:[NSObject:AnyObject]?=nil)  -> NSError {
+func err(code: ErrorCode, _ userInfo:[NSObject:AnyObject]? = nil)  -> NSError {
     // Generate an NSError object, using ErrorDomain, and using whatever
     // value we were passed.
     return NSError(domain: ErrorDomain, code: code.rawValue, userInfo: userInfo)

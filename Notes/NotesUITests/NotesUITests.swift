@@ -45,7 +45,8 @@ class NotesUITests: XCTestCase {
         let untitledWindow = app.windows["Untitled"]
         
         // Get the main text view
-        let textView = untitledWindow.childrenMatchingType(.ScrollView).elementBoundByIndex(0).childrenMatchingType(.TextView).element
+        let textView = untitledWindow.childrenMatchingType(.ScrollView)
+            .elementBoundByIndex(0).childrenMatchingType(.TextView).element
         
         // Type some text
         textView.typeText("This is a useful document that I'm testing.")
@@ -54,7 +55,8 @@ class NotesUITests: XCTestCase {
         textView.typeKey("s", modifierFlags:.Command)
         
         // The save sheet has appeared; type "Test" in it and press return
-        untitledWindow.sheets["save"].childrenMatchingType(.TextField).elementBoundByIndex(0).typeText("Test\r")
+        untitledWindow.sheets["save"].childrenMatchingType(.TextField)
+            .elementBoundByIndex(0).typeText("Test\r")
         
         // Close the document
         app.windows["Test"].typeKey("w", modifierFlags:.Command)

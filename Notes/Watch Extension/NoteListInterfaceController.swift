@@ -38,12 +38,21 @@ class NoteListInterfaceController: WKInterfaceController {
     
     // BEGIN watch_create_note
     @IBAction func createNote() {
-        self.presentTextInputControllerWithSuggestions(nil,
+        
+        let suggestions = [
+            "Awesome note!",
+            "What a great test note!",
+            "I love purchasing and reading books from O'Reilly Media!"
+        ]
+        
+        self.presentTextInputControllerWithSuggestions(suggestions,
             allowedInputMode: WKTextInputMode.Plain) {
             (results) -> Void in
             
                 if let text = results?.first as? String {
-                    SessionManager.sharedSession.createNote(text, completionHandler: { notes, error in
+                    SessionManager
+                        .sharedSession
+                        .createNote(text, completionHandler: { notes, error in
                         self.updateListWithNotes(notes)
                     })
                 }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+
 import MobileCoreServices
 
 // BEGIN core_spotlight
@@ -52,8 +53,10 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
     }
     // END base_properties
     
-    var beginEditingButton = UIBarButtonItem(barButtonSystemItem: .Edit, target: nil, action: nil)
-    var endEditingButton = UIBarButtonItem(barButtonSystemItem: .Done, target: nil, action: nil)
+    var beginEditingButton = UIBarButtonItem(barButtonSystemItem: .Edit,
+                                             target: nil, action: nil)
+    var endEditingButton = UIBarButtonItem(barButtonSystemItem: .Done,
+                                           target: nil, action: nil)
 
     // BEGIN attachments_collection_view
     @IBOutlet weak var attachmentsCollectionView : UICollectionView!
@@ -96,6 +99,8 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
     // BEGIN document_vc_view_did_load
     override func viewDidLoad() {
         
+        super.viewDidLoad()
+        
         let menuController = UIMenuController.sharedMenuController()
         
         /*-
@@ -105,7 +110,9 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
         -*/
         
         // BEGIN localization
-        let speakItem = UIMenuItem(title:  NSLocalizedString("Speak", comment: "speak action"), action: "speakSelection:")
+        let speakItem = UIMenuItem(
+            title:  NSLocalizedString("Speak", comment: "speak action"),
+            action: "speakSelection:")
         // END localization
         menuController.menuItems = [speakItem]
         
@@ -116,7 +123,8 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
         // END document_vc_view_did_load_edit_support
         
         // BEGIN document_vc_view_did_load_prefs
-        self.editing = NSUserDefaults.standardUserDefaults().boolForKey("document_edit_on_open")
+        self.editing = NSUserDefaults
+            .standardUserDefaults().boolForKey("document_edit_on_open")
         // END document_vc_view_did_load_prefs
         
         // BEGIN document_vc_view_did_load_undo_support
@@ -124,8 +132,17 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
             self.undoButton?.enabled = self.textView.undoManager?.canUndo == true
         }
         
-        didUndoObserver = NSNotificationCenter.defaultCenter().addObserverForName(NSUndoManagerDidUndoChangeNotification, object: nil, queue: nil, usingBlock: respondToUndoOrRedo)
-        didRedoObserver = NSNotificationCenter.defaultCenter().addObserverForName(NSUndoManagerDidRedoChangeNotification, object: nil, queue: nil, usingBlock: respondToUndoOrRedo)
+        didUndoObserver = NSNotificationCenter.defaultCenter()
+            .addObserverForName(NSUndoManagerDidUndoChangeNotification,
+                                object: nil,
+                                queue: nil,
+                                usingBlock: respondToUndoOrRedo)
+        
+        didRedoObserver = NSNotificationCenter.defaultCenter()
+            .addObserverForName(NSUndoManagerDidRedoChangeNotification,
+                                object: nil,
+                                queue: nil,
+                                usingBlock: respondToUndoOrRedo)
         
         // END document_vc_view_did_load_undo_support
         
@@ -163,8 +180,6 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
     
     // BEGIN speak_selection
     func speakSelection(sender:AnyObject) {
-        
-        self.textView.selectedTextRange?.start
         
         if let range = self.textView.selectedTextRange,
             let selectedText = self.textView.textInRange(range) {
@@ -212,11 +227,14 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
                     document.userActivity?.title = document.localizedName
                     
                     let contentAttributeSet
-                        = CSSearchableItemAttributeSet(itemContentType: document.fileType!)
+                        = CSSearchableItemAttributeSet(
+                            itemContentType: document.fileType!)
+                    
                     contentAttributeSet.title = document.localizedName
                     contentAttributeSet.contentDescription = document.text.string
                     
-                    document.userActivity?.contentAttributeSet = contentAttributeSet
+                    document.userActivity?.contentAttributeSet
+                        = contentAttributeSet
 
                     document.userActivity?.eligibleForSearch = true
                     // END view_will_appear_searching_support
@@ -252,16 +270,20 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
                     let alertTitle = "Error"
                     let alertMessage = "Failed to open document"
                     let alert = UIAlertController(title: alertTitle,
-                        message: alertMessage, preferredStyle: UIAlertControllerStyle.Alert)
+                        message: alertMessage,
+                        preferredStyle: UIAlertControllerStyle.Alert)
                     
                     // Add a button that returns to the previous screen
                     alert.addAction(UIAlertAction(title: "Close",
                         style: .Default, handler: { (action) -> Void in
-                        self.navigationController?.popViewControllerAnimated(true)
+                        self.navigationController?
+                            .popViewControllerAnimated(true)
                     }))
                     
                     // Show the alert
-                    self.presentViewController(alert, animated: true, completion: nil)
+                    self.presentViewController(alert,
+                        animated: true,
+                        completion: nil)
                 }
             }
         }
@@ -289,14 +311,18 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
     
     // BEGIN document_state_changed
     func documentStateChanged() {
-        if let document = self.document where document.documentState.contains(UIDocumentState.InConflict) {
+        if let document = self.document
+            where document.documentState.contains(UIDocumentState.InConflict) {
+            
             // Gather all conflicted versions
             guard var conflictedVersions = NSFileVersion
                 .unresolvedConflictVersionsOfItemAtURL(document.fileURL) else {
                 fatalError("The document is in conflict, but no " +
                     "conflicting versions were found. This should not happen.")
             }
-            let currentVersion = NSFileVersion.currentVersionOfItemAtURL(document.fileURL)!
+            let currentVersion
+                = NSFileVersion.currentVersionOfItemAtURL(document.fileURL)!
+            
             // And include our own local version
             conflictedVersions += [currentVersion]
             
@@ -305,7 +331,7 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
             let message = "Choose a version of this document to keep."
             
             let picker = UIAlertController(title: title, message: message,
-                preferredStyle: UIAlertControllerStyle.ActionSheet);
+                preferredStyle: UIAlertControllerStyle.ActionSheet)
             
             let dateFormatter = NSDateFormatter()
             dateFormatter.dateStyle = .ShortStyle
@@ -319,21 +345,30 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
             
             // For each version, offer it as an option
             for version in conflictedVersions {
-                let description = "Edited on \(version.localizedNameOfSavingComputer!) at \(dateFormatter.stringFromDate(version.modificationDate!))"
+                let description = "Edited on " +
+                    "\(version.localizedNameOfSavingComputer!) at " +
+                    "\(dateFormatter.stringFromDate(version.modificationDate!))"
                 
-                let action = UIAlertAction(title: description, style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+                let action = UIAlertAction(title: description,
+                                           style: UIAlertActionStyle.Default,
+                                           handler: { (action) -> Void in
                     
                     // If it was selected, use this version
                     do {
                         
                         if version != currentVersion {
-                            try version.replaceItemAtURL(document.fileURL, options: NSFileVersionReplacingOptions.ByMoving)
-                            try NSFileVersion.removeOtherVersionsOfItemAtURL(document.fileURL)
+                            try version.replaceItemAtURL(document.fileURL,
+                                options: NSFileVersionReplacingOptions.ByMoving)
+                            
+                            try NSFileVersion
+                                .removeOtherVersionsOfItemAtURL(document.fileURL)
                         }
                         
                         // BEGIN document_state_changed_bar_items_context
                         
-                        document.revertToContentsOfURL(document.fileURL, completionHandler: { (success) -> Void in
+                        document.revertToContentsOfURL(document.fileURL,
+                            completionHandler: { (success) -> Void in
+                                
                             self.textView.attributedText = document.text
                             self.attachmentsCollectionView?.reloadData()
                             
@@ -349,11 +384,20 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
                         // END document_state_changed_bar_items_context
                         
                     } catch let error as NSError {
-                        // If there was a problem, let the user know and close the document
-                        let errorView = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
-                        errorView.addAction(UIAlertAction(title: "Done", style: UIAlertActionStyle.Cancel, handler: cancelAndClose))
+                        // If there was a problem, let the user know and 
+                        // close the document
+                        let errorView = UIAlertController(title: "Error",
+                            message: error.localizedDescription,
+                            preferredStyle: UIAlertControllerStyle.Alert)
+                        
+                        errorView.addAction(UIAlertAction(title: "Done",
+                            style: UIAlertActionStyle.Cancel,
+                            handler: cancelAndClose))
+                        
                         self.shouldCloseOnDisappear = false
-                        self.presentViewController(errorView, animated: true, completion: nil)
+                        self.presentViewController(errorView,
+                            animated: true,
+                            completion: nil)
                     }
                 
                 })
@@ -361,7 +405,8 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
             }
             
             // Add a 'choose later' option
-            picker.addAction(UIAlertAction(title: "Choose Later", style: UIAlertActionStyle.Cancel, handler: cancelAndClose))
+            picker.addAction(UIAlertAction(title: "Choose Later",
+                style: UIAlertActionStyle.Cancel, handler: cancelAndClose))
             
             self.shouldCloseOnDisappear = false
             
@@ -385,14 +430,21 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
         }
         
         
-        let notificationButton = UIBarButtonItem(image: notificationButtonImage, style: UIBarButtonItemStyle.Plain, target: self, action: "showNotification")
+        let notificationButton =
+            UIBarButtonItem(image: notificationButtonImage,
+                            style: UIBarButtonItemStyle.Plain,
+                            target: self,
+                            action: "showNotification")
         
         rightButtonItems.append(notificationButton)
         // END bar_items_notification_button
         
         // BEGIN bar_items_undo_support
         if editing {
-            undoButton = UIBarButtonItem(barButtonSystemItem: .Undo, target: self.textView?.undoManager, action: "undo")
+            undoButton = UIBarButtonItem(barButtonSystemItem: .Undo,
+                                         target: self.textView?.undoManager,
+                                         action: "undo")
+            
             undoButton?.enabled = self.textView?.undoManager?.canUndo == true
             rightButtonItems.append(undoButton!)
         }
@@ -405,7 +457,8 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
     
     // BEGIN show_notification
     func showNotification() {
-        self.performSegueWithIdentifier("ShowNotificationAttachment", sender: nil)
+        self.performSegueWithIdentifier("ShowNotificationAttachment",
+                                        sender: nil)
     }
     // END show_notification
     
@@ -441,7 +494,8 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
             // If we were coming from a cell, get the attachment
             // that this cell represents so that we can view it
             if let cell = sender as? UICollectionViewCell,
-                let indexPath = self.attachmentsCollectionView?.indexPathForCell(cell),
+                let indexPath =
+                    self.attachmentsCollectionView?.indexPathForCell(cell),
                 let attachment = self.document?.attachedFiles?[indexPath.row] {
                 
                 attachmentViewer.attachmentFile = attachment
@@ -455,9 +509,9 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
             // END prepare_for_segue_close_on_disappear
             
             // If this has a popover, present it from the the attachments list
-            if let popover = segue.destinationViewController.popoverPresentationController
-                {
-                    
+            if let popover =
+                segue.destinationViewController.popoverPresentationController {
+                
                 // BEGIN prepare_for_segue_popover_delegate
                 // Ensure that we add a close button to the popover on iPhone
                 popover.delegate = self
@@ -476,7 +530,8 @@ class DocumentViewController: UIViewController, UITextViewDelegate {
 
 // MARK: - Collection view
 // BEGIN document_vc_collectionview
-extension DocumentViewController : UICollectionViewDataSource, UICollectionViewDelegate {
+extension DocumentViewController : UICollectionViewDataSource,
+    UICollectionViewDelegate {
     
     // BEGIN document_vc_numberofitems
     func collectionView(collectionView: UICollectionView,
@@ -502,7 +557,8 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
         cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         // Work out how many cells we need to display
-        let totalNumberOfCells = collectionView.numberOfItemsInSection(indexPath.section)
+        let totalNumberOfCells =
+            collectionView.numberOfItemsInSection(indexPath.section)
         
         // Figure out if we're being asked to configure the Add cell,
         // or any other cell. If we're the last cell, it's the Add cell.
@@ -532,10 +588,14 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
             
             // Give it to the cell
             if image == nil {
+                
                 // We don't know what it is, so use a generic image
                 image = UIImage(named: "File")
+                
                 // Also set the label
-                attachmentCell.extensionLabel?.text = attachment?.fileExtension?.uppercaseString
+                attachmentCell.extensionLabel?.text =
+                    attachment?.fileExtension?.uppercaseString
+                
             } else {
                 // We know what it is, so ensure that the label is empty
                 attachmentCell.extensionLabel?.text = nil
@@ -572,32 +632,39 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
     
     // BEGIN add_attachment_sheet
     func addAttachment(sourceView : UIView) {
-        let actionSheet = UIAlertController(title: "Add attachment", message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet);
+        let actionSheet
+            = UIAlertController(title: "Add attachment",
+                                message: nil,
+                                preferredStyle: UIAlertControllerStyle
+                                    .ActionSheet)
 
         // BEGIN add_attachment_sheet_camera
         // If a camera is available to use...
-        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) {
-            // This variable contains a closure that either shows the image picker,
+        if UIImagePickerController
+            .isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) {
+            // This variable contains a closure that shows the image picker,
             // or asks the user to grant permission.
             var handler : (action:UIAlertAction) -> Void
             
             
-            switch AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo) {
+            switch AVCaptureDevice
+                .authorizationStatusForMediaType(AVMediaTypeVideo) {
             case .Authorized:
                 fallthrough
             case .NotDetermined:
-                // If we have permission, or we don't know if it's been denied yet,
+                // If we have permission, or we don't know if it's been denied,
                 // then the closure shows the image picker.
                 handler = { (action) in
                     self.addPhoto()
                 }
             default:
                 
-                // Otherwise, when the button is tapped, ask the user to grant permission.
+                // Otherwise, when the button is tapped, ask for permission.
                 handler = { (action) in
                     
                     let title = "Camera access required"
-                    let message = "Go to Settings to grant permission to access the camera."
+                    let message = "Go to Settings to grant permission to" +
+                        "access the camera."
                     let cancelButton = "Cancel"
                     let settingsButton = "Settings"
                     
@@ -613,13 +680,18 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
                     alert.addAction(UIAlertAction(title: settingsButton,
                         style: .Default, handler: { (action) in
                             
-                            if let settingsURL = NSURL(string: UIApplicationOpenSettingsURLString) {
-                                UIApplication.sharedApplication().openURL(settingsURL)
+                            if let settingsURL = NSURL(
+                                string: UIApplicationOpenSettingsURLString) {
+                                
+                                UIApplication.sharedApplication()
+                                    .openURL(settingsURL)
                             }
                             
                     }))
                     
-                    self.presentViewController(alert, animated: true, completion: nil)
+                    self.presentViewController(alert,
+                                               animated: true,
+                                               completion: nil)
                 }
             }
             
@@ -657,9 +729,13 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
         // If this is on an iPad, present it in a popover connected
         // to the source view
         if UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.Pad {
-            actionSheet.modalPresentationStyle = .Popover
-            actionSheet.popoverPresentationController?.sourceView = sourceView
-            actionSheet.popoverPresentationController?.sourceRect = sourceView.bounds
+            
+            actionSheet.modalPresentationStyle
+                = .Popover
+            actionSheet.popoverPresentationController?.sourceView
+                = sourceView
+            actionSheet.popoverPresentationController?.sourceRect
+                = sourceView.bounds
         }
         
         self.presentViewController(actionSheet, animated: true, completion: nil)
@@ -696,7 +772,9 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
         else {
             // Otherwise, show a different view controller based on the type
             // of the attachment
-            guard let attachment = self.document?.attachedFiles?[indexPath.row] else {
+            guard let attachment = self.document?
+                .attachedFiles?[indexPath.row] else {
+                    
                 NSLog("No attachment for this cell!")
                 return
             }
@@ -720,15 +798,17 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
                 self.document?.URLForAttachment(attachment,
                     completion: { (url) -> Void in
                         
-                        if let url = url {
+                        if let attachmentURL = url {
                             let media = AVPlayerViewController()
-                            media.player = AVPlayer(URL: url)
+                            media.player = AVPlayer(URL: attachmentURL)
                             
                             // BEGIN document_vc_didselectitem_attachments_movie_pip_support
-                            let _ = try? AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+                            let _ = try? AVAudioSession.sharedInstance()
+                                .setCategory(AVAudioSessionCategoryPlayback)
                             // END document_vc_didselectitem_attachments_movie_pip_support
                             
-                            self.presentViewController(media, animated: true, completion: nil)
+                            self.presentViewController(media, animated: true,
+                                completion: nil)
                         }
                 })
                 
@@ -745,9 +825,15 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
                         let contactViewController =
                             CNContactViewController(forContact: contact)
                             
-                        let navigationController = UINavigationController(rootViewController: contactViewController)
+                        let navigationController =
+                            UINavigationController(rootViewController:
+                                contactViewController)
                         
-                        contactViewController.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: "dismissModalView")
+                        contactViewController.navigationItem
+                            .rightBarButtonItem = UIBarButtonItem(
+                                barButtonSystemItem: .Done,
+                                target: self,
+                                action: "dismissModalView")
                             
                         self.presentViewController(navigationController,
                             animated: true, completion: nil)
@@ -767,9 +853,9 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
                 self.document?.URLForAttachment(attachment,
                     completion: { (url) -> Void in
                     
-                    if let url = url {
+                    if let attachmentURL = url {
                         let documentInteraction
-                            = UIDocumentInteractionController(URL: url)
+                            = UIDocumentInteractionController(URL: attachmentURL)
                         
                         documentInteraction
                             .presentOptionsMenuFromRect(selectedCell.bounds,
@@ -797,14 +883,16 @@ extension DocumentViewController : UICollectionViewDataSource, UICollectionViewD
 // END document_vc_collectionview
 
 
-// This extension adds a navigation controller that contains a "Done" button to view controllers that are being presented in a popover, but that popover is appearing in full-screen mode
+// This extension adds a navigation controller that contains a "Done" button to
+// view controllers that are being presented in a popover, but that popover is appearing in full-screen mode
 // BEGIN document_view_controller_popover_management
 extension DocumentViewController : UIPopoverPresentationControllerDelegate {
     
-    // Called by the system to determine which view controller should be the content of the popover
+    // Called by the system to determine which view controller should be the
+    // content of the popover
     func presentationController(controller: UIPresentationController,
-        viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle)
-        -> UIViewController? {
+        viewControllerForAdaptivePresentationStyle
+        style: UIModalPresentationStyle) -> UIViewController? {
         
         // Get the view controller that we want to present
         let presentedViewController = controller.presentedViewController
@@ -920,7 +1008,9 @@ extension DocumentViewController  {
         
         picker.sourceType = .Camera
         // BEGIN document_add_photo_video_support
-        picker.mediaTypes = UIImagePickerController.availableMediaTypesForSourceType(UIImagePickerControllerSourceType.Camera)!
+        picker.mediaTypes = UIImagePickerController
+            .availableMediaTypesForSourceType(
+                UIImagePickerControllerSourceType.Camera)!
         // END document_add_photo_video_support
     
         picker.delegate = self
@@ -957,15 +1047,20 @@ extension DocumentViewController : CNContactPickerDelegate {
         let contactPicker = CNContactPickerViewController()
         contactPicker.delegate = self
         self.shouldCloseOnDisappear = false
-        self.presentViewController(contactPicker, animated: true, completion: nil)
+        self.presentViewController(contactPicker,
+                                   animated: true,
+                                   completion: nil)
     }
     
-    func contactPicker(picker: CNContactPickerViewController, didSelectContact contact: CNContact) {
+    func contactPicker(picker: CNContactPickerViewController,
+         didSelectContact contact: CNContact) {
         
         do {
-            if let data = try? CNContactVCardSerialization.dataWithContacts([contact]) {
+            if let data = try? CNContactVCardSerialization
+                .dataWithContacts([contact]) {
                 
-                let name = "\(contact.identifier)-\(contact.givenName)\(contact.familyName).vcf"
+                let name = "\(contact.identifier)-" +
+                    "\(contact.givenName)\(contact.familyName).vcf"
                 
                 try self.document?.addAttachmentWithData(data, name: name)
                 self.attachmentsCollectionView?.reloadData()                
@@ -997,7 +1092,8 @@ extension DocumentViewController : UIImagePickerControllerDelegate,
                     self.attachmentsCollectionView?.reloadData()
                     
                 // BEGIN document_image_controller_support_video
-                } else if let mediaURL = (info[UIImagePickerControllerMediaURL]) as? NSURL {
+                } else if let mediaURL
+                    = (info[UIImagePickerControllerMediaURL]) as? NSURL {
                     
                     try self.document?.addAttachmentAtURL(mediaURL)
                 // END document_image_controller_support_video

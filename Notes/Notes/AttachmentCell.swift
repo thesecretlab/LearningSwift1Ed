@@ -8,10 +8,12 @@
 
 import Cocoa
 
-// BEGIN attachment_cell
+// BEGIN attachment_cell_mac
 class AttachmentCell: NSCollectionViewItem {
     
+    // BEGIN attachment_cell_mac_delegate
     weak var delegate : AttachmentCellDelegate?
+    // END attachment_cell_mac_delegate
     
     // BEGIN attachment_cell_mousedown
     override func mouseDown(theEvent: NSEvent) {
@@ -21,4 +23,4 @@ class AttachmentCell: NSCollectionViewItem {
     }
     // END attachment_cell_mousedown
 }
-// END attachment_cell
+// END attachment_cell_mac

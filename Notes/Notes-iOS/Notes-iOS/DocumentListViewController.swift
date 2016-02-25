@@ -61,7 +61,9 @@ class DocumentListViewController: UICollectionViewController {
     // BEGIN icloud_available
     class var iCloudAvailable : Bool {
         
-        if NSUserDefaults.standardUserDefaults().boolForKey(NotesUseiCloudKey) == false {
+        if NSUserDefaults.standardUserDefaults()
+            .boolForKey(NotesUseiCloudKey) == false {
+            
             return false
         }
         
@@ -106,7 +108,8 @@ class DocumentListViewController: UICollectionViewController {
         
         // BEGIN restore_user_activity_state_watch
         // This is coming from the watch
-        if let urlString = activity.userInfo?[WatchHandoffDocumentURL] as? String,
+        if let urlString = activity
+                .userInfo?[WatchHandoffDocumentURL] as? String,
             let url = NSURL(string: urlString) {
                 // Open the document
                 self.performSegueWithIdentifier("ShowDocument", sender: url)
@@ -117,7 +120,8 @@ class DocumentListViewController: UICollectionViewController {
         
         // BEGIN restore_user_activity_state_search
         // We're coming from a search result
-        if let searchableItemIdentifier = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String,
+        if let searchableItemIdentifier = activity
+                .userInfo?[CSSearchableItemActivityIdentifier] as? String,
             let url = NSURL(string: searchableItemIdentifier) {
             // Open the document
             self.performSegueWithIdentifier("ShowDocument", sender: url)
@@ -137,13 +141,15 @@ class DocumentListViewController: UICollectionViewController {
         self.navigationItem.rightBarButtonItem = addButton
         // END doc_list_view_did_load_create
         
-        self.queryDidUpdateObserver = NSNotificationCenter.defaultCenter()
+        self.queryDidUpdateObserver = NSNotificationCenter
+            .defaultCenter()
             .addObserverForName(NSMetadataQueryDidUpdateNotification,
                 object: metadataQuery,
                 queue: NSOperationQueue.mainQueue()) { (notification) in
                     self.queryUpdated()
         }
-        self.queryDidFinishGatheringObserver = NSNotificationCenter.defaultCenter()
+        self.queryDidFinishGatheringObserver = NSNotificationCenter
+            .defaultCenter()
             .addObserverForName(NSMetadataQueryDidFinishGatheringNotification,
                 object: metadataQuery,
                 queue: NSOperationQueue.mainQueue()) { (notification) in
@@ -160,7 +166,8 @@ class DocumentListViewController: UICollectionViewController {
         
         if hasPromptedForiCloud == false {
             let alert = UIAlertController(title: "Use iCloud?",
-                message: "Do you want to store your documents in iCloud, or store them locally?",
+                message: "Do you want to store your documents in iCloud, " +
+                "or store them locally?",
                 preferredStyle: UIAlertControllerStyle.Alert)
             
             alert.addAction(UIAlertAction(title: "iCloud",
@@ -174,7 +181,8 @@ class DocumentListViewController: UICollectionViewController {
             }))
             
             
-            alert.addAction(UIAlertAction(title: "Local Only", style: .Default, handler: { (action) in
+            alert.addAction(UIAlertAction(title: "Local Only", style: .Default,
+                handler: { (action) in
                 
                 NSUserDefaults.standardUserDefaults()
                     .setBool(false, forKey: NotesUseiCloudKey)
@@ -184,7 +192,8 @@ class DocumentListViewController: UICollectionViewController {
             
             self.presentViewController(alert, animated: true, completion: nil)
             
-            NSUserDefaults.standardUserDefaults().setBool(true, forKey: NotesHasPromptedForiCloudKey)
+            NSUserDefaults.standardUserDefaults()
+                .setBool(true, forKey: NotesHasPromptedForiCloudKey)
             
         } else {
             metadataQuery.startQuery()
@@ -200,7 +209,15 @@ class DocumentListViewController: UICollectionViewController {
     func refreshLocalFileList() {
         
         do {
-            var localFiles = try NSFileManager.defaultManager().contentsOfDirectoryAtURL(DocumentListViewController.localDocumentsDirectoryURL, includingPropertiesForKeys: [NSURLNameKey], options: [.SkipsPackageDescendants, .SkipsSubdirectoryDescendants])
+            var localFiles = try NSFileManager.defaultManager()
+                .contentsOfDirectoryAtURL(
+                    DocumentListViewController.localDocumentsDirectoryURL,
+                    includingPropertiesForKeys: [NSURLNameKey],
+                    options: [
+                        .SkipsPackageDescendants,
+                        .SkipsSubdirectoryDescendants
+                    ]
+                )
             
             localFiles = localFiles.filter({ (url) in
                 return url.pathExtension == "note"
@@ -209,13 +226,20 @@ class DocumentListViewController: UICollectionViewController {
             if (DocumentListViewController.iCloudAvailable) {
                 // Move these files into iCloud
                 for file in localFiles {
-                    if let documentName = file.lastPathComponent, let ubiquitousDestinationURL =
-                        DocumentListViewController.ubiquitousDocumentsDirectoryURL?
+                    if let documentName = file.lastPathComponent,
+                        let ubiquitousDestinationURL =
+                        DocumentListViewController
+                            .ubiquitousDocumentsDirectoryURL?
                             .URLByAppendingPathComponent(documentName) {
                                 do {
-                                    try NSFileManager.defaultManager().setUbiquitous(true, itemAtURL: file, destinationURL: ubiquitousDestinationURL)
+                                    try NSFileManager.defaultManager()
+                                        .setUbiquitous(true,
+                                                       itemAtURL: file,
+                                                       destinationURL:
+                                                        ubiquitousDestinationURL)
                                 } catch let error as NSError {
-                                    NSLog("Failed to move file \(file) to iCloud: \(error)")
+                                    NSLog("Failed to move file \(file) " +
+                                        "to iCloud: \(error)")
                                 }
                     }
                     
@@ -236,8 +260,12 @@ class DocumentListViewController: UICollectionViewController {
     
     // BEGIN document_list_editing
     override func setEditing(editing: Bool, animated: Bool) {
+        
         super.setEditing(editing, animated: animated)
-        for visibleCell in self.collectionView?.visibleCells() as! [FileCollectionViewCell] {
+        
+        for visibleCell in self.collectionView?.visibleCells()
+            as! [FileCollectionViewCell] {
+                
             visibleCell.setEditing(editing, animated: animated)
         }
     }
@@ -247,8 +275,7 @@ class DocumentListViewController: UICollectionViewController {
     func queryUpdated() {
         self.collectionView?.reloadData()
         
-        // Ensure that the metadata query's results
-        // can't be accessed
+        // Ensure that the metadata query's results can be accessed
         guard let items = self.metadataQuery.results as? [NSMetadataItem]  else {
             return
         }
@@ -271,7 +298,7 @@ class DocumentListViewController: UICollectionViewController {
             guard let url =
                 item.valueForAttribute(NSMetadataItemURLKey) as? NSURL else {
                 // We need to have the URL to access it, so move on
-                // to the next file
+                // to the next file by breaking out of this loop
                 continue
             }
             
@@ -347,9 +374,17 @@ class DocumentListViewController: UICollectionViewController {
             
         // BEGIN cellforitematindexpath_quicklook
         // Get the thumbnail image, if it exists
-        let thumbnailImageURL = url.URLByAppendingPathComponent(NoteDocumentFileNames.QuickLookDirectory.rawValue , isDirectory: true).URLByAppendingPathComponent(NoteDocumentFileNames.QuickLookThumbnail.rawValue, isDirectory: false)
+        let thumbnailImageURL =
+            url
+                .URLByAppendingPathComponent(
+                    NoteDocumentFileNames.QuickLookDirectory.rawValue,
+                    isDirectory: true)
+                .URLByAppendingPathComponent(
+                    NoteDocumentFileNames.QuickLookThumbnail.rawValue,
+                    isDirectory: false)
     
-        if let path = thumbnailImageURL.path, let image = UIImage(contentsOfFile: path) {
+        if let path = thumbnailImageURL.path,
+            let image = UIImage(contentsOfFile: path) {
             cell.imageView?.image = image
         } else {
             cell.imageView?.image = nil
@@ -365,10 +400,11 @@ class DocumentListViewController: UICollectionViewController {
             
         // BEGIN cellforitematindexpath_renaming
         
-        cell.fileNameLabel?.gestureRecognizers = []
-        let labelTapRecognizer = UITapGestureRecognizer(target: cell, action: "renameTapped")
-        cell.fileNameLabel?.addGestureRecognizer(labelTapRecognizer)
-            
+        let labelTapRecognizer = UITapGestureRecognizer(target: cell,
+                                                        action: "renameTapped")
+        
+        cell.fileNameLabel?.gestureRecognizers = [labelTapRecognizer]
+        
         cell.renameHander = {
             self.renameDocumentAtURL(url)
         }
@@ -399,26 +435,32 @@ class DocumentListViewController: UICollectionViewController {
     func renameDocumentAtURL(url: NSURL) {
         
         // Create an alert box
-        let renameBox = UIAlertController(title: "Rename Document", message: nil, preferredStyle: .Alert)
+        let renameBox = UIAlertController(title: "Rename Document",
+                                          message: nil, preferredStyle: .Alert)
         
         // Add a text field to it that contains its current name, sans ".note"
         renameBox.addTextFieldWithConfigurationHandler({ (textField) -> Void in
-            let filename = url.lastPathComponent?.stringByReplacingOccurrencesOfString(".note", withString: "")
+            let filename = url.lastPathComponent?
+                .stringByReplacingOccurrencesOfString(".note", withString: "")
             textField.text = filename
         })
         
         // Add the cancel button, which does nothing
-        renameBox.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
+        renameBox.addAction(UIAlertAction(title: "Cancel",
+            style: .Cancel, handler: nil))
         
         // Add the rename button, which actually does the renaming
-        renameBox.addAction(UIAlertAction(title: "Rename", style: .Default) { (action) in
+        renameBox.addAction(UIAlertAction(title: "Rename",
+            style: .Default) { (action) in
             
-            // Attempt to construct a destination URL from the name the user provided
+            // Attempt to construct a destination URL from 
+            // the name the user provided
             if let newName = renameBox.textFields?.first?.text,
                 let destinationURL = url.URLByDeletingLastPathComponent?
                     .URLByAppendingPathComponent(newName + ".note") {
                         
-                        let fileCoordinator = NSFileCoordinator(filePresenter: nil)
+                        let fileCoordinator =
+                            NSFileCoordinator(filePresenter: nil)
                         
                         // Indicate that we intend to do writing
                         fileCoordinator.coordinateWritingItemAtURL(url,
@@ -431,13 +473,13 @@ class DocumentListViewController: UICollectionViewController {
                                 do {
                                     // Perform the actual move
                                     try NSFileManager.defaultManager()
-                                        .moveItemAtURL(origin, toURL: destination)
+                                        .moveItemAtURL(origin,
+                                            toURL: destination)
                                     
                                     // Remove the original URL from the file
                                     // list by filtering it out
-                                    self.availableFiles = self.availableFiles.filter {
-                                        $0 != url
-                                    }
+                                    self.availableFiles =
+                                        self.availableFiles.filter { $0 != url }
                                     
                                     // Add the new URL to the file list
                                     self.availableFiles.append(destination)
@@ -445,7 +487,8 @@ class DocumentListViewController: UICollectionViewController {
                                     // Refresh our collection of files
                                     self.collectionView?.reloadData()
                                 } catch let error as NSError {
-                                    NSLog("Failed to move \(origin) to \(destination): \(error)")
+                                    NSLog("Failed to move \(origin) to " +
+                                        "\(destination): \(error)")
                                 }
                                 
                         })
@@ -466,7 +509,8 @@ class DocumentListViewController: UICollectionViewController {
         fileCoordinator.coordinateWritingItemAtURL(url,
             options: .ForDeleting, error: nil) { (urlForModifying) -> Void in
             do {
-                try NSFileManager.defaultManager().removeItemAtURL(urlForModifying)
+                try NSFileManager.defaultManager()
+                    .removeItemAtURL(urlForModifying)
                 
                 // Remove the URL from the list
                 
@@ -485,7 +529,9 @@ class DocumentListViewController: UICollectionViewController {
                 alert.addAction(UIAlertAction(title: "Done",
                     style: .Default, handler: nil))
                 
-                self.presentViewController(alert, animated: true, completion: nil)
+                self.presentViewController(alert,
+                                           animated: true,
+                                           completion: nil)
             }
         }
     }
@@ -496,7 +542,7 @@ class DocumentListViewController: UICollectionViewController {
     func itemIsOpenable(url:NSURL?) -> Bool {
         
         // Return false if item is nil
-        guard let url = url else {
+        guard let itemURL = url else {
             return false
         }
         
@@ -510,16 +556,18 @@ class DocumentListViewController: UICollectionViewController {
         // Ask the system for the download status
         var downloadStatus : AnyObject?
         do {
-            try url.getResourceValue(&downloadStatus,
+            try itemURL.getResourceValue(&downloadStatus,
                 forKey: NSURLUbiquitousItemDownloadingStatusKey)
         } catch let error as NSError {
-            NSLog("Failed to get downloading status for \(url): \(error)")
+            NSLog("Failed to get downloading status for \(itemURL): \(error)")
             // If we can't get that, we can't open it
             return false
         }
         
         // Return true if this file is the most current version
-        if downloadStatus as? String == NSURLUbiquitousItemDownloadingStatusCurrent {
+        if downloadStatus as? String
+            == NSURLUbiquitousItemDownloadingStatusCurrent {
+            
             return true
         } else {
             return false
@@ -541,12 +589,14 @@ class DocumentListViewController: UICollectionViewController {
     
     // BEGIN documents_urls
     class var localDocumentsDirectoryURL : NSURL {
-        return NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory,
+        return NSFileManager.defaultManager().URLsForDirectory(
+            .DocumentDirectory,
             inDomains: .UserDomainMask).first!
     }
     
     class var ubiquitousDocumentsDirectoryURL : NSURL? {
-        return NSFileManager.defaultManager().URLForUbiquityContainerIdentifier(nil)?
+        return NSFileManager.defaultManager()
+            .URLForUbiquityContainerIdentifier(nil)?
             .URLByAppendingPathComponent("Documents")
     }
     // END documents_urls
@@ -555,7 +605,7 @@ class DocumentListViewController: UICollectionViewController {
     // BEGIN create_document
     func createDocument() {
         
-        // Create a name for this new document
+        // Create a unique name for this new document by adding a random number
         let documentName = "Document \(arc4random()).note"
         
         // Work out where we're going to store it, temporarily
@@ -576,40 +626,47 @@ class DocumentListViewController: UICollectionViewController {
                     DocumentListViewController.ubiquitousDocumentsDirectoryURL?
                         .URLByAppendingPathComponent(documentName) {
                             
-                            // Perform the move to iCloud in the background
-                            NSOperationQueue().addOperationWithBlock { () -> Void in
-                                do {
-                                    try NSFileManager.defaultManager()
-                                        .setUbiquitous(true,
-                                            itemAtURL: documentDestinationURL,
-                                            destinationURL: ubiquitousDestinationURL)
-                                    
-                                    NSOperationQueue.mainQueue().addOperationWithBlock { () -> Void in
-                                        
-                                        self.availableFiles.append(ubiquitousDestinationURL)
-                                        
-                                        // Open the document
-                                        if let path = ubiquitousDestinationURL.path {
-                                            self.openDocumentWithPath(path)
-                                        }
-                                        
-                                        self.collectionView?.reloadData()
-                                    }
-                                } catch let error as NSError {
-                                    NSLog("Error storing document in iCloud! \(error.localizedDescription)")
+                    // Perform the move to iCloud in the background
+                    NSOperationQueue().addOperationWithBlock { () -> Void in
+                        do {
+                            try NSFileManager.defaultManager()
+                                .setUbiquitous(true,
+                                    itemAtURL: documentDestinationURL,
+                                    destinationURL: ubiquitousDestinationURL)
+                            
+                            NSOperationQueue.mainQueue()
+                                .addOperationWithBlock { () -> Void in
+                                
+                                self.availableFiles
+                                    .append(ubiquitousDestinationURL)
+                                
+                                // BEGIN create_document_open
+                                // Open the document
+                                if let path = ubiquitousDestinationURL.path {
+                                    self.openDocumentWithPath(path)
                                 }
+                                // END create_document_open
+                                
+                                self.collectionView?.reloadData()
                             }
+                        } catch let error as NSError {
+                            NSLog("Error storing document in iCloud! " +
+                                "\(error.localizedDescription)")
+                        }
+                    }
                 }
             } else {
                 // We can't save it to iCloud, so it stays in local storage.
-                // Just open it locally
                 
                 self.availableFiles.append(documentDestinationURL)
                 self.collectionView?.reloadData()
                 
+                // BEGIN create_document_open
+                // Just open it locally
                 if let path = documentDestinationURL.path {
                     self.openDocumentWithPath(path)
                 }
+                // END create_document_open
             }
         }
     }
@@ -632,9 +689,11 @@ class DocumentListViewController: UICollectionViewController {
     // BEGIN prepare_for_segue_list
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
-        // If the segue is "ShowDocument" and the destination view controller is a DocumentViewController...
+        // If the segue is "ShowDocument" and the destination view controller
+        // is a DocumentViewController...
         if segue.identifier == "ShowDocument",
-            let documentVC = segue.destinationViewController as? DocumentViewController
+            let documentVC = segue.destinationViewController
+                as? DocumentViewController
         {
          
             // If it's a URL we can open...
