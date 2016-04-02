@@ -1,4 +1,4 @@
-# Learning Swift First Edition
+# Learning Swift, 1st Edition
 
 
 <img src="http://akamaicovers.oreilly.com/images/0636920045946/rc_lrg.jpg" alt="Learning Swift cover" width="100px;" align="right">
